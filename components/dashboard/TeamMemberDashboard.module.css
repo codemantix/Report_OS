@@ -1,0 +1,189 @@
+.page {
+  @apply space-y-8;
+}
+
+.greeting {
+  @apply space-y-1;
+}
+
+.greetingTitle {
+  @apply text-2xl font-bold text-gray-900 dark:text-white;
+}
+
+.greetingSubtitle {
+  @apply text-gray-500 dark:text-gray-400;
+}
+
+.statsGrid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4;
+}
+
+.card {
+  @apply bg-white rounded-xl shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800;
+}
+
+.cardHeader {
+  @apply flex items-center justify-between p-5 pb-0;
+}
+
+.cardTitle {
+  @apply text-base font-semibold text-gray-900;
+}
+
+.cardBody {
+  @apply p-5;
+}
+
+.quickActions {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+}
+
+.quickActionCard {
+  @apply bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow cursor-pointer dark:bg-gray-900 dark:border-gray-800 dark:hover:bg-gray-800;
+}
+
+.quickActionIcon {
+  @apply w-10 h-10 rounded-lg bg-blue-600/10 flex items-center justify-center text-blue-600 mb-3 dark:bg-blue-900/30;
+}
+
+.quickActionTitle {
+  @apply font-semibold text-gray-900 dark:text-white;
+}
+
+.quickActionDesc {
+  @apply text-sm text-gray-500 mt-1 dark:text-gray-400;
+}
+
+.emptyState {
+  @apply text-center py-10;
+}
+
+.emptyIcon {
+  @apply w-10 h-10 mx-auto mb-2 text-gray-300 dark:text-gray-600;
+}
+
+.emptyText {
+  @apply text-sm text-gray-400 dark:text-gray-500;
+}
+
+.reportItem {
+  @apply flex items-center justify-between p-3 border-b border-gray-50 last:border-0 dark:border-gray-800;
+}
+
+.reportMeta {
+  @apply text-xs text-gray-500 dark:text-gray-400;
+}
+
+.goalItem {
+  @apply p-3 border border-gray-100 rounded-lg dark:border-gray-700;
+}
+
+.goalTitle {
+  @apply text-sm font-medium text-gray-900 dark:text-white;
+}
+
+.goalDept {
+  @apply text-xs text-gray-500 mt-0.5 dark:text-gray-400;
+}
+
+.progressBar {
+  @apply w-full bg-gray-100 rounded-full h-1.5 mt-2 dark:bg-gray-700;
+}
+
+.progressFill {
+  @apply bg-blue-600 rounded-full h-1.5 transition-all dark:bg-blue-500;
+}
+
+.badge {
+  @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium dark:bg-gray-800 dark:text-gray-300;
+}
+
+.successBadge {
+  @apply badge bg-emerald-50 text-emerald-700;
+}
+
+.warningBadge {
+  @apply badge bg-amber-50 text-amber-700;
+}
+
+.dangerBadge {
+  @apply badge bg-red-50 text-red-700;
+}
+
+.infoBadge {
+  @apply badge bg-blue-50 text-blue-700;
+}
+
+.scoreCard {
+  @apply p-4 rounded-lg border text-center dark:border-gray-700;
+}
+
+.scoreValue {
+  @apply text-2xl font-bold;
+}
+
+.scoreLabel {
+  @apply text-xs text-gray-500 mt-1 dark:text-gray-400;
+}
+
+.loadingGrid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4;
+}
+
+.skeleton {
+  @apply animate-pulse bg-gray-200 rounded dark:bg-gray-700;
+}
+
+.sectionGrid {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+}
+
+.aiFeedbackCard {
+  @apply bg-blue-50/50 rounded-lg p-4 dark:bg-blue-900/20;
+}
+
+.viewAllLink {
+  @apply text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400;
+}
+
+:global(.dark) .greetingTitle,
+:global(.dark) .cardTitle,
+:global(.dark) .quickActionTitle,
+:global(.dark) .goalTitle {
+  color: var(--color-text);
+}
+
+:global(.dark) .greetingSubtitle,
+:global(.dark) .quickActionDesc,
+:global(.dark) .emptyText,
+:global(.dark) .reportMeta,
+:global(.dark) .goalDept,
+:global(.dark) .scoreLabel {
+  color: var(--color-muted);
+}
+
+:global(.dark) .card,
+:global(.dark) .quickActionCard {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+:global(.dark) .quickActionCard:hover {
+  background: var(--color-surface-soft);
+}
+
+:global(.dark) .reportItem,
+:global(.dark) .goalItem,
+:global(.dark) .scoreCard {
+  border-color: var(--color-border);
+}
+
+:global(.dark) .progressBar,
+:global(.dark) .skeleton {
+  background: var(--color-border);
+}
+
+:global(.dark) .aiFeedbackCard {
+  background: rgba(30, 58, 138, 0.18);
+}

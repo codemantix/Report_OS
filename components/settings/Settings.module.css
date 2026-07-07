@@ -1,0 +1,277 @@
+.page {
+  @apply max-w-6xl mx-auto space-y-6;
+}
+
+.header {
+  @apply space-y-1;
+}
+
+.title {
+  @apply text-2xl font-bold;
+  color: var(--color-text);
+}
+
+.subtitle {
+  color: var(--color-muted);
+}
+
+.section {
+  @apply rounded-xl border p-6 transition-colors duration-200;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.sectionHeader {
+  @apply mb-5 border-b pb-4;
+  border-color: var(--color-border);
+}
+
+.sectionTitle {
+  @apply text-lg font-semibold;
+  color: var(--color-text);
+}
+
+.sectionDescription {
+  @apply mt-1 text-sm;
+  color: var(--color-muted);
+}
+
+.profileGrid {
+  @apply grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr];
+}
+
+.leftColumn,
+.rightColumn {
+  @apply space-y-6;
+}
+
+.formGrid {
+  @apply grid grid-cols-1 gap-4 md:grid-cols-2;
+}
+
+.field {
+  @apply space-y-1.5;
+}
+
+.fieldFull {
+  @apply md:col-span-2;
+}
+
+.label {
+  @apply block text-sm font-medium;
+  color: var(--color-text);
+}
+
+.input,
+.textarea {
+  @apply w-full rounded-lg border px-3.5 py-2.5 text-sm transition-all duration-150 focus:outline-none;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.textarea {
+  @apply min-h-[120px] resize-y;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--color-muted);
+  opacity: 0.72;
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+}
+
+:global(.dark) .input,
+:global(.dark) .textarea {
+  background: rgba(2, 6, 23, 0.62);
+}
+
+.errorText {
+  @apply text-xs;
+  color: #EF4444;
+}
+
+.formActions {
+  @apply mt-6 flex flex-col-reverse gap-3 border-t pt-5 sm:flex-row sm:justify-end;
+  border-color: var(--color-border);
+}
+
+.primaryBtn,
+.secondaryBtn,
+.dangerBtn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.primaryBtn {
+  @apply text-white;
+  background: #1E3A8A;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  background: #1E40AF;
+}
+
+.secondaryBtn {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.secondaryBtn:hover:not(:disabled) {
+  background: var(--color-surface-soft);
+}
+
+.dangerBtn {
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.08);
+  color: #DC2626;
+}
+
+:global(.dark) .dangerBtn {
+  color: #F87171;
+}
+
+.dangerBtn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.14);
+}
+
+.avatarCard,
+.accountCard {
+  @apply rounded-xl border p-5;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+.avatarWrap {
+  @apply flex flex-col items-center text-center;
+}
+
+.avatarPreview {
+  @apply mb-4 flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border text-3xl font-bold;
+  background: var(--color-surface-soft);
+  border-color: var(--color-border);
+  color: #2563EB;
+}
+
+.avatarImage {
+  @apply h-full w-full object-cover;
+}
+
+.avatarTitle {
+  @apply text-sm font-semibold;
+  color: var(--color-text);
+}
+
+.avatarHint {
+  @apply mt-1 text-xs;
+  color: var(--color-muted);
+}
+
+.avatarActions {
+  @apply mt-4 flex flex-col gap-2 sm:flex-row lg:flex-col;
+}
+
+.fileInput {
+  @apply hidden;
+}
+
+.infoList {
+  @apply space-y-4;
+}
+
+.infoItem {
+  @apply flex items-start justify-between gap-4 border-b pb-3 last:border-0 last:pb-0;
+  border-color: var(--color-border);
+}
+
+.infoLabel {
+  @apply text-xs font-medium uppercase tracking-wider;
+  color: var(--color-muted);
+}
+
+.infoValue {
+  @apply text-right text-sm font-medium;
+  color: var(--color-text);
+}
+
+.badge {
+  @apply inline-flex rounded-full px-2.5 py-1 text-xs font-medium capitalize;
+  background: var(--color-surface-soft);
+  color: var(--color-text);
+}
+
+.roleBadge {
+  background: rgba(37, 99, 235, 0.10);
+  color: #2563EB;
+}
+
+.statusBadge {
+  background: rgba(16, 185, 129, 0.10);
+  color: #059669;
+}
+
+.departmentBadge {
+  background: rgba(249, 115, 22, 0.10);
+  color: #EA580C;
+}
+
+:global(.dark) .roleBadge {
+  color: #60A5FA;
+}
+
+:global(.dark) .statusBadge {
+  color: #34D399;
+}
+
+:global(.dark) .departmentBadge {
+  color: #FDBA74;
+}
+
+.alertSuccess,
+.alertError {
+  @apply mb-4 rounded-lg border p-3 text-sm;
+}
+
+.alertSuccess {
+  border-color: rgba(16, 185, 129, 0.25);
+  background: rgba(16, 185, 129, 0.08);
+  color: #047857;
+}
+
+.alertError {
+  border-color: rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.08);
+  color: #DC2626;
+}
+
+:global(.dark) .alertSuccess {
+  color: #34D399;
+}
+
+:global(.dark) .alertError {
+  color: #F87171;
+}
+
+.loadingShell {
+  @apply flex items-center justify-center py-24;
+}
+
+.spinner {
+  @apply h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent;
+}
+
+.themeStatus {
+  @apply mt-4 text-xs;
+  color: var(--color-muted);
+}
+
+.themeStatusStrong {
+  @apply font-medium capitalize;
+  color: var(--color-text);
+}

@@ -1,0 +1,53 @@
+.pagination {
+  @apply flex flex-col gap-3 border-t px-6 py-3 md:flex-row md:items-center md:justify-between;
+  border-color: var(--color-border);
+}
+
+.paginationInfo,
+.paginationLabel,
+.paginationEllipsis {
+  @apply text-sm;
+  color: var(--color-muted);
+}
+
+.paginationRight {
+  @apply flex flex-wrap items-center gap-4;
+}
+
+.pageSizeWrap {
+  @apply flex items-center gap-1;
+}
+
+.paginationButtons {
+  @apply flex items-center gap-1;
+}
+
+.pageBtn {
+  @apply inline-flex h-8 w-8 items-center justify-center rounded-lg text-sm font-medium transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40;
+  color: var(--color-muted);
+}
+
+.pageBtn:hover {
+  background: var(--color-surface-soft);
+  color: var(--color-text);
+}
+
+.pageBtnActive {
+  @apply inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-sm font-medium text-white;
+}
+
+.perPageSelect {
+  @apply rounded-lg border px-2 py-1 text-sm transition-all duration-150 focus:outline-none;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.perPageSelect:focus {
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+}
+
+:global(.dark) .perPageSelect {
+  background: rgba(2, 6, 23, 0.62);
+}

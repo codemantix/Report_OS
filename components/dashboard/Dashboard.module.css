@@ -1,0 +1,23 @@
+.page {
+  @apply space-y-6;
+}
+
+.statsGrid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 dark:gap-4;
+}
+
+.headerRow {
+  @apply flex items-center justify-between;
+}
+
+.liveIndicator {
+  @apply flex items-center gap-1.5 text-xs text-emerald-600 font-medium;
+}
+
+.liveDot {
+  @apply w-1.5 h-1.5 rounded-full bg-emerald-500;
+}
+
+.liveDotActive {
+  @apply animate-pulse;
+}

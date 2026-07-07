@@ -1,0 +1,1530 @@
+/* ============================================================
+   Typography & Base Layout
+   ============================================================ */
+.sectionInner {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.sectionHeader {
+  @apply max-w-3xl mx-auto text-center mb-16 sm:mb-20;
+}
+
+.sectionHeaderLeft {
+  @apply max-w-3xl mb-12 sm:mb-16;
+}
+
+.sectionTag {
+  @apply inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-4;
+  background: rgba(30, 58, 138, 0.06);
+  color: #1E3A8A;
+}
+
+:global(.dark) .sectionTag {
+  background: rgba(96, 165, 250, 0.12);
+  color: #94A3B8;
+}
+
+.sectionTitle {
+  @apply text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight leading-tight;
+  font-family: 'Sora', sans-serif;
+  color: #0F172A;
+}
+
+:global(.dark) .sectionTitle {
+  color: #F8FAFC;
+}
+
+.sectionDesc {
+  @apply text-base sm:text-lg leading-relaxed text-slate-500;
+  max-width: 52rem;
+}
+
+:global(.dark) .sectionDesc {
+  @apply text-slate-400;
+}
+
+/* ============================================================
+   Navbar Redesign
+   ============================================================ */
+.navbar {
+  @apply sticky top-0 z-50 border-b backdrop-blur-md transition-colors duration-200;
+  background: rgba(248, 250, 252, 0.88);
+  border-color: #E2E8F0;
+}
+
+:global(.dark) .navbar {
+  background: rgba(2, 6, 23, 0.88);
+  border-color: #1E293B;
+}
+
+.navbarInner {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between;
+}
+
+.navbarBrand {
+  @apply flex items-center gap-3 font-semibold text-lg;
+  color: #0F172A;
+  font-family: 'Sora', sans-serif;
+}
+
+:global(.dark) .navbarBrand {
+  color: #F8FAFC;
+}
+
+.navbarProduct {
+  @apply hidden sm:inline-flex items-center rounded-[7px] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider;
+  color: #1E3A8A;
+  background: rgba(30, 58, 138, 0.08);
+  font-family: 'Saira', sans-serif;
+}
+
+:global(.dark) .navbarProduct {
+  color: #94A3B8;
+  background: rgba(30, 58, 138, 0.3);
+}
+
+.navbarLinks {
+  @apply hidden md:flex items-center gap-2;
+}
+
+.navbarLink {
+  @apply px-4 py-2 text-sm font-medium rounded-lg transition-colors text-slate-600 hover:text-slate-900;
+}
+
+:global(.dark) .navbarLink {
+  @apply text-slate-400 hover:text-slate-200;
+}
+
+.navbarRight {
+  @apply flex items-center gap-4;
+}
+
+.navbarLoginBtn {
+  @apply px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-150 text-white bg-slate-900 hover:bg-slate-800;
+}
+
+:global(.dark) .navbarLoginBtn {
+  @apply text-slate-900 bg-slate-100 hover:bg-slate-200;
+}
+
+.navbarMobileBtn {
+  @apply p-2 rounded-lg text-slate-600 hover:bg-slate-100 md:hidden;
+}
+
+:global(.dark) .navbarMobileBtn {
+  @apply text-slate-400 hover:bg-slate-800;
+}
+
+.navbarMobileMenu {
+  @apply md:hidden border-t border-slate-200 bg-white;
+}
+
+:global(.dark) .navbarMobileMenu {
+  @apply border-slate-800 bg-slate-950;
+}
+
+.navbarMobileHeader {
+  @apply px-4 py-3 border-b flex items-center justify-between border-slate-100 mb-1.5;
+}
+
+:global(.dark) .navbarMobileHeader {
+  @apply border-slate-800/80;
+}
+
+.navbarMobileBrand {
+  @apply text-sm font-bold text-slate-800;
+  font-family: 'Sora', sans-serif;
+}
+
+:global(.dark) .navbarMobileBrand {
+  @apply text-slate-200;
+}
+
+.navbarMobileProduct {
+  @apply inline-flex items-center rounded-[7px] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider;
+  color: #1E3A8A;
+  background: rgba(30, 58, 138, 0.08);
+  font-family: 'Saira', sans-serif;
+}
+
+:global(.dark) .navbarMobileProduct {
+  color: #94A3B8;
+  background: rgba(30, 58, 138, 0.3);
+}
+
+.navbarMobileMenuInner {
+  @apply px-4 py-2 space-y-1 flex flex-col;
+}
+
+.navbarMobileLink {
+  @apply px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-slate-50;
+}
+
+:global(.dark) .navbarMobileLink {
+  @apply text-slate-400 hover:bg-slate-900;
+}
+
+/* ============================================================
+   Hero Section
+   ============================================================ */
+.hero {
+  @apply relative overflow-hidden py-16 sm:py-24 border-b;
+  background: #F8FAFC;
+  border-color: #E2E8F0;
+}
+
+:global(.dark) .hero {
+  background: #020617;
+  border-color: #1E293B;
+}
+
+.heroInner {
+  @apply relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.heroBgGrid {
+  @apply absolute inset-0 z-0 opacity-40;
+  background-image:
+    linear-gradient(#E2E8F0 1px, transparent 1px),
+    linear-gradient(90deg, #E2E8F0 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(circle at center, black, transparent 80%);
+}
+
+:global(.dark) .heroBgGrid {
+  @apply opacity-10;
+  background-image:
+    linear-gradient(#334155 1px, transparent 1px),
+    linear-gradient(90deg, #334155 1px, transparent 1px);
+}
+
+.heroGlow, .heroGlowSecondary {
+  @apply absolute rounded-full blur-3xl opacity-[0.02] pointer-events-none;
+}
+
+.heroGrid {
+  @apply grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center;
+}
+
+.heroContent {
+  @apply lg:col-span-5 flex flex-col items-start;
+}
+
+.heroBadge {
+  @apply inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold mb-6;
+  background: rgba(30, 58, 138, 0.06);
+  color: #1E3A8A;
+  border: 1px solid rgba(30, 58, 138, 0.1);
+}
+
+:global(.dark) .heroBadge {
+  background: rgba(30, 58, 138, 0.25);
+  color: #94A3B8;
+  border-color: rgba(30, 58, 138, 0.2);
+}
+
+.heroBadgeDot {
+  @apply w-1.5 h-1.5 rounded-full;
+  background: #10B981;
+}
+
+.heroTitle {
+  @apply text-4xl sm:text-5xl font-extrabold leading-tight mb-6 tracking-tight;
+  font-family: 'Sora', sans-serif;
+  color: #0F172A;
+}
+
+:global(.dark) .heroTitle {
+  color: #FFFFFF;
+}
+
+.heroSubtitle {
+  @apply text-base sm:text-lg leading-relaxed mb-8 text-slate-500;
+}
+
+:global(.dark) .heroSubtitle {
+  color: #94A3B8;
+}
+
+.heroActions {
+  @apply flex flex-wrap gap-3.5 mb-6;
+}
+
+.heroPrimaryBtn {
+  @apply inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold rounded-lg transition-all duration-150 text-white bg-slate-900 hover:bg-slate-800;
+}
+
+:global(.dark) .heroPrimaryBtn {
+  @apply text-slate-900 bg-slate-100 hover:bg-slate-200;
+}
+
+.heroSecondaryBtn {
+  @apply inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold rounded-lg transition-all duration-150 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50;
+}
+
+:global(.dark) .heroSecondaryBtn {
+  @apply border-slate-800 text-slate-300 bg-slate-900 hover:bg-slate-800;
+}
+
+.heroMicrocopy {
+  @apply text-xs text-slate-400;
+}
+
+.heroVisual {
+  @apply lg:col-span-7 w-full;
+}
+
+/* ============================================================
+   Mockup: Internal Dashboard (Visuals)
+   ============================================================ */
+.dashboardCard {
+  @apply rounded-xl border p-5 sm:p-6 shadow-sm bg-white border-slate-200 transition-colors duration-200;
+}
+
+:global(.dark) .dashboardCard {
+  @apply bg-slate-900 border-slate-800;
+}
+
+.dbCardHeader {
+  @apply flex justify-between items-center mb-6 pb-4 border-b border-slate-100;
+}
+
+:global(.dark) .dbCardHeader {
+  @apply border-slate-800;
+}
+
+.dbEyebrow {
+  @apply text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5;
+}
+
+.dbTitle {
+  @apply text-base font-bold text-slate-800;
+  font-family: 'Sora', sans-serif;
+}
+
+:global(.dark) .dbTitle {
+  @apply text-slate-100;
+}
+
+.dbStatus {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100;
+}
+
+:global(.dark) .dbStatus {
+  @apply text-emerald-400 bg-emerald-950/20 border-emerald-900/30;
+}
+
+.dbStatGridMini {
+  @apply grid grid-cols-3 gap-3 mb-5;
+}
+
+.dbMiniStat {
+  @apply rounded-lg border p-3 bg-slate-50 border-slate-100;
+}
+
+:global(.dark) .dbMiniStat {
+  @apply bg-slate-950/40 border-slate-800/40;
+}
+
+.dbMiniLabel {
+  @apply block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1;
+}
+
+.dbMiniValue {
+  @apply block text-lg font-bold text-slate-800;
+  font-family: 'Sora', sans-serif;
+}
+
+:global(.dark) .dbMiniValue {
+  @apply text-slate-100;
+}
+
+.dbReportCard {
+  @apply rounded-lg border p-4 mb-4 bg-slate-50 border-slate-100;
+}
+
+:global(.dark) .dbReportCard {
+  @apply bg-slate-950/20 border-slate-800/60;
+}
+
+.dbReportTopline {
+  @apply flex justify-between items-center mb-2.5;
+}
+
+.dbDeptBadge {
+  @apply text-xs max-sm:text-[10px] font-semibold text-slate-500;
+}
+
+:global(.dark) .dbDeptBadge {
+  @apply text-slate-400;
+}
+
+.dbStatusBadgeGreen {
+  @apply text-[10px] max-sm:text-[8px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full text-emerald-600 bg-emerald-50 border border-emerald-100;
+}
+
+:global(.dark) .dbStatusBadgeGreen {
+  @apply text-emerald-400 bg-emerald-950/40 border-emerald-900/20;
+}
+
+.dbStatusBadgeOrange {
+  @apply text-[10px] max-sm:text-[8px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full text-orange-600 bg-orange-50 border border-orange-100;
+}
+
+:global(.dark) .dbStatusBadgeOrange {
+  @apply text-orange-400 bg-orange-950/40 border-orange-900/20;
+}
+
+.dbReportText {
+  @apply text-xs leading-relaxed text-slate-600 mb-3.5;
+}
+
+:global(.dark) .dbReportText {
+  @apply text-slate-300;
+}
+
+.dbInsightList {
+  @apply flex flex-wrap gap-2;
+}
+
+.dbInsightList span {
+  @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white border border-slate-200 text-slate-500;
+}
+
+:global(.dark) .dbInsightList span {
+  @apply bg-slate-900 border-slate-800 text-slate-400;
+}
+
+.dbDeptList {
+  @apply border-t border-slate-100 pt-4 mt-4;
+}
+
+:global(.dark) .dbDeptList {
+  @apply border-slate-800;
+}
+
+.dbSectionTitle {
+  @apply text-xs font-bold text-slate-400 uppercase tracking-wider mb-3;
+  font-family: 'Sora', sans-serif;
+}
+
+.dbDeptProgressRow {
+  @apply flex items-center gap-3 mb-2.5 text-xs;
+}
+
+.dbDeptName {
+  @apply w-20 text-slate-500 font-medium;
+}
+
+:global(.dark) .dbDeptName {
+  @apply text-slate-400;
+}
+
+.dbProgressBar {
+  @apply flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden;
+}
+
+:global(.dark) .dbProgressBar {
+  @apply bg-slate-800;
+}
+
+.dbProgressFill {
+  @apply h-full rounded-full bg-emerald-500;
+}
+
+.dbDeptPercent {
+  @apply text-[11px] font-semibold text-slate-700 w-8 text-right;
+}
+
+:global(.dark) .dbDeptPercent {
+  @apply text-slate-300;
+}
+
+.dbAiSummaryRow {
+  @apply rounded-lg p-3 bg-indigo-50/50 border border-indigo-100/50 mt-4;
+}
+
+:global(.dark) .dbAiSummaryRow {
+  @apply bg-indigo-950/10 border-indigo-950/20;
+}
+
+.dbAiHeader {
+  @apply flex items-center gap-1.5 text-[11px] font-bold text-indigo-700 uppercase tracking-wider mb-1;
+}
+
+:global(.dark) .dbAiHeader {
+  @apply text-indigo-400;
+}
+
+.dbAiText {
+  @apply text-[11px] leading-relaxed text-slate-500;
+}
+
+:global(.dark) .dbAiText {
+  @apply text-slate-400;
+}
+
+/* ============================================================
+   Section Styles
+   ============================================================ */
+.sectionPreview {
+  @apply py-16 sm:py-24 border-b bg-white border-slate-100;
+}
+
+:global(.dark) .sectionPreview {
+  @apply bg-slate-950 border-slate-900;
+}
+
+/* ============================================================
+   Dashboard Preview Mockup (Full App representation)
+   ============================================================ */
+.dashboardMockupContainer {
+  @apply mt-10 rounded-xl border shadow-lg overflow-hidden border-slate-200 bg-slate-50;
+}
+
+:global(.dark) .dashboardMockupContainer {
+  @apply border-slate-800 bg-slate-950;
+}
+
+.mockupApp {
+  @apply flex flex-col md:flex-row min-h-[500px];
+}
+
+.mockupSidebar {
+  @apply w-full md:w-56 border-b md:border-b-0 md:border-r p-4 flex flex-col shrink-0 bg-white border-slate-200;
+}
+
+:global(.dark) .mockupSidebar {
+  @apply bg-slate-900 border-slate-800;
+}
+
+.sidebarHeader {
+  @apply flex items-center gap-2 mb-6 max-md:mb-0;
+}
+
+.sidebarLogo {
+  @apply w-6 h-6 rounded bg-slate-900;
+}
+
+:global(.dark) .sidebarLogo {
+  @apply bg-slate-100;
+}
+
+.sidebarTitle {
+  @apply font-bold text-sm text-slate-800;
+  font-family: 'Sora', sans-serif;
+}
+
+:global(.dark) .sidebarTitle {
+  @apply text-slate-100;
+}
+
+.sidebarNav {
+  @apply space-y-1.5 flex-1 max-md:hidden;
+}
+
+.sidebarNavItem {
+  @apply flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-50 cursor-default;
+}
+
+:global(.dark) .sidebarNavItem {
+  @apply text-slate-400 hover:bg-slate-800/40;
+}
+
+.sidebarNavItemActive {
+  @apply text-slate-950 bg-slate-100;
+}
+
+:global(.dark) .sidebarNavItemActive {
+  @apply text-slate-100 bg-slate-800;
+}
+
+.sidebarFooter {
+  @apply border-t pt-4 mt-4 border-slate-100 max-md:hidden;
+}
+
+:global(.dark) .sidebarFooter {
+  @apply border-slate-800;
+}
+
+.sidebarUser {
+  @apply flex items-center gap-2.5;
+}
+
+.sidebarAvatar {
+  @apply w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-700 border border-slate-200;
+}
+
+:global(.dark) .sidebarAvatar {
+  @apply bg-slate-800 text-slate-300 border-slate-700;
+}
+
+.sidebarUserInfo {
+  @apply min-w-0;
+}
+
+.sidebarUserName {
+  @apply text-[11px] font-semibold text-slate-700 truncate;
+}
+
+:global(.dark) .sidebarUserName {
+  @apply text-slate-300;
+}
+
+.sidebarUserRole {
+  @apply text-[10px] text-slate-400 truncate;
+}
+
+.mockupMain {
+  @apply flex-1 p-4 sm:p-6 bg-slate-50 flex flex-col gap-5;
+}
+
+:global(.dark) .mockupMain {
+  @apply bg-slate-950;
+}
+
+.mockupHeader {
+  @apply flex items-center justify-between pb-4 border-b border-slate-200/60 max-sm:hidden;
+}
+
+:global(.dark) .mockupHeader {
+  @apply border-slate-800;
+}
+
+.mockupSearch {
+  @apply flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white border-slate-200 w-64;
+}
+
+:global(.dark) .mockupSearch {
+  @apply bg-slate-900 border-slate-800;
+}
+
+.mockupSearchPlaceholder {
+  @apply text-xs text-slate-400 truncate;
+}
+
+.mockupHeaderActions {
+  @apply flex items-center gap-4;
+}
+
+.mockupStatusIndicator {
+  @apply flex items-center gap-1.5;
+}
+
+.mockupStatusDot {
+  @apply w-1.5 h-1.5 rounded-full bg-emerald-500;
+}
+
+.mockupStatusText {
+  @apply text-[10px] font-semibold text-slate-400 uppercase tracking-wider;
+}
+
+.mockupDashboardGrid {
+  @apply flex flex-col gap-5;
+}
+
+.mockupStatsRow {
+  @apply grid grid-cols-2 lg:grid-cols-4 gap-4;
+}
+
+.mockupStatCard {
+  @apply rounded-lg border p-4 bg-white border-slate-200/80;
+}
+
+:global(.dark) .mockupStatCard {
+  @apply bg-slate-900 border-slate-800;
+}
+
+.mockupStatHeader {
+  @apply flex items-center justify-between text-slate-400 mb-1.5;
+}
+
+.mockupStatTitle {
+  @apply text-[10px] font-bold uppercase tracking-wider;
+}
+
+.mockupStatVal {
+  @apply text-2xl font-extrabold text-slate-800;
+  font-family: 'Sora', sans-serif;
+}
+
+:global(.dark) .mockupStatVal {
+  @apply text-slate-100;
+}
+
+.mockupStatSub {
+  @apply block text-[10px] text-slate-400 mt-1;
+}
+
+.mockupContentSplit {
+  @apply grid grid-cols-1 lg:grid-cols-12 gap-5;
+}
+
+.mockupReportsPanel {
+  @apply lg:col-span-7 rounded-lg border p-4 bg-white border-slate-200/80 flex flex-col;
+}
+
+:global(.dark) .mockupReportsPanel {
+  @apply bg-slate-900 border-slate-800;
+}
+
+.mockupPanelHeader {
+  @apply flex items-center justify-between mb-4 pb-2 border-b border-slate-100;
+}
+
+:global(.dark) .mockupPanelHeader {
+  @apply border-slate-800;
+}
+
+.mockupPanelTitle {
+  @apply text-xs font-bold text-slate-800 uppercase tracking-wider;
+  font-family: 'Sora', sans-serif;
+}
+
+:global(.dark) .mockupPanelTitle {
+  @apply text-slate-200;
+}
+
+.mockupPanelLink {
+  @apply inline-flex items-center gap-0.5 text-[11px] font-semibold text-slate-400 hover:text-slate-600 cursor-default;
+}
+
+.mockupTableWrapper {
+  @apply overflow-x-auto;
+}
+
+.mockupTable {
+  @apply w-full text-left border-collapse text-xs;
+}
+
+.mockupTable th:nth-child(2),
+.mockupTable td:nth-child(2) {
+  @apply max-sm:hidden;
+}
+
+.mockupTable th {
+  @apply pb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200;
+}
+
+:global(.dark) .mockupTable th {
+  @apply border-slate-800;
+}
+
+.mockupTable td {
+  @apply py-3 border-b border-slate-100 align-middle;
+}
+
+:global(.dark) .mockupTable td {
+  @apply border-slate-800/80;
+}
+
+.tableUser {
+  @apply flex items-center gap-2;
+}
+
+.tableAvatar {
+  @apply w-6 h-6 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[9px] font-bold text-slate-700;
+}
+
+:global(.dark) .tableAvatar {
+  @apply bg-slate-800 border-slate-800 text-slate-300;
+}
+
+.tableReportText {
+  @apply text-slate-600 line-clamp-2 max-w-[200px] max-sm:max-w-[140px];
+}
+
+:global(.dark) .tableReportText {
+  @apply text-slate-300;
+}
+
+/* Badges Tech/Design/Ops inside mockup app */
+.badgeTech {
+  @apply inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold text-blue-600 bg-blue-50/50 border border-blue-100;
+}
+:global(.dark) .badgeTech {
+  @apply text-blue-400 bg-blue-950/20 border-blue-900/30;
+}
+.badgeCreative {
+  @apply inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold text-purple-600 bg-purple-50/50 border border-purple-100;
+}
+:global(.dark) .badgeCreative {
+  @apply text-purple-400 bg-purple-950/20 border-purple-900/30;
+}
+.badgeOps {
+  @apply inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold text-slate-600 bg-slate-50 border border-slate-200;
+}
+:global(.dark) .badgeOps {
+  @apply text-slate-400 bg-slate-900 border-slate-800;
+}
+
+.badgeSuccess {
+  @apply inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold text-emerald-600 bg-emerald-50/60 border border-emerald-100;
+}
+:global(.dark) .badgeSuccess {
+  @apply text-emerald-400 bg-emerald-950/20 border-emerald-900/20;
+}
+.badgeWarning {
+  @apply inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold text-orange-600 bg-orange-50/60 border border-orange-100;
+}
+:global(.dark) .badgeWarning {
+  @apply text-orange-400 bg-orange-950/20 border-orange-900/20;
+}
+.badgeReview {
+  @apply inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold text-indigo-600 bg-indigo-50/60 border border-indigo-100;
+}
+:global(.dark) .badgeReview {
+  @apply text-indigo-400 bg-indigo-950/20 border-indigo-900/20;
+}
+
+.mockupInsightsPanel {
+  @apply lg:col-span-5 flex flex-col gap-4;
+}
+
+.aiInsightsBox {
+  @apply rounded-lg border p-4 bg-white border-slate-200/80 flex flex-col gap-3.5;
+}
+
+:global(.dark) .aiInsightsBox {
+  @apply bg-slate-900 border-slate-800;
+}
+
+.aiInsightItem {
+  @apply pb-3 border-b border-slate-100 last:border-b-0 last:pb-0;
+}
+
+:global(.dark) .aiInsightItem {
+  @apply border-slate-800;
+}
+
+.aiInsightHeader {
+  @apply flex justify-between items-center mb-1.5;
+}
+
+.aiInsightTagWarning {
+  @apply text-[9px] font-bold uppercase tracking-wider text-orange-600;
+}
+
+:global(.dark) .aiInsightTagWarning {
+  @apply text-orange-400;
+}
+
+.aiInsightTagSuccess {
+  @apply text-[9px] font-bold uppercase tracking-wider text-emerald-600;
+}
+
+:global(.dark) .aiInsightTagSuccess {
+  @apply text-emerald-400;
+}
+
+.aiInsightTime {
+  @apply text-[10px] text-slate-400;
+}
+
+.aiInsightText {
+  @apply text-xs leading-relaxed text-slate-500;
+}
+
+:global(.dark) .aiInsightText {
+  @apply text-slate-400;
+}
+
+.aiInsightAction {
+  @apply mt-2 text-[10px] leading-relaxed p-2 bg-orange-50/50 border border-orange-100 rounded text-slate-600;
+}
+
+:global(.dark) .aiInsightAction {
+  @apply bg-orange-950/10 border-orange-950/20 text-slate-300;
+}
+
+.mockupDeptProgressBox {
+  @apply rounded-lg border p-4 bg-white border-slate-200/80;
+}
+
+:global(.dark) .mockupDeptProgressBox {
+  @apply bg-slate-900 border-slate-800;
+}
+
+.mockupSubTitle {
+  @apply text-xs font-bold text-slate-400 uppercase tracking-wider mb-3.5;
+  font-family: 'Sora', sans-serif;
+}
+
+.deptProgressItem {
+  @apply mb-3.5 last:mb-0;
+}
+
+.deptProgressHeader {
+  @apply flex justify-between items-center text-xs text-slate-500 mb-1.5;
+}
+
+:global(.dark) .deptProgressHeader {
+  @apply text-slate-400;
+}
+
+.deptProgressBar {
+  @apply h-1.5 rounded-full bg-slate-100 overflow-hidden;
+}
+
+:global(.dark) .deptProgressBar {
+  @apply bg-slate-800;
+}
+
+.deptProgressFill {
+  @apply h-full bg-emerald-500 rounded-full;
+}
+
+/* ============================================================
+   Execution Chain Section
+   ============================================================ */
+.sectionChain {
+  @apply py-16 sm:py-24 border-b bg-slate-50 border-slate-200/60;
+}
+
+:global(.dark) .sectionChain {
+  @apply bg-slate-900/40 border-slate-900;
+}
+
+.chainTimelineWrapper {
+  @apply relative mt-12 sm:mt-16;
+}
+
+.chainTimelineLine {
+  @apply absolute top-1/2 left-0 right-0 h-0.5 -translate-y-1/2 bg-slate-200 hidden lg:block;
+}
+
+:global(.dark) .chainTimelineLine {
+  @apply bg-slate-800;
+}
+
+.chainTimelineGrid {
+  @apply grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-4 relative z-10;
+}
+
+.chainNode {
+  @apply rounded-xl border p-5 bg-white border-slate-200/80 transition-all duration-200;
+}
+
+:global(.dark) .chainNode {
+  @apply bg-slate-900 border-slate-800;
+}
+
+.chainNodeHeader {
+  @apply flex items-center gap-3 mb-3;
+}
+
+.chainNodeNumber {
+  @apply w-7 h-7 rounded-full flex items-center justify-center text-xs font-extrabold bg-slate-900 text-white shrink-0;
+  font-family: 'Sora', sans-serif;
+}
+
+:global(.dark) .chainNodeNumber {
+  @apply bg-slate-100 text-slate-900;
+}
+
+.chainNodeTitle {
+  @apply text-sm font-bold text-slate-800;
+  font-family: 'Sora', sans-serif;
+}
+
+:global(.dark) .chainNodeTitle {
+  @apply text-slate-200;
+}
+
+.chainNodeText {
+  @apply text-xs leading-relaxed text-slate-500;
+}
+
+:global(.dark) .chainNodeText {
+  @apply text-slate-400;
+}
+
+/* ============================================================
+   Real Team Workflow Section
+   ============================================================ */
+.sectionWorkflow {
+  @apply py-16 sm:py-24 border-b bg-white border-slate-100;
+}
+
+:global(.dark) .sectionWorkflow {
+  @apply bg-slate-950 border-slate-900;
+}
+
+.workflowTimeline {
+  @apply mt-12 sm:mt-16 max-w-5xl mx-auto flex flex-col gap-6;
+}
+
+.workflowRow {
+  @apply grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 items-start;
+}
+
+.workflowTimelineCol {
+  @apply hidden md:flex md:col-span-1 flex-col items-center self-stretch;
+}
+
+.timelineNode {
+  @apply w-9 h-9 rounded-full flex items-center justify-center border bg-slate-50 border-slate-200 text-slate-500;
+}
+
+:global(.dark) .timelineNode {
+  @apply bg-slate-900 border-slate-800 text-slate-400;
+}
+
+.timelineConnector {
+  @apply w-0.5 flex-1 bg-slate-200/80 my-3;
+}
+
+:global(.dark) .timelineConnector {
+  @apply bg-slate-800;
+}
+
+.workflowContentCol {
+  @apply md:col-span-5 flex flex-col justify-center;
+}
+
+.workflowStepLabel {
+  @apply text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5;
+}
+
+.workflowStepTitle {
+  @apply text-base font-bold text-slate-800 mb-2;
+  font-family: 'Sora', sans-serif;
+}
+
+:global(.dark) .workflowStepTitle {
+  @apply text-slate-200;
+}
+
+.workflowStepDesc {
+  @apply text-xs sm:text-sm leading-relaxed text-slate-500;
+}
+
+:global(.dark) .workflowStepDesc {
+  @apply text-slate-400;
+}
+
+.workflowCardCol {
+  @apply md:col-span-6;
+}
+
+.workflowLiveCard {
+  @apply rounded-xl border p-4 shadow-sm bg-slate-50/50 border-slate-200 transition-colors duration-200;
+}
+
+:global(.dark) .workflowLiveCard {
+  @apply bg-slate-900/30 border-slate-800;
+}
+
+.workflowCardHeader {
+  @apply flex justify-between items-center mb-2.5;
+}
+
+.workflowCardTime {
+  @apply inline-flex items-center gap-1 text-[10px] text-slate-400;
+}
+
+.workflowCardText {
+  @apply text-xs leading-relaxed text-slate-600 italic;
+}
+
+:global(.dark) .workflowCardText {
+  @apply text-slate-400;
+}
+
+/* Badges inside Workflow */
+.wfBadgeTech {
+  @apply text-[10px] font-semibold px-2 py-0.5 rounded-full text-blue-600 bg-blue-50/50 border border-blue-100;
+}
+:global(.dark) .wfBadgeTech {
+  @apply text-blue-400 bg-blue-950/20 border-blue-900/30;
+}
+
+.wfBadgeCreative {
+  @apply text-[10px] font-semibold px-2 py-0.5 rounded-full text-purple-600 bg-purple-50/50 border border-purple-100;
+}
+:global(.dark) .wfBadgeCreative {
+  @apply text-purple-400 bg-purple-950/20 border-purple-900/30;
+}
+
+.wfBadgeOps {
+  @apply text-[10px] font-semibold px-2 py-0.5 rounded-full text-emerald-600 bg-emerald-50/50 border border-emerald-100;
+}
+:global(.dark) .wfBadgeOps {
+  @apply text-emerald-400 bg-emerald-950/20 border-emerald-900/30;
+}
+
+.wfBadgeAdmin {
+  @apply text-[10px] font-semibold px-2 py-0.5 rounded-full text-slate-600 bg-slate-50 border border-slate-200;
+}
+:global(.dark) .wfBadgeAdmin {
+  @apply text-slate-400 bg-slate-900 border-slate-800;
+}
+
+.wfBadgeAI {
+  @apply text-[10px] font-semibold px-2 py-0.5 rounded-full text-indigo-600 bg-indigo-50/50 border border-indigo-100;
+}
+:global(.dark) .wfBadgeAI {
+  @apply text-indigo-400 bg-indigo-950/20 border-indigo-900/30;
+}
+
+/* ============================================================
+   AI Analysis Section
+   ============================================================ */
+.sectionAIReview {
+  @apply py-16 sm:py-24 border-b bg-slate-50 border-slate-200/60;
+}
+
+:global(.dark) .sectionAIReview {
+  @apply bg-slate-900/40 border-slate-900;
+}
+
+.aiReviewContainer {
+  @apply grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center;
+}
+
+.aiReviewText {
+  @apply lg:col-span-5 flex flex-col items-start;
+}
+
+.sectionDescSecondary {
+  @apply text-xs leading-relaxed text-slate-400 mt-4;
+}
+
+.aiReviewVisual {
+  @apply lg:col-span-7 w-full;
+}
+
+.aiReviewCard {
+  @apply rounded-xl border p-5 sm:p-6 bg-white border-slate-200 shadow-sm transition-colors duration-200;
+}
+
+:global(.dark) .aiReviewCard {
+  @apply bg-slate-900 border-slate-800;
+}
+
+.aiCardHeader {
+  @apply flex justify-between items-center mb-5 pb-3.5 border-b border-slate-100;
+}
+
+:global(.dark) .aiCardHeader {
+  @apply border-slate-800;
+}
+
+.aiHeaderTitleWrap {
+  @apply flex items-center gap-2;
+}
+
+.aiHeaderTitle {
+  @apply text-xs sm:text-sm font-bold text-slate-800;
+  font-family: 'Sora', sans-serif;
+}
+
+:global(.dark) .aiHeaderTitle {
+  @apply text-slate-200;
+}
+
+.aiHeaderTag {
+  @apply text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full text-indigo-600 bg-indigo-50/55 border border-indigo-100/50;
+}
+
+:global(.dark) .aiHeaderTag {
+  @apply text-indigo-400 bg-indigo-950/30 border-indigo-900/20;
+}
+
+.aiSourceReport {
+  @apply rounded-lg p-3 bg-slate-50 border border-slate-200 mb-5;
+}
+
+:global(.dark) .aiSourceReport {
+  @apply bg-slate-950/40 border-slate-800;
+}
+
+.aiSourceHeader {
+  @apply text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1.5;
+}
+
+.aiSourceText {
+  @apply text-xs leading-relaxed text-slate-500 italic;
+}
+
+:global(.dark) .aiSourceText {
+  @apply text-slate-400;
+}
+
+.aiAnalysisPanel {
+  @apply flex flex-col gap-4;
+}
+
+.aiAnalysisTitle {
+  @apply text-xs font-bold text-slate-400 uppercase tracking-wider;
+  font-family: 'Sora', sans-serif;
+}
+
+.aiAnalysisItem {
+  @apply flex flex-col gap-1;
+}
+
+.aiLabel {
+  @apply text-[10px] font-bold text-slate-400 uppercase tracking-wider;
+}
+
+:global(.dark) .aiLabel {
+  @apply text-slate-500;
+}
+
+.aiValue {
+  @apply text-xs leading-relaxed text-slate-700;
+}
+
+:global(.dark) .aiValue {
+  @apply text-slate-300;
+}
+
+.aiSplitRow {
+  @apply grid grid-cols-1 sm:grid-cols-2 gap-4;
+}
+
+.aiList {
+  @apply list-disc list-inside text-xs text-slate-600 space-y-0.5;
+}
+
+:global(.dark) .aiList {
+  @apply text-slate-300;
+}
+
+.aiAlertBox {
+  @apply rounded-lg p-3 bg-orange-50/50 border border-orange-100 flex flex-col gap-1;
+}
+
+:global(.dark) .aiAlertBox {
+  @apply bg-orange-950/10 border-orange-900/20;
+}
+
+.aiAlertHeader {
+  @apply flex items-center gap-1.5 text-[10px] font-bold text-orange-700 uppercase tracking-wider;
+}
+
+:global(.dark) .aiAlertHeader {
+  @apply text-orange-400;
+}
+
+.aiAlertDesc {
+  @apply text-xs leading-relaxed text-slate-600;
+}
+
+:global(.dark) .aiAlertDesc {
+  @apply text-slate-300;
+}
+
+.aiActionBox {
+  @apply rounded-lg p-3 bg-indigo-50/30 border border-indigo-100/50 flex flex-col gap-1;
+}
+
+:global(.dark) .aiActionBox {
+  @apply bg-indigo-950/10 border-indigo-900/20;
+}
+
+.aiActionHeader {
+  @apply text-[10px] font-bold text-indigo-700 uppercase tracking-wider;
+}
+
+:global(.dark) .aiActionHeader {
+  @apply text-indigo-400;
+}
+
+.aiActionDesc {
+  @apply text-xs leading-relaxed text-slate-600;
+}
+
+:global(.dark) .aiActionDesc {
+  @apply text-slate-300;
+}
+
+.aiMetricGrid {
+  @apply grid grid-cols-3 gap-3 border-t border-slate-100 pt-4 mt-1;
+}
+
+:global(.dark) .aiMetricGrid {
+  @apply border-slate-800;
+}
+
+.aiMetricCard {
+  @apply rounded-lg border p-2.5 bg-slate-50/60 border-slate-100 flex flex-col items-center;
+}
+
+:global(.dark) .aiMetricCard {
+  @apply bg-slate-950/20 border-slate-800;
+}
+
+.aiMetricHeader {
+  @apply flex items-center gap-1 text-[9px] font-semibold text-slate-400 uppercase tracking-wider mb-1;
+}
+
+.aiMetricVal {
+  @apply text-sm font-bold text-slate-800;
+  font-family: 'Sora', sans-serif;
+}
+
+:global(.dark) .aiMetricVal {
+  @apply text-slate-200;
+}
+
+.aiMetricValBad {
+  @apply text-sm font-bold text-orange-600;
+  font-family: 'Sora', sans-serif;
+}
+
+:global(.dark) .aiMetricValBad {
+  @apply text-orange-400;
+}
+
+/* ============================================================
+   Roles Section (Compact Cards)
+   ============================================================ */
+.sectionRoles {
+  @apply py-16 sm:py-24 border-b bg-white border-slate-100;
+}
+
+:global(.dark) .sectionRoles {
+  @apply bg-slate-950 border-slate-900;
+}
+
+.rolesGridCompact {
+  @apply grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 sm:mt-16;
+}
+
+.roleCardCompact {
+  @apply rounded-xl border p-5 bg-white border-slate-200/80 transition-colors duration-200;
+}
+
+:global(.dark) .roleCardCompact {
+  @apply bg-slate-900 border-slate-800;
+}
+
+.roleIconBox {
+  @apply w-9 h-9 rounded-lg flex items-center justify-center mb-4;
+}
+
+.roleIconAdmin {
+  background: rgba(59, 130, 246, 0.08);
+  color: #2563EB;
+}
+:global(.dark) .roleIconAdmin {
+  background: rgba(96, 165, 250, 0.12);
+  color: #60A5FA;
+}
+
+.roleIconLead {
+  background: rgba(16, 185, 129, 0.08);
+  color: #059669;
+}
+:global(.dark) .roleIconLead {
+  background: rgba(52, 211, 153, 0.12);
+  color: #34D399;
+}
+
+.roleIconMember {
+  background: rgba(100, 116, 139, 0.08);
+  color: #475569;
+}
+:global(.dark) .roleIconMember {
+  background: rgba(148, 163, 184, 0.12);
+  color: #94A3B8;
+}
+
+.roleTitleCompact {
+  @apply text-base font-bold text-slate-800 mb-2;
+  font-family: 'Sora', sans-serif;
+}
+
+:global(.dark) .roleTitleCompact {
+  @apply text-slate-200;
+}
+
+.roleDescCompact {
+  @apply text-xs sm:text-sm leading-relaxed text-slate-500;
+}
+
+:global(.dark) .roleDescCompact {
+  @apply text-slate-400;
+}
+
+/* ============================================================
+   Benefits Section
+   ============================================================ */
+.sectionBenefits {
+  @apply py-16 sm:py-24 border-b bg-slate-50 border-slate-200/60;
+}
+
+:global(.dark) .sectionBenefits {
+  @apply bg-slate-900/40 border-slate-900;
+}
+
+.benefitsGridPremium {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12 sm:mt-16;
+}
+
+.benefitCardPremium {
+  @apply rounded-xl border p-5 sm:p-6 bg-white border-slate-200/80 transition-colors duration-200;
+}
+
+:global(.dark) .benefitCardPremium {
+  @apply bg-slate-900 border-slate-800;
+}
+
+.benefitIconBox {
+  @apply w-9 h-9 rounded-lg flex items-center justify-center mb-4 bg-slate-50 border border-slate-200 text-slate-600;
+}
+
+:global(.dark) .benefitIconBox {
+  @apply bg-slate-950 border-slate-800 text-slate-400;
+}
+
+.benefitTitleText {
+  @apply text-sm sm:text-base font-bold text-slate-800 mb-2;
+  font-family: 'Sora', sans-serif;
+}
+
+:global(.dark) .benefitTitleText {
+  @apply text-slate-200;
+}
+
+.benefitDescText {
+  @apply text-xs sm:text-sm leading-relaxed text-slate-500;
+}
+
+:global(.dark) .benefitDescText {
+  @apply text-slate-400;
+}
+
+/* ============================================================
+   CTA Section
+   ============================================================ */
+.ctaSectionPremium {
+  @apply py-16 sm:py-24 border-b bg-white border-slate-100;
+}
+
+:global(.dark) .ctaSectionPremium {
+  @apply bg-slate-950 border-slate-900;
+}
+
+.ctaBox {
+  @apply rounded-xl border p-8 sm:p-12 text-center max-w-4xl mx-auto bg-slate-50 border-slate-200 transition-colors duration-200;
+}
+
+:global(.dark) .ctaBox {
+  @apply bg-slate-900 border-slate-800;
+}
+
+.ctaTitlePremium {
+  @apply text-2xl sm:text-3xl font-extrabold text-slate-800 mb-3 tracking-tight;
+  font-family: 'Sora', sans-serif;
+}
+
+:global(.dark) .ctaTitlePremium {
+  @apply text-slate-100;
+}
+
+.ctaDescPremium {
+  @apply text-sm sm:text-base leading-relaxed text-slate-500 mb-6 max-w-lg mx-auto;
+}
+
+:global(.dark) .ctaDescPremium {
+  @apply text-slate-400;
+}
+
+.ctaActions {
+  @apply flex justify-center;
+}
+
+.ctaBtnPrimary {
+  @apply inline-flex items-center gap-2 px-6 py-3.5 text-sm font-semibold rounded-lg transition-all duration-150 text-white bg-slate-900 hover:bg-slate-800;
+}
+
+:global(.dark) .ctaBtnPrimary {
+  @apply text-slate-900 bg-slate-100 hover:bg-slate-200;
+}
+
+/* ============================================================
+   Footer Section
+   ============================================================ */
+.footerPremium {
+  @apply py-12 bg-slate-50 border-t border-slate-200/80 transition-colors duration-200 max-sm:text-center
+}
+
+:global(.dark) .footerPremium {
+  @apply bg-slate-950 border-slate-900;
+}
+
+.footerInner {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.footerGrid {
+  @apply flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mb-8;
+}
+
+.footerBranding {
+  @apply flex flex-col items-start max-sm:items-center max-sm:text-center;
+}
+
+.footerLogoWrap {
+  @apply flex items-center gap-3 font-semibold text-base text-slate-800 mb-2;
+  font-family: 'Sora', sans-serif;
+}
+
+:global(.dark) .footerLogoWrap {
+  @apply text-slate-200;
+}
+
+.footerProductName {
+  @apply inline-flex max-sm:hidden items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 bg-slate-200 border border-slate-200;
+  font-family: 'Saira', sans-serif;
+}
+
+:global(.dark) .footerProductName {
+  @apply text-slate-400 bg-slate-900 border-slate-800;
+}
+
+.footerTaglineText {
+  @apply text-xs text-slate-400;
+}
+
+.footerNavLinks {
+  @apply flex flex-wrap gap-x-6 gap-y-2 max-sm:justify-center;
+}
+
+.footerLinkItem {
+  @apply text-xs font-semibold text-slate-400 hover:text-slate-700 transition-colors;
+}
+
+:global(.dark) .footerLinkItem {
+  @apply text-slate-400 hover:text-slate-300;
+}
+
+.footerDivider {
+  @apply border-t border-slate-200/60 mb-6;
+}
+
+:global(.dark) .footerDivider {
+  @apply border-slate-800;
+}
+
+.footerBottomRow {
+  @apply flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400;
+}
+
+/* ============================================================
+   Specific Mobile/Table Tweaks
+   ============================================================ */
+@media (max-width: 640px) {
+  .heroTitle {
+    @apply text-3xl;
+  }
+  .sectionTitle {
+    @apply text-2xl;
+  }
+  .chainTimelineGrid {
+    @apply gap-4;
+  }
+}

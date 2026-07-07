@@ -1,0 +1,68 @@
+.wrapper {
+  @apply space-y-2;
+}
+
+.label {
+  @apply block text-sm font-medium text-gray-700;
+}
+
+.dropZone {
+  @apply border-2 border-dashed border-gray-200 rounded-lg p-6 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors;
+}
+
+.dropZoneActive {
+  @apply border-blue-500 bg-blue-50;
+}
+
+.dropIcon {
+  @apply w-8 h-8 mx-auto mb-2 text-gray-400;
+}
+
+.dropText {
+  @apply text-sm text-gray-600;
+}
+
+.dropHint {
+  @apply text-xs text-gray-400 mt-1;
+}
+
+.fileList {
+  @apply mt-3 space-y-2;
+}
+
+.fileItem {
+  @apply flex items-center justify-between p-2.5 bg-gray-50 rounded-lg;
+}
+
+.fileInfo {
+  @apply flex items-center gap-2.5 min-w-0;
+}
+
+.fileIcon {
+  @apply w-8 h-8 rounded bg-white flex items-center justify-center text-gray-400;
+}
+
+.fileName {
+  @apply text-sm font-medium text-gray-700 truncate;
+}
+
+.fileSize {
+  @apply text-xs text-gray-500;
+}
+
+.removeBtn {
+  @apply p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors flex-shrink-0;
+}
+
+:global(.dark) .label,
+:global(.dark) .dropText,
+:global(.dark) .fileName { color: var(--color-text); }
+:global(.dark) .dropHint,
+:global(.dark) .dropIcon,
+:global(.dark) .fileSize { color: var(--color-muted); }
+:global(.dark) .dropZone { border-color: var(--color-border); background: rgba(2, 6, 23, 0.18); }
+:global(.dark) .dropZone:hover,
+:global(.dark) .dropZoneActive { border-color: #60A5FA; background: rgba(30, 58, 138, 0.18); }
+:global(.dark) .fileItem { background: var(--color-surface-soft); }
+:global(.dark) .fileIcon { background: var(--color-surface); color: var(--color-muted); }
+:global(.dark) .removeBtn:hover { background: rgba(127, 29, 29, 0.22); }

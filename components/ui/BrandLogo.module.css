@@ -1,0 +1,77 @@
+.root {
+  @apply inline-flex items-center;
+}
+
+.image {
+  @apply object-contain transition-opacity duration-200;
+}
+
+.logoDark {
+  @apply hidden;
+}
+
+:global(.dark) .logoLight {
+  @apply hidden;
+}
+
+:global(.dark) .logoDark {
+  @apply block;
+}
+
+.auth,
+.authCompact {
+  @apply flex-col justify-center text-center;
+}
+
+.auth .image {
+  @apply h-10 w-auto mx-auto;
+}
+
+.authCompact .image {
+  @apply h-10 w-auto mx-auto;
+}
+
+.productName {
+  @apply mt-3 text-xl font-extrabold tracking-tight;
+  color: var(--color-text);
+}
+
+.authCompact .productName {
+  @apply mt-2 text-lg;
+}
+
+:global(.dark) .productName {
+  color: #F8FAFC;
+}
+
+.sidebar {
+  display: inline-flex;
+}
+.sidebar .image {
+  @apply h-9 w-auto;
+  max-width: 150px;
+}
+
+.landing {
+  display: inline-flex;
+}
+.landing .image {
+  @apply h-9 w-auto;
+  max-width: 180px;
+}
+
+.footer {
+  display: inline-flex;
+}
+.footer .image {
+  @apply h-9 w-auto;
+  max-width: 176px;
+}
+
+@media (max-width: 768px) {
+  .sidebar .image,
+  .landing .image,
+  .footer .image {
+    max-width: 138px;
+  }
+}

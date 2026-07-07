@@ -1,0 +1,147 @@
+.page {
+  @apply space-y-6;
+}
+
+.header {
+  @apply flex items-center justify-between;
+}
+
+.title {
+  @apply text-2xl font-bold;
+  color: var(--color-text);
+}
+
+.subtitle {
+  @apply mt-1;
+  color: var(--color-muted);
+}
+
+.filtersCard {
+  @apply rounded-xl shadow-sm border p-4 transition-colors duration-200;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.filtersRow {
+  @apply flex flex-wrap gap-3;
+}
+
+.filterSelect {
+  @apply px-3.5 py-2.5 border rounded-lg focus:outline-none transition-all duration-150 text-sm;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.filterSelect:focus {
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+}
+
+:global(.dark) .filterSelect {
+  background: rgba(2, 6, 23, 0.62);
+}
+
+.filterBtn {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 font-medium rounded-lg transition-colors duration-150 text-sm;
+  color: var(--color-muted);
+}
+
+.filterBtn:hover {
+  background: var(--color-surface-soft);
+  color: var(--color-text);
+}
+
+.loadingCard {
+  @apply rounded-xl shadow-sm border p-6 transition-colors duration-200;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.loadingRow {
+  @apply animate-pulse rounded h-12 w-full;
+  background: var(--color-border);
+}
+
+.errorCard {
+  @apply rounded-xl shadow-sm border p-8 text-center transition-colors duration-200;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.errorText {
+  @apply text-red-500 mb-4;
+}
+
+.retryBtn {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors;
+}
+
+.tableCard {
+  @apply rounded-xl shadow-sm border overflow-hidden transition-colors duration-200;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.liveIndicator {
+  @apply flex items-center gap-1.5 text-xs text-emerald-600 font-medium;
+}
+
+.liveDot {
+  @apply w-1.5 h-1.5 rounded-full bg-emerald-500;
+}
+
+.liveDotActive {
+  @apply animate-pulse;
+}
+
+.pagination {
+  @apply flex items-center justify-between px-6 py-3 border-t;
+  border-color: var(--color-border);
+}
+
+.paginationInfo,
+.paginationLabel,
+.paginationEllipsis {
+  @apply text-sm;
+  color: var(--color-muted);
+}
+
+.paginationButtons {
+  @apply flex items-center gap-1;
+}
+
+.pageBtn {
+  @apply inline-flex items-center justify-center w-8 h-8 text-sm font-medium rounded-lg transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed;
+  color: var(--color-muted);
+}
+
+.pageBtn:hover {
+  background: var(--color-surface-soft);
+  color: var(--color-text);
+}
+
+.pageBtnActive {
+  @apply inline-flex items-center justify-center w-8 h-8 text-sm font-medium text-white
+         bg-blue-600 rounded-lg;
+}
+
+.perPageSelect {
+  @apply px-2 py-1 border rounded-lg text-sm focus:outline-none transition-all duration-150;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.perPageSelect:focus {
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+}
+
+:global(.dark) .perPageSelect {
+  background: rgba(2, 6, 23, 0.62);
+}

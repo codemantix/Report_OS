@@ -1,0 +1,282 @@
+.page {
+  @apply space-y-6;
+}
+
+.header {
+  @apply flex items-center justify-between;
+}
+
+.title {
+  @apply text-2xl font-bold;
+  color: var(--color-text);
+}
+
+.subtitle {
+  @apply mt-1;
+  color: var(--color-muted);
+}
+
+.surfaceCard,
+.emptyCard,
+.tableCard {
+  @apply rounded-xl border transition-colors duration-200;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.surfaceCard {
+  @apply p-6;
+}
+
+.emptyCard {
+  @apply p-12;
+}
+
+.tableCard {
+  @apply overflow-hidden;
+}
+
+.tableWrapper {
+  @apply overflow-x-auto;
+}
+
+.table {
+  @apply w-full;
+}
+
+.th {
+  @apply text-left text-xs font-semibold uppercase tracking-wider px-4 py-3;
+  background: var(--color-surface-soft);
+  color: var(--color-muted);
+}
+
+.td {
+  @apply px-4 py-3.5 text-sm whitespace-nowrap;
+  color: var(--color-muted);
+}
+
+.tr {
+  @apply border-b transition-colors;
+  border-color: var(--color-border);
+}
+
+.tr:hover {
+  background: var(--color-surface-soft);
+}
+
+.userCell {
+  @apply flex items-center gap-3;
+}
+
+.userAvatar {
+  @apply w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold overflow-hidden;
+  background: rgba(37, 99, 235, 0.10);
+  color: #2563EB;
+}
+
+.userAvatarImage {
+  @apply h-full w-full object-cover;
+}
+
+:global(.dark) .userAvatar {
+  background: rgba(59, 130, 246, 0.18);
+  color: #60A5FA;
+}
+
+.userName {
+  @apply text-sm font-medium;
+  color: var(--color-text);
+}
+
+.currentUserTag {
+  @apply ml-1.5 text-xs font-normal;
+  color: #9333EA;
+}
+
+:global(.dark) .currentUserTag {
+  color: #C084FC;
+}
+
+.roleBadge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.roleAdmin {
+  @apply bg-purple-50 text-purple-700;
+}
+
+.roleLead {
+  @apply bg-blue-50 text-blue-700;
+}
+
+.roleMember {
+  background: var(--color-surface-soft);
+  color: var(--color-muted);
+}
+
+.statusBadge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.statusActive {
+  @apply bg-emerald-50 text-emerald-700;
+}
+
+.statusInactive {
+  @apply bg-amber-50 text-amber-700;
+}
+
+.statusSuspended {
+  @apply bg-red-50 text-red-700;
+}
+
+.actions {
+  @apply flex items-center gap-2;
+}
+
+.actionBtn {
+  @apply p-1.5 rounded-lg transition-colors;
+  color: var(--color-muted);
+}
+
+.actionBtn:hover {
+  background: var(--color-surface-soft);
+  color: var(--color-text);
+}
+
+.editPanel {
+  @apply rounded-lg p-4 mt-2;
+  background: var(--color-surface-soft);
+}
+
+.editPanelContent {
+  @apply flex flex-wrap items-end gap-4;
+}
+
+.editField {
+  @apply flex flex-col gap-1.5;
+}
+
+.editLabel {
+  @apply text-xs font-medium uppercase tracking-wider;
+  color: var(--color-muted);
+}
+
+.select {
+  @apply w-full px-3 py-1.5 border rounded-lg text-sm focus:outline-none transition-all duration-150;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.select:focus {
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+}
+
+:global(.dark) .select {
+  background: rgba(2, 6, 23, 0.62);
+}
+
+.editActions {
+  @apply flex items-center gap-2;
+}
+
+.saveBtn {
+  @apply px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors;
+}
+
+.cancelBtn {
+  @apply px-3 py-1.5 border text-sm font-medium rounded-lg transition-colors;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.cancelBtn:hover {
+  background: var(--color-surface-soft);
+}
+
+.emptyState {
+  @apply text-center py-12;
+}
+
+.emptyIcon {
+  @apply w-12 h-12 mx-auto mb-3;
+  color: var(--color-muted);
+  opacity: 0.6;
+}
+
+.emptyText {
+  @apply text-sm;
+  color: var(--color-muted);
+}
+
+.loadingRow {
+  @apply animate-pulse rounded h-14 w-full;
+  background: var(--color-border);
+}
+
+.errorState {
+  @apply text-center py-12;
+}
+
+.errorText {
+  @apply text-sm text-red-500 mb-4;
+}
+
+.retryBtn {
+  @apply px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors;
+}
+
+.overlay {
+  @apply fixed inset-0 bg-black/40 z-40 flex items-center justify-center p-4 dark:bg-black/60;
+}
+
+.modal {
+  @apply rounded-xl shadow-xl max-w-md w-full p-6 border;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+.modalTitle {
+  @apply text-lg font-semibold mb-2;
+  color: var(--color-text);
+}
+
+.modalText {
+  @apply text-sm mb-6;
+  color: var(--color-muted);
+}
+
+.modalActions {
+  @apply flex justify-end gap-3;
+}
+
+.confirmBtn {
+  @apply px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors;
+}
+
+.dangerBtn {
+  @apply px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors;
+}
+
+.warningBanner {
+  @apply flex items-center gap-2 p-3 border rounded-lg mb-4;
+  background: rgba(249, 115, 22, 0.10);
+  border-color: rgba(249, 115, 22, 0.25);
+}
+
+.warningIcon {
+  @apply w-5 h-5 text-amber-600 flex-shrink-0;
+}
+
+.warningText {
+  @apply text-sm text-amber-800 dark:text-amber-300;
+}
+
+.roleInfo {
+  @apply text-xs text-center mt-2;
+  color: var(--color-muted);
+}

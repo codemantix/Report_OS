@@ -1,0 +1,110 @@
+.page {
+  @apply max-w-5xl mx-auto space-y-6;
+}
+
+.header {
+  @apply flex items-start justify-between;
+}
+
+.headerLeft {
+  @apply space-y-1;
+}
+
+.backBtn {
+  @apply inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-4 transition-colors dark:text-gray-400 dark:hover:text-white;
+}
+
+.metaGrid {
+  @apply grid grid-cols-2 md:grid-cols-4 gap-4;
+}
+
+.metaItem {
+  @apply space-y-1;
+}
+
+.metaLabel {
+  @apply text-xs text-gray-500 uppercase tracking-wider dark:text-gray-400;
+}
+
+.metaValue {
+  @apply text-sm font-medium text-gray-900 dark:text-white;
+}
+
+.section {
+  @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6 dark:bg-gray-900 dark:border-gray-800;
+}
+
+.sectionTitle {
+  @apply text-base font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-100 dark:text-white dark:border-gray-800;
+}
+
+.textBlock {
+  @apply text-sm text-gray-700 leading-relaxed whitespace-pre-wrap dark:text-gray-300;
+}
+
+.scoreGrid {
+  @apply grid grid-cols-2 md:grid-cols-4 gap-4;
+}
+
+.scoreCard {
+  @apply p-4 rounded-lg border text-center dark:border-gray-700;
+}
+
+.scoreValue {
+  @apply text-2xl font-bold;
+}
+
+.scoreLabel {
+  @apply text-xs text-gray-500 mt-1 dark:text-gray-400;
+}
+
+.reviewPanel {
+  @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6 dark:bg-gray-900 dark:border-gray-800;
+}
+
+.reviewBtn {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white font-medium rounded-lg
+         hover:bg-blue-700 active:bg-blue-800 transition-colors duration-150;
+}
+
+.commentBox {
+  @apply space-y-3;
+}
+
+.commentInput {
+  @apply w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900
+         placeholder:text-gray-400
+         focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600
+         transition-all duration-150 min-h-[80px] resize-y dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500;
+}
+
+.commentItem {
+  @apply p-4 bg-gray-50 rounded-lg dark:bg-gray-800;
+}
+
+.commentAuthor {
+  @apply text-sm font-medium text-gray-900 dark:text-white;
+}
+
+.commentDate {
+  @apply text-xs text-gray-500 dark:text-gray-400;
+}
+
+.commentText {
+  @apply text-sm text-gray-700 mt-1 dark:text-gray-300;
+}
+
+:global(.dark) .metaValue,
+:global(.dark) .sectionTitle,
+:global(.dark) .commentAuthor { color: var(--color-text); }
+:global(.dark) .metaLabel,
+:global(.dark) .scoreLabel,
+:global(.dark) .commentDate { color: var(--color-muted); }
+:global(.dark) .textBlock,
+:global(.dark) .commentText { color: #CBD5E1; }
+:global(.dark) .section,
+:global(.dark) .reviewPanel { background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-card); }
+:global(.dark) .sectionTitle,
+:global(.dark) .scoreCard { border-color: var(--color-border); }
+:global(.dark) .commentInput { background: rgba(2, 6, 23, 0.62); border-color: var(--color-border); color: var(--color-text); }
+:global(.dark) .commentItem { background: var(--color-surface-soft); }

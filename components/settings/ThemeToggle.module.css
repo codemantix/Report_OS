@@ -1,0 +1,28 @@
+.toggle {
+  @apply inline-flex items-center rounded-lg p-1 gap-1;
+  background: var(--color-surface-soft);
+}
+
+.option {
+  @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer;
+  color: var(--color-muted);
+}
+
+.option:hover {
+  color: var(--color-text);
+}
+
+.optionActive {
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+:global(.dark) .optionActive {
+  background: var(--color-surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.icon {
+  @apply w-4 h-4;
+}

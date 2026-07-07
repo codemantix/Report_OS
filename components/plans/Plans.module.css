@@ -1,0 +1,107 @@
+.page { @apply space-y-6; }
+.header { @apply flex items-center justify-between; }
+.title { @apply text-2xl font-bold text-gray-900; }
+.subtitle { @apply text-gray-500 mt-1; }
+.section { @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6 dark:bg-gray-900 dark:border-gray-800; }
+.sectionTitle { @apply text-base font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-100 dark:text-white dark:border-gray-800; }
+.form { @apply space-y-5; }
+.row { @apply grid grid-cols-1 md:grid-cols-2 gap-4; }
+.field { @apply space-y-1.5; }
+.label { @apply block text-sm font-medium text-gray-700; }
+.input { @apply w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all duration-150 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500; }
+.textarea { @apply w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all duration-150 min-h-[100px] resize-y dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500; }
+.select { @apply w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all duration-150 appearance-none cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500; }
+.actions { @apply flex items-center justify-end gap-3 pt-4; }
+.submitBtn { @apply inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors; }
+.cancelBtn { @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-gray-600 font-medium rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors; }
+.tableWrapper {
+  @apply overflow-x-auto pb-2;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.45) transparent;
+}
+.tableWrapper::-webkit-scrollbar {
+  height: 10px;
+}
+.tableWrapper::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 999px;
+}
+.tableWrapper::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, rgba(30, 58, 138, 0.35), rgba(16, 185, 129, 0.35));
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+.tableWrapper::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, rgba(30, 58, 138, 0.58), rgba(16, 185, 129, 0.58));
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.table { @apply w-full min-w-[700px]; }
+.th { @apply text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3 bg-gray-50/50 dark:bg-gray-800 dark:text-gray-400; }
+.td { @apply px-4 py-3.5 text-sm text-gray-700 whitespace-nowrap dark:text-gray-300; }
+.tr { @apply border-b border-gray-100 hover:bg-gray-50/50 transition-colors cursor-pointer dark:border-gray-800 dark:hover:bg-gray-800/50; }
+.emptyState { @apply text-center py-12; }
+.emptyIcon { @apply w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600; }
+.emptyText { @apply text-sm text-gray-400 dark:text-gray-500; }
+.detailGrid { @apply grid grid-cols-2 gap-4; }
+.detailLabel { @apply text-xs text-gray-500 uppercase tracking-wider dark:text-gray-400; }
+.detailValue { @apply text-sm font-medium text-gray-900 dark:text-white; }
+.backBtn { @apply inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-4 transition-colors dark:text-gray-400 dark:hover:text-white; }
+.typeBadge { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize; }
+.skeleton { @apply h-16 bg-gray-100 rounded-lg animate-pulse; }
+.errorState { @apply flex flex-col items-center justify-center py-16 text-center; }
+.errorIcon { @apply w-14 h-14 mb-4 text-red-400; }
+.errorText { @apply text-sm text-gray-500 mb-1; }
+.errorMessage { @apply text-sm text-red-500; }
+.retryBtn { @apply mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors; }
+.editBtn { @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors; }
+.deleteBtn { @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-red-600 rounded-lg border border-red-200 hover:bg-red-50 transition-colors; }
+.newBtn { @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors; }
+.confirmModal { @apply fixed inset-0 z-50 flex items-center justify-center bg-black/40; }
+.confirmModalContent { @apply bg-white rounded-xl shadow-xl p-6 max-w-sm w-full mx-4; }
+.confirmModalTitle { @apply text-lg font-semibold text-gray-900 mb-2; }
+.confirmModalText { @apply text-sm text-gray-500 mb-6; }
+.confirmModalActions { @apply flex items-center justify-end gap-3; }
+.loadingWrapper { @apply flex items-center justify-center py-16; }
+.spinner { @apply w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin; }
+
+:global(.dark) .tableWrapper {
+  scrollbar-color: rgba(148, 163, 184, 0.38) transparent;
+}
+:global(.dark) .tableWrapper::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, rgba(96, 165, 250, 0.36), rgba(52, 211, 153, 0.34));
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+:global(.dark) .tableWrapper::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, rgba(96, 165, 250, 0.62), rgba(52, 211, 153, 0.58));
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+:global(.dark) .title,
+:global(.dark) .sectionTitle,
+:global(.dark) .label,
+:global(.dark) .detailValue,
+:global(.dark) .confirmModalTitle { color: var(--color-text); }
+:global(.dark) .subtitle,
+:global(.dark) .td,
+:global(.dark) .detailLabel,
+:global(.dark) .emptyText,
+:global(.dark) .errorText,
+:global(.dark) .confirmModalText { color: var(--color-muted); }
+:global(.dark) .section,
+:global(.dark) .confirmModalContent { background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-card); }
+:global(.dark) .input,
+:global(.dark) .textarea,
+:global(.dark) .select { background: rgba(2, 6, 23, 0.62); border-color: var(--color-border); color: var(--color-text); }
+:global(.dark) .th,
+:global(.dark) .skeleton { background: var(--color-surface-soft); }
+:global(.dark) .tr,
+:global(.dark) .sectionTitle { border-color: var(--color-border); }
+:global(.dark) .tr:hover,
+:global(.dark) .cancelBtn:hover,
+:global(.dark) .retryBtn:hover { background: var(--color-surface-soft); }
+:global(.dark) .cancelBtn,
+:global(.dark) .retryBtn { background: var(--color-surface); border-color: var(--color-border); color: var(--color-text); }

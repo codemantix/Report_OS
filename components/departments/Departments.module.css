@@ -1,0 +1,235 @@
+.page {
+  @apply space-y-6;
+}
+
+.header {
+  @apply flex items-center justify-between;
+}
+
+.form {
+  @apply space-y-4;
+}
+
+.field {
+  @apply space-y-1.5;
+}
+
+.label {
+  @apply block text-sm font-medium text-gray-700;
+}
+
+.input {
+  @apply w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900
+         placeholder:text-gray-400
+         focus:outline-none focus:ring-2 focus:ring-brand-deepblue/20 focus:border-brand-deepblue
+         transition-all duration-150
+         dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500;
+}
+
+.textarea {
+  @apply w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900
+         placeholder:text-gray-400 min-h-[100px] resize-y
+         focus:outline-none focus:ring-2 focus:ring-brand-deepblue/20 focus:border-brand-deepblue
+         transition-all duration-150
+         dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500;
+}
+
+.select {
+  @apply w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900
+         cursor-pointer
+         focus:outline-none focus:ring-2 focus:ring-brand-deepblue/20 focus:border-brand-deepblue
+         transition-all duration-150
+         dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500 dark:focus:border-blue-600;
+}
+
+.actions {
+  @apply flex justify-end gap-3 pt-2;
+}
+
+.detailSection {
+  @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6 dark:bg-gray-900 dark:border-gray-800;
+}
+
+.sectionTitle {
+  @apply text-base font-semibold text-surface-dark pb-3 border-b border-gray-100 dark:text-white dark:border-gray-800;
+}
+
+.memberList {
+  @apply space-y-2;
+}
+
+.memberItem {
+  @apply flex items-center gap-3 p-3 bg-gray-50 rounded-lg dark:bg-gray-800;
+}
+
+.emptyState {
+  @apply text-center py-12 text-gray-400 dark:text-gray-500;
+}
+
+.statsGrid {
+  @apply grid grid-cols-2 md:grid-cols-4 gap-4;
+}
+
+.statCard {
+  @apply bg-white rounded-xl border border-gray-100 shadow-sm p-5 border-l-4 dark:bg-gray-900 dark:border-gray-800;
+}
+
+.statCardBlue {
+  @apply border-l-blue-600;
+}
+
+.statCardEmerald {
+  @apply border-l-emerald-500;
+}
+
+.statCardAmber {
+  @apply border-l-amber-500;
+}
+
+.statCardRed {
+  @apply border-l-red-500;
+}
+
+.statTitle {
+  @apply text-sm text-gray-500 font-medium dark:text-gray-400;
+}
+
+.statValue {
+  @apply text-2xl font-bold text-gray-900 mt-1 dark:text-white;
+}
+
+.sectionGrid {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+}
+
+.reportItem {
+  @apply flex items-center justify-between p-3 border-b border-gray-50 last:border-0 dark:border-gray-800;
+}
+
+.reportName {
+  @apply text-sm font-medium text-gray-900 dark:text-white;
+}
+
+.reportMeta {
+  @apply text-xs text-gray-500 dark:text-gray-400;
+}
+
+.goalItem {
+  @apply p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer dark:border-gray-700 dark:hover:bg-gray-800;
+}
+
+.goalTitle {
+  @apply text-sm font-medium text-gray-900 dark:text-white;
+}
+
+.goalDept {
+  @apply text-xs text-gray-500 mt-0.5 dark:text-gray-400;
+}
+
+.goalDates {
+  @apply text-xs text-gray-400 mt-1 dark:text-gray-500;
+}
+
+.progressBar {
+  @apply w-full bg-gray-100 rounded-full h-1.5 mt-2 dark:bg-gray-700;
+}
+
+.progressFill {
+  @apply bg-blue-600 rounded-full h-1.5 transition-all duration-300;
+}
+
+.planChip {
+  @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
+}
+
+.planChipDaily {
+  @apply bg-sky-50 text-sky-700;
+}
+
+.planChipWeekly {
+  @apply bg-indigo-50 text-indigo-700;
+}
+
+.planChipMonthly {
+  @apply bg-blue-50 text-blue-700;
+}
+
+.planChipQuarterly {
+  @apply bg-purple-50 text-purple-700;
+}
+
+.planChipProject {
+  @apply bg-emerald-50 text-emerald-700;
+}
+
+.reportList {
+  @apply divide-y divide-gray-50;
+}
+
+.goalList {
+  @apply space-y-2;
+}
+
+.loadingState {
+  @apply space-y-6;
+}
+
+.skeletonGrid {
+  @apply grid grid-cols-2 md:grid-cols-4 gap-4;
+}
+
+.skeletonCard {
+  @apply bg-white rounded-xl border border-gray-100 p-5;
+}
+
+.skeletonLine {
+  @apply animate-pulse bg-gray-200 rounded;
+}
+
+:global(.dark) .label,
+:global(.dark) .sectionTitle,
+:global(.dark) .statValue,
+:global(.dark) .reportName,
+:global(.dark) .goalTitle {
+  color: var(--color-text);
+}
+
+:global(.dark) .statTitle,
+:global(.dark) .reportMeta,
+:global(.dark) .goalDept,
+:global(.dark) .goalDates,
+:global(.dark) .emptyState {
+  color: var(--color-muted);
+}
+
+:global(.dark) .input,
+:global(.dark) .textarea,
+:global(.dark) .select {
+  background: rgba(2, 6, 23, 0.62);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+:global(.dark) .detailSection,
+:global(.dark) .statCard,
+:global(.dark) .skeletonCard {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+:global(.dark) .memberItem,
+:global(.dark) .goalItem:hover {
+  background: var(--color-surface-soft);
+}
+
+:global(.dark) .goalItem,
+:global(.dark) .reportItem,
+:global(.dark) .sectionTitle {
+  border-color: var(--color-border);
+}
+
+:global(.dark) .progressBar,
+:global(.dark) .skeletonLine {
+  background: var(--color-border);
+}

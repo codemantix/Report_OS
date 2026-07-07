@@ -1,0 +1,328 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&family=Sora:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Saira:wght@400;500;600;700;800&display=swap');
+
+/* ============================================================
+   CSS Custom Properties for Theming
+   ============================================================ */
+:root {
+  --color-bg: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-surface-soft: #F1F5F9;
+  --color-text: #0F172A;
+  --color-muted: #64748B;
+  --color-border: #E2E8F0;
+  --color-border-light: #F1F5F9;
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-premium: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 10px 15px -3px rgb(0 0 0 / 0.04);
+}
+
+.dark {
+  --color-bg: #020617;
+  --color-surface: #0F172A;
+  --color-surface-soft: #111827;
+  --color-text: #F8FAFC;
+  --color-muted: #94A3B8;
+  --color-border: #1E293B;
+  --color-border-light: #1E293B;
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+  --shadow-premium: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 10px 15px -3px rgb(0 0 0 / 0.3);
+}
+
+/* ============================================================
+   Base Styles
+   ============================================================ */
+@layer base {
+  html {
+    @apply antialiased;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+    min-height: 100vh;
+    @apply transition-colors duration-150;
+  }
+
+  * {
+    border-color: var(--color-border);
+  }
+
+  h1 {
+    @apply text-2xl font-bold text-surface-dark;
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+
+  .dark h1 {
+    color: var(--color-text);
+  }
+
+  h2 {
+    @apply text-xl font-semibold text-surface-dark;
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+
+  .dark h2 {
+    color: var(--color-text);
+  }
+
+  h3 {
+    @apply text-lg font-semibold text-surface-dark;
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+
+  .dark h3 {
+    color: var(--color-text);
+  }
+
+  h4,
+  h5,
+  h6 {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+}
+
+/* ============================================================
+   Component Classes
+   ============================================================ */
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 font-medium rounded-lg
+           transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
+    background: #1E3A8A;
+    color: #FFFFFF;
+  }
+
+  .btn-primary:hover {
+    background: #1E40AF;
+  }
+
+  .dark .btn-primary {
+    background: #1E3A8A;
+  }
+
+  .dark .btn-primary:hover {
+    background: #2563EB;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 font-medium rounded-lg border
+           transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-color: var(--color-border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-surface-soft);
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 font-medium rounded-lg
+           transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
+    color: var(--color-muted);
+  }
+
+  .btn-ghost:hover {
+    background: var(--color-surface-soft);
+    color: var(--color-text);
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white font-medium rounded-lg
+           hover:bg-red-700 active:bg-red-800 transition-colors duration-150
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .input-field {
+    @apply w-full px-3.5 py-2.5 rounded-lg transition-all duration-150;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+
+  .input-field::placeholder {
+    color: var(--color-muted);
+    opacity: 0.6;
+  }
+
+  .input-field:focus {
+    outline: none;
+    border-color: #1E3A8A;
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+  }
+
+  .label {
+    @apply block text-sm font-medium mb-1.5;
+    color: var(--color-text);
+  }
+
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-premium {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-premium);
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-success {
+    @apply badge;
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+  }
+
+  .dark .badge-success {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34D399;
+  }
+
+  .badge-warning {
+    @apply badge;
+    background: rgba(249, 115, 22, 0.1);
+    color: #D97706;
+  }
+
+  .dark .badge-warning {
+    background: rgba(249, 115, 22, 0.15);
+    color: #FBBF24;
+  }
+
+  .badge-danger {
+    @apply badge;
+    background: rgba(239, 68, 68, 0.1);
+    color: #DC2626;
+  }
+
+  .dark .badge-danger {
+    background: rgba(239, 68, 68, 0.15);
+    color: #F87171;
+  }
+
+  .badge-info {
+    @apply badge;
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563EB;
+  }
+
+  .dark .badge-info {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60A5FA;
+  }
+
+  .badge-neutral {
+    @apply badge;
+    background: var(--color-surface-soft);
+    color: var(--color-muted);
+  }
+
+  /* Skeleton */
+  .skeleton {
+    @apply animate-pulse rounded;
+    background: var(--color-border);
+  }
+
+  /* Dark-mode fallback for remaining inline Tailwind color utilities.
+     This keeps older page-level markup readable while CSS modules are migrated. */
+  .dark .bg-white {
+    background-color: var(--color-surface) !important;
+  }
+
+  .dark .bg-gray-50,
+  .dark .bg-gray-100 {
+    background-color: var(--color-surface-soft) !important;
+  }
+
+  .dark .bg-red-50 {
+    background-color: rgba(127, 29, 29, 0.22) !important;
+  }
+
+  .dark .bg-blue-50,
+  .dark .bg-blue-100 {
+    background-color: rgba(30, 58, 138, 0.24) !important;
+  }
+
+  .dark .bg-green-50,
+  .dark .bg-green-100,
+  .dark .bg-emerald-50,
+  .dark .bg-emerald-100 {
+    background-color: rgba(6, 78, 59, 0.24) !important;
+  }
+
+  .dark .bg-orange-50,
+  .dark .bg-orange-100,
+  .dark .bg-amber-50,
+  .dark .bg-amber-100 {
+    background-color: rgba(124, 45, 18, 0.24) !important;
+  }
+
+  .dark .border-gray-100,
+  .dark .border-gray-200,
+  .dark .border-gray-300 {
+    border-color: var(--color-border) !important;
+  }
+
+  .dark .text-surface-dark,
+  .dark .text-gray-900,
+  .dark .text-gray-800,
+  .dark .text-gray-700 {
+    color: var(--color-text) !important;
+  }
+
+  .dark .text-gray-600,
+  .dark .text-gray-500,
+  .dark .text-gray-400 {
+    color: var(--color-muted) !important;
+  }
+
+  .dark .placeholder\:text-gray-400::placeholder,
+  .dark .placeholder\:text-gray-500::placeholder {
+    color: var(--color-muted) !important;
+    opacity: 0.72;
+  }
+
+  .dark input,
+  .dark select,
+  .dark textarea {
+    color-scheme: dark;
+  }
+
+  /* Scrollbar */
+  .dark ::-webkit-scrollbar-track {
+    background: var(--color-bg);
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 8px;
+  }
+}
+
+/* ============================================================
+   Utility Classes
+   ============================================================ */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

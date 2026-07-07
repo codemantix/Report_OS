@@ -1,0 +1,48 @@
+.card {
+  @apply rounded-xl border shadow-sm p-5 border-l-4 transition-colors duration-200;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  border-left-color: #2563EB;
+  box-shadow: var(--shadow-card);
+}
+
+.header {
+  @apply flex items-center justify-between mb-2;
+}
+
+.title {
+  @apply text-sm font-medium;
+  color: var(--color-muted);
+}
+
+.iconWrapper {
+  @apply w-8 h-8 rounded-lg flex items-center justify-center;
+  background: rgba(37, 99, 235, 0.10);
+  color: #2563EB;
+}
+
+:global(.dark) .iconWrapper {
+  background: rgba(59, 130, 246, 0.16);
+  color: #60A5FA;
+}
+
+.value {
+  @apply text-3xl font-bold;
+  color: var(--color-text);
+}
+
+.trend {
+  @apply mt-1;
+}
+
+.trendUp {
+  @apply text-emerald-500 text-sm font-medium;
+}
+
+.trendDown {
+  @apply text-red-500 text-sm font-medium;
+}
+
+.trendNeutral {
+  @apply text-gray-400 text-sm font-medium;
+}

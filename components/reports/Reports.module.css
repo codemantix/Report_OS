@@ -1,0 +1,153 @@
+.tableWrapper {
+  @apply overflow-x-auto;
+}
+
+.table {
+  @apply w-full;
+}
+
+.th {
+  @apply text-left text-xs font-semibold uppercase tracking-wider px-3 py-3 whitespace-nowrap;
+  background: var(--color-surface-soft);
+  color: var(--color-muted);
+}
+
+.td {
+  @apply px-3 py-3.5 text-sm whitespace-nowrap;
+  color: var(--color-muted);
+}
+
+.tr {
+  @apply border-b transition-colors;
+  border-color: var(--color-border);
+}
+
+.tr:hover {
+  background: var(--color-surface-soft);
+}
+
+.emptyState {
+  @apply text-center py-16;
+}
+
+.emptyIcon {
+  @apply w-14 h-14 mx-auto mb-4;
+  color: var(--color-muted);
+  opacity: 0.55;
+}
+
+.emptyText {
+  @apply text-sm;
+  color: var(--color-muted);
+}
+
+.userCell {
+  @apply flex items-center gap-2.5;
+}
+
+.userAvatar {
+  @apply w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 overflow-hidden;
+  background: rgba(37, 99, 235, 0.10);
+  color: #2563EB;
+}
+
+.userAvatarImage {
+  @apply h-full w-full object-cover;
+}
+
+:global(.dark) .userAvatar {
+  background: rgba(59, 130, 246, 0.18);
+  color: #60A5FA;
+}
+
+.userName {
+  @apply font-medium truncate max-w-[120px];
+  color: var(--color-text);
+}
+
+.actionBtn {
+  @apply p-1.5 rounded-lg transition-colors;
+  color: var(--color-muted);
+}
+
+.actionBtn:hover {
+  background: rgba(37, 99, 235, 0.10);
+  color: #2563EB;
+}
+
+:global(.dark) .actionBtn:hover {
+  background: rgba(59, 130, 246, 0.14);
+  color: #60A5FA;
+}
+
+.actionGroup {
+  @apply flex items-center gap-1;
+}
+
+.typeBadge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize;
+  background: var(--color-surface-soft);
+  color: var(--color-muted);
+}
+
+.scoreBadge {
+  @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium min-w-[36px] justify-center dark:text-white;
+}
+
+/* Risk badges use global .badge-* classes from globals.css */
+
+.statusPending {
+  @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
+  background: var(--color-surface-soft);
+  color: var(--color-muted);
+}
+
+.statusSuccess {
+  @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-50 text-emerald-700;
+}
+
+.statusFailed {
+  @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-50 text-red-600;
+}
+
+.reviewedBadge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700;
+}
+
+.unreviewedBadge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700;
+}
+
+:global(.dark) .th {
+  background: var(--color-surface-soft);
+  color: var(--color-muted);
+}
+
+:global(.dark) .td,
+:global(.dark) .typeBadge,
+:global(.dark) .statusPending {
+  color: var(--color-muted);
+}
+
+:global(.dark) .tr {
+  border-color: var(--color-border);
+}
+
+:global(.dark) .tr:hover,
+:global(.dark) .actionBtn:hover {
+  background: var(--color-surface-soft);
+}
+
+:global(.dark) .userName {
+  color: var(--color-text);
+}
+
+:global(.dark) .typeBadge,
+:global(.dark) .statusPending {
+  background: var(--color-surface-soft);
+}
+
+:global(.dark) .emptyText,
+:global(.dark) .emptyIcon {
+  color: var(--color-muted);
+}

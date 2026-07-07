@@ -1,0 +1,101 @@
+.sidebar {
+  @apply fixed inset-y-0 left-0 z-30 w-64 border-r flex flex-col transition-colors duration-200;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+.logo {
+  @apply flex items-center gap-3 px-6 h-16 border-b;
+  border-color: var(--color-border);
+}
+
+.logoText {
+  @apply text-xl font-extrabold text-blue-600 tracking-tight
+         dark:text-white;
+}
+
+.nav {
+  @apply flex-1 overflow-y-auto px-3 py-4 space-y-1;
+}
+
+.section {
+  @apply px-3 pt-4 pb-1.5;
+}
+
+.sectionLabel {
+  @apply text-xs font-semibold uppercase tracking-wider;
+  color: var(--color-muted);
+}
+
+.navLink {
+  @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150;
+  color: var(--color-muted);
+}
+
+.navLink:hover {
+  background: var(--color-surface-soft);
+  color: var(--color-text);
+}
+
+.navLinkActive {
+  @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold;
+  background: rgba(37, 99, 235, 0.12);
+  color: #2563EB;
+}
+
+:global(.dark) .navLinkActive {
+  background: rgba(59, 130, 246, 0.18);
+  color: #60A5FA;
+}
+
+.navIcon {
+  @apply w-5 h-5 flex-shrink-0;
+}
+
+.userSection {
+  @apply border-t p-4;
+  border-color: var(--color-border);
+}
+
+.userInfo {
+  @apply flex items-center gap-3;
+}
+
+.userAvatar {
+  @apply w-9 h-9 rounded-full text-white flex items-center justify-center text-sm font-semibold overflow-hidden;
+  background-color: var(--color-bg);
+}
+
+.userAvatarImage {
+  @apply h-full w-full object-cover;
+}
+
+.userName {
+  @apply text-sm font-medium truncate;
+  color: var(--color-text);
+}
+
+.userRole {
+  @apply text-xs capitalize;
+  color: var(--color-muted);
+}
+
+.signOutBtn {
+  @apply mt-3 w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors duration-150;
+  color: var(--color-muted);
+}
+
+.signOutBtn:hover {
+  background: var(--color-surface-soft);
+  color: var(--color-text);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    @apply -translate-x-full transition-transform duration-200;
+  }
+
+  .sidebarOpen {
+    @apply translate-x-0;
+  }
+}
