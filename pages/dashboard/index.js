@@ -232,7 +232,7 @@ export default function DashboardPage() {
         {/* High Risk & Department Progress */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
           {/* High Risk Reports */}
-          <div className="card-premium p-6">
+          <div className="card-premium p-6 max-sm:p-3">
             <h2 className="mb-4">High Risk Reports</h2>
             {highRiskReports.length === 0 ? (
               <div className="text-center py-8 text-gray-400">

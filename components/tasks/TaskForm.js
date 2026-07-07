@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { getProfileDisplayName, getProfileInitials } from '../../utils/profileHelpers';
 import styles from './Tasks.module.css';
+import Image from 'next/image';
 
 const PRIORITY_OPTIONS = [
   { value: 'low', label: 'Low' },
@@ -180,7 +181,7 @@ export default function TaskForm({ initialData, departments, goals, plans, users
                 <label key={user.id} className={selected ? styles.assigneeOptionSelected : styles.assigneeOption}>
                   <input type="checkbox" checked={selected} onChange={() => handleAssigneeToggle(user.id)} className={styles.assigneeCheckbox} />
                   <span className={styles.userAvatar}>
-                    {user.avatar_url ? <img src={user.avatar_url} alt="" className={styles.userAvatarImage} /> : getProfileInitials(user, 'U')}
+                    {user.avatar_url ? <Image src={user.avatar_url} alt="" className={styles.userAvatarImage} width={32} height={32} /> : getProfileInitials(user, 'U')}
                   </span>
                   <span className={styles.userName}>{getProfileDisplayName(user, 'User')}</span>
                 </label>

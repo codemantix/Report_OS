@@ -8,11 +8,11 @@ export default function DepartmentCard({ department, onClick }) {
       onClick={() => onClick?.(department)}
     >
       <h3 className="text-lg font-semibold text-surface-dark mb-2">{department.name}</h3>
-      <p className="text-sm text-gray-500 mb-3 line-clamp-2">
+      <p className="text-sm max-sm:text-xs text-gray-500 mb-3 line-clamp-2">
         {department.description || 'No description'}
       </p>
       <div className="flex items-center justify-between">
-        <span className="text-xs text-gray-400">
+        <span className="text-xs max-sm:text-xs text-gray-400">
           Lead: {department.lead ? getProfileDisplayName(department.lead, 'Not assigned') : 'Not assigned'}
         </span>
         <span

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pencil, X, Check, ShieldAlert } from 'lucide-react';
 import { getProfileDisplayName, getProfileInitials } from '../../utils/profileHelpers';
 import styles from './Team.module.css';
+import Image from 'next/image';
 
 const roleLabels = {
   admin: 'Admin',
@@ -103,7 +104,7 @@ export default function TeamTable({ users, departments = [], onUserUpdate }) {
                     <div className={styles.userCell}>
                       <div className={styles.userAvatar}>
                         {user.avatar_url ? (
-                          <img src={user.avatar_url} alt={displayName} className={styles.userAvatarImage} />
+                          <Image src={user.avatar_url} alt={displayName} className={styles.userAvatarImage} width={32} height={32} />
                         ) : (
                           initials
                         )}

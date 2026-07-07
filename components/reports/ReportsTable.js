@@ -3,6 +3,7 @@ import { Eye, FileText, MessageSquare, CheckCircle } from 'lucide-react';
 import { formatDateTime, timeAgo } from '../../utils/dateHelpers';
 import { getProfileDisplayName, getProfileInitials } from '../../utils/profileHelpers';
 import styles from './Reports.module.css';
+import Image from 'next/image';
 
 function getRiskBadge(riskLevel) {
   if (!riskLevel) return 'badge-neutral';
@@ -79,7 +80,7 @@ export default function ReportsTable({ reports, emptyMessage = 'No reports found
                   <div className={styles.userCell}>
                     <div className={styles.userAvatar}>
                       {report.users?.avatar_url ? (
-                        <img src={report.users.avatar_url} alt={userName} className={styles.userAvatarImage} />
+                        <Image src={report.users.avatar_url} alt={userName} className={styles.userAvatarImage} width={32} height={32} />
                       ) : (
                         initials
                       )}

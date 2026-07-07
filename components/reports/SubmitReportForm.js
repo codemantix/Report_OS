@@ -1,0 +1,502 @@
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import toast from 'react-hot-toast';
+import { Upload } from 'lucide-react';
+import { getCurrentUserProfile } from '../../lib/authHelpers';
+import { fetchDepartments } from '../../services/departmentService';
+import { fetchGoals } from '../../services/goalService';
+import { fetchPlans } from '../../services/planService';
+import { fetchMyTasks } from '../../services/taskService';
+import { createReport } from '../../services/reportService';
+import { uploadFiles } from '../../services/uploadService';
+import FileUpload from './FileUpload';
+import styles from './ReportForm.module.css';
+
+const reportTypes = [
+  { value: 'daily', label: 'Daily Report' },
+  { value: 'weekly', label: 'Weekly Report' },
+  { value: 'project', label: 'Project Report' },
+  { value: 'task_completion', label: 'Task Completion' },
+  { value: 'blocker', label: 'Blocker Report' },
+];
+
+export default function SubmitReportForm() {
+  const router = useRouter();
+  const [user, setUser] = useState(null);
+  const [departments, setDepartments] = useState([]);
+  const [goals, setGoals] = useState([]);
+  const [plans, setPlans] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [selectedDept, setSelectedDept] = useState('');
+  const [errors, setErrors] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+  const [files, setFiles] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState(null);
+
+  const [formData, setFormData] = useState({
+    report_type: 'weekly',
+    department_id: '',
+    project_name: '',
+    goal_id: '',
+    plan_id: '',
+    task_id: '',
+    worked_on: '',
+    completed_tasks: '',
+    pending_tasks: '',
+    blockers: '',
+    support_needed: '',
+    hours_worked: '',
+    completion_percentage: '',
+    additional_notes: '',
+  });
+
+  useEffect(() => {
+    async function loadData() {
+      const profile = await getCurrentUserProfile();
+      if (!profile) {
+        router.push('/auth/login');
+        return;
+      }
+      setUser(profile);
+
+      const { data: depts } = await fetchDepartments();
+      setDepartments(depts || []);
+
+      // Auto-select user's department
+      if (profile.department_id) {
+        setSelectedDept(profile.department_id);
+        setFormData((prev) => ({ ...prev, department_id: profile.department_id }));
+      }
+
+      setLoading(false);
+    }
+    loadData();
+  }, [router]);
+
+  useEffect(() => {
+    async function loadRelatedData() {
+      if (selectedDept) {
+        const [goalsData, plansData, tasksData] = await Promise.all([
+          fetchGoals({ department_id: selectedDept }),
+          fetchPlans({ department_id: selectedDept }),
+          fetchMyTasks(user?.id).catch(() => ({ data: [] })),
+        ]);
+        setGoals(goalsData.data || []);
+        setPlans(plansData.data || []);
+        // Filter to only non-completed/non-cancelled department tasks
+        const rawTasks = tasksData?.data || [];
+        setTasks(rawTasks.filter((t) => {
+          const task = t.tasks;
+          return task && task.department_id === selectedDept && task.status !== 'completed' && task.status !== 'cancelled' && !task.archived;
+        }));
+      } else {
+        setTasks([]);
+      }
+    }
+    loadRelatedData();
+  }, [selectedDept, user?.id]);
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === 'department_id') {
+      setSelectedDept(value);
+      setFormData((prev) => ({ ...prev, goal_id: '', plan_id: '', task_id: '' }));
+      setSelectedTask(null);
+    }
+  }
+
+  function validateForm() {
+    const errs = {};
+    if (!formData.report_type) errs.report_type = 'Report type is required';
+    if (!formData.department_id) errs.department_id = 'Department is required';
+    if (!formData.worked_on.trim()) errs.worked_on = 'Please describe what you worked on';
+    if (!formData.completed_tasks.trim()) errs.completed_tasks = 'Please list completed tasks';
+    if (formData.hours_worked && (isNaN(formData.hours_worked) || Number(formData.hours_worked) < 0)) {
+      errs.hours_worked = 'Hours must be a valid positive number';
+    }
+    if (formData.completion_percentage) {
+      const pct = Number(formData.completion_percentage);
+      if (isNaN(pct) || pct < 0 || pct > 100) {
+        errs.completion_percentage = 'Percentage must be between 0 and 100';
+      }
+    }
+    return errs;
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    setSubmitted(true);
+    const validationErrors = validateForm();
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      // Upload files first (if any)
+      let attachments = [];
+      if (files.length > 0) {
+        setUploadProgress({ uploaded: 0, total: files.length });
+        try {
+          attachments = await uploadFiles(files, (progress) => {
+            setUploadProgress({ ...progress });
+          });
+        } catch (uploadErr) {
+          toast.error(uploadErr.message || 'Some files failed to upload');
+          console.error('Upload error:', uploadErr);
+          // Don't block report save — continue without failed attachments
+        }
+        setUploadProgress(null);
+      }
+
+      const reportPayload = {
+        user_id: user.id,
+        department_id: formData.department_id || null,
+        goal_id: formData.goal_id || null,
+        plan_id: formData.plan_id || null,
+        report_type: formData.report_type,
+        project_name: formData.project_name || null,
+        worked_on: formData.worked_on,
+        completed_tasks: formData.completed_tasks || null,
+        pending_tasks: formData.pending_tasks || null,
+        blockers: formData.blockers || null,
+        support_needed: formData.support_needed || null,
+        hours_worked: formData.hours_worked ? parseFloat(formData.hours_worked) : null,
+        completion_percentage: formData.completion_percentage ? parseInt(formData.completion_percentage) : null,
+        additional_notes: formData.additional_notes || null,
+        attachments: attachments.length > 0 ? JSON.stringify(attachments) : null,
+        ai_status: 'pending',
+      };
+
+      const { data, error } = await createReport(reportPayload);
+
+      if (error) {
+        toast.error('Failed to submit report');
+        console.error(error);
+        setSubmitting(false);
+        return;
+      }
+
+      // Submit background processing (email, task linking)
+      try {
+        await fetch('/api/reports/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            reportId: data.id,
+            taskId: formData.task_id || null,
+          }),
+        });
+      } catch (apiErr) {
+        console.error('Background processing error:', apiErr);
+      }
+
+      toast.success('Report submitted successfully!');
+      setSubmitted(false);
+
+      router.push('/dashboard/reports');
+    } catch (err) {
+      toast.error('Something went wrong');
+      console.error(err);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-8 h-8 border-2 border-brand-deepblue border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.page}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Submit Report</h1>
+        <p className={styles.subtitle}>Document your work and progress</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className={styles.form}>
+        {/* Report Type & Department */}
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Report Information</h2>
+          <div className={styles.row}>
+            <div className={styles.field}>
+              <label className={`${styles.label} ${styles.required}`}>Report Type</label>
+              <select
+                name="report_type"
+                value={formData.report_type}
+                onChange={handleChange}
+                className={`${styles.select} ${errors.report_type && submitted ? styles.inputError : ''}`}
+                required
+              >
+                {reportTypes.map((type) => (
+                  <option key={type.value} value={type.value}>{type.label}</option>
+                ))}
+              </select>
+              {errors.report_type && submitted && <p className={styles.fieldError}>{errors.report_type}</p>}
+            </div>
+            <div className={styles.field}>
+              <label className={`${styles.label} ${styles.required}`}>Department</label>
+              <select
+                name="department_id"
+                value={formData.department_id}
+                onChange={handleChange}
+                className={`${styles.select} ${errors.department_id && submitted ? styles.inputError : ''}`}
+              >
+                <option value="">Select department</option>
+                {departments.map((dept) => (
+                  <option key={dept.id} value={dept.id}>{dept.name}</option>
+                ))}
+              </select>
+              {errors.department_id && submitted && <p className={styles.fieldError}>{errors.department_id}</p>}
+            </div>
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label}>Project Name</label>
+            <input
+              type="text"
+              name="project_name"
+              value={formData.project_name}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="e.g., Website Redesign"
+            />
+          </div>
+        </div>
+
+        {/* Goal, Plan & Task */}
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Goal, Plan &amp; Task Alignment</h2>
+          <div className={styles.row}>
+            <div className={styles.field}>
+              <label className={styles.label}>Related Goal</label>
+              <select
+                name="goal_id"
+                value={formData.goal_id}
+                onChange={handleChange}
+                className={styles.select}
+                disabled={!selectedDept}
+              >
+                <option value="">Select goal</option>
+                {goals.map((goal) => (
+                  <option key={goal.id} value={goal.id}>{goal.title}</option>
+                ))}
+              </select>
+              {!selectedDept && <p className={styles.hint}>Select a department first</p>}
+            </div>
+            <div className={styles.field}>
+              <label className={styles.label}>Related Plan</label>
+              <select
+                name="plan_id"
+                value={formData.plan_id}
+                onChange={handleChange}
+                className={styles.select}
+                disabled={!selectedDept}
+              >
+                <option value="">Select plan</option>
+                {plans.map((plan) => (
+                  <option key={plan.id} value={plan.id}>{plan.title}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className={styles.row}>
+            <div className={styles.field}>
+              <label className={styles.label}>Related Task</label>
+              <select
+                name="task_id"
+                value={formData.task_id}
+                onChange={(e) => {
+                  handleChange(e);
+                  const taskItem = tasks.find((t) => t.tasks?.id === e.target.value);
+                  setSelectedTask(taskItem?.tasks || null);
+                }}
+                className={styles.select}
+                disabled={!selectedDept}
+              >
+                <option value="">Select task</option>
+                {tasks.map((taskItem) => (
+                  <option key={taskItem.tasks?.id || Math.random()} value={taskItem.tasks?.id}>
+                    {taskItem.tasks?.title || 'Unknown'}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.field}>
+              <label className={styles.label}>Task Info</label>
+              <div className="rounded-lg border p-3 text-sm min-h-[42px]" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+                {selectedTask ? (
+                  <div className="space-y-1">
+                    <p className="font-medium" style={{ color: 'var(--color-text)' }}>{selectedTask.title}</p>
+                    {selectedTask.expected_output && <p className="text-xs" style={{ color: 'var(--color-muted)' }}>Expected: {selectedTask.expected_output}</p>}
+                    {selectedTask.due_date && <p className="text-xs" style={{ color: 'var(--color-muted)' }}>Due: {new Date(selectedTask.due_date).toLocaleDateString()}</p>}
+                    <p className="text-xs capitalize" style={{ color: 'var(--color-muted)' }}>Priority: {selectedTask.priority} · Status: {selectedTask.status?.replace(/_/g, ' ')}</p>
+                  </div>
+                ) : (
+                  <p className="text-xs" style={{ color: 'var(--color-muted)' }}>No task selected</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Work Details */}
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Work Details</h2>
+          <div className={styles.field}>
+            <label className={`${styles.label} ${styles.required}`}>What did you work on?</label>
+            <textarea
+              name="worked_on"
+              value={formData.worked_on}
+              onChange={handleChange}
+              className={`${styles.textarea} ${errors.worked_on && submitted ? styles.inputError : ''}`}
+              placeholder="Describe the work you did..."
+              required
+            />
+            {errors.worked_on && submitted && <p className={styles.fieldError}>{errors.worked_on}</p>}
+          </div>
+          <div className={styles.row}>
+            <div className={styles.field}>
+              <label className={`${styles.label} ${styles.required}`}>What did you complete?</label>
+              <textarea
+                name="completed_tasks"
+                value={formData.completed_tasks}
+                onChange={handleChange}
+                className={`${styles.textarea} ${errors.completed_tasks && submitted ? styles.inputError : ''}`}
+                placeholder="List completed tasks..."
+              />
+              {errors.completed_tasks && submitted && <p className={styles.fieldError}>{errors.completed_tasks}</p>}
+            </div>
+            <div className={styles.field}>
+              <label className={styles.label}>What is still pending?</label>
+              <textarea
+                name="pending_tasks"
+                value={formData.pending_tasks}
+                onChange={handleChange}
+                className={styles.textarea}
+                placeholder="List pending items..."
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Blockers & Support */}
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Challenges & Support</h2>
+          <div className={styles.row}>
+            <div className={styles.field}>
+              <label className={styles.label}>Blockers or Challenges</label>
+              <textarea
+                name="blockers"
+                value={formData.blockers}
+                onChange={handleChange}
+                className={styles.textarea}
+                placeholder="Any blockers or challenges?"
+              />
+            </div>
+            <div className={styles.field}>
+              <label className={styles.label}>Support Needed</label>
+              <textarea
+                name="support_needed"
+                value={formData.support_needed}
+                onChange={handleChange}
+                className={styles.textarea}
+                placeholder="What support do you need?"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Metrics */}
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Metrics</h2>
+          <div className={styles.row}>
+            <div className={styles.field}>
+              <label className={styles.label}>Hours Worked</label>
+              <input
+                type="number"
+                name="hours_worked"
+                value={formData.hours_worked}
+                onChange={handleChange}
+                className={`${styles.input} ${errors.hours_worked && submitted ? styles.inputError : ''}`}
+                placeholder="e.g., 8"
+                min="0"
+                step="0.5"
+              />
+              {errors.hours_worked && submitted && <p className={styles.fieldError}>{errors.hours_worked}</p>}
+            </div>
+            <div className={styles.field}>
+              <label className={styles.label}>Completion %</label>
+              <input
+                type="number"
+                name="completion_percentage"
+                value={formData.completion_percentage}
+                onChange={handleChange}
+                className={`${styles.input} ${errors.completion_percentage && submitted ? styles.inputError : ''}`}
+                placeholder="e.g., 75"
+                min="0"
+                max="100"
+              />
+              {errors.completion_percentage && submitted && <p className={styles.fieldError}>{errors.completion_percentage}</p>}
+            </div>
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label}>Additional Notes</label>
+            <textarea
+              name="additional_notes"
+              value={formData.additional_notes}
+              onChange={handleChange}
+              className={styles.textarea}
+              placeholder="Any additional notes..."
+            />
+          </div>
+        </div>
+
+        {/* Attachments */}
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Attachments</h2>
+          <FileUpload
+            files={files}
+            onFilesChange={setFiles}
+            disabled={submitting}
+            label="Upload supporting documents"
+          />
+        </div>
+
+        {/* Submit */}
+        <div className={styles.submitSection}>
+          <button type="button" onClick={() => router.back()} className={styles.cancelBtn}>
+            Cancel
+          </button>
+          <button type="submit" disabled={submitting} className={styles.submitBtn}>
+            {submitting ? (
+              <span className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                {uploadProgress
+                  ? `Uploading files (${uploadProgress.uploaded}/${uploadProgress.total})...`
+                  : 'Submitting...'}
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <Upload className="w-4 h-4" />
+                Submit Report
+              </span>
+            )}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}

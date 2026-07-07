@@ -12,7 +12,7 @@
 }
 
 .subtitle {
-  @apply mt-1;
+  @apply mt-1 max-sm:text-xs;
   color: var(--color-muted);
 }
 
@@ -28,7 +28,7 @@
 }
 
 .filterSelect {
-  @apply px-3.5 py-2.5 border rounded-lg focus:outline-none transition-all duration-150 text-sm;
+  @apply px-3.5 py-2.5 border rounded-lg focus:outline-none transition-all duration-150 text-sm max-sm:text-xs max-sm:px-2 max-sm:py-2;
   background: var(--color-surface);
   border-color: var(--color-border);
   color: var(--color-text);
@@ -44,7 +44,7 @@
 }
 
 .filterBtn {
-  @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 font-medium rounded-lg transition-colors duration-150 text-sm;
+  @apply inline-flex items-center justify-center gap-2 max-sm:text-xs max-sm:gap-1 max-sm:px-2 max-sm:py-2 px-4 py-2.5 font-medium rounded-lg transition-colors duration-150 text-sm;
   color: var(--color-muted);
 }
 

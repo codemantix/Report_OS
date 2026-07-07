@@ -13,16 +13,23 @@ const iconMap = {
 };
 
 const variantStyles = {
-  default: '',
+  default: 'border-l-blue-600',
   danger: 'border-l-red-500',
   warning: 'border-l-amber-500',
+  success: 'border-l-emerald-500',
+  info: 'border-l-blue-500',
 };
 
 export default function StatCard({ title, value, icon, trend, variant = 'default' }) {
-  const Icon = iconMap[icon] || FileText;
+  // Support both Lucide component references and string keys
+  const Icon = typeof icon === 'function' || (icon && typeof icon === 'object')
+    ? icon
+    : (iconMap[icon] || FileText);
+
+  const borderClass = variantStyles[variant] || variantStyles.default;
 
   return (
-    <div className={`${styles.card} ${variantStyles[variant]}`}>
+    <div className={`${styles.card} ${borderClass}`}>
       <div className={styles.header}>
         <span className={styles.title}>{title}</span>
         <div className={styles.iconWrapper}>

@@ -92,14 +92,14 @@ export default function DepartmentsPage() {
       <div className={styles.page}>
         <div className={styles.header}>
           <div>
-            <h1 className="text-2xl font-bold text-surface-dark">Departments</h1>
-            <p className="text-brand-slate mt-1">Manage departments and leads</p>
+            <h1 className="text-2xl max-sm:text-xl font-bold text-surface-dark">Departments</h1>
+            <p className="text-brand-slate max-sm:text-sm mt-1">Manage departments and leads</p>
           </div>
           <button
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-deepblue rounded-lg hover:bg-brand-deepblue/90 transition-colors"
+            className=" items-center gap-2 px-4  py-2 text-sm max-sm:text-xs font-medium text-white bg-brand-deepblue rounded-lg hover:bg-brand-deepblue/90 transition-colors"
             onClick={() => setShowCreate(true)}
           >
-            + Create Department
+            + Add Depart...
           </button>
         </div>
 

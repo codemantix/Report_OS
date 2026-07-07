@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { Upload, FileText, Image, File, X } from 'lucide-react';
 import styles from './FileUpload.module.css';
+import toast from 'react-hot-toast';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
@@ -61,8 +62,7 @@ export default function FileUpload({ files, onFilesChange, disabled = false, lab
       }
 
       if (invalid.length > 0) {
-        // Could dispatch a toast from parent, but we just alert for now
-        alert(invalid.join('\n'));
+        toast.error(invalid.join('\n'));
       }
 
       if (valid.length > 0) {

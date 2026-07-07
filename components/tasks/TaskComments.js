@@ -4,6 +4,7 @@ import { formatDateTime } from '../../utils/dateHelpers';
 import { getProfileDisplayName, getProfileInitials } from '../../utils/profileHelpers';
 import { addTaskComment } from '../../services/taskService';
 import styles from './Tasks.module.css';
+import Image from 'next/image';
 
 export default function TaskComments({ taskId, comments, currentUserId, onCommentAdded }) {
   const [comment, setComment] = useState('');
@@ -51,7 +52,7 @@ export default function TaskComments({ taskId, comments, currentUserId, onCommen
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
                 <span className={styles.userAvatar}>
-                  {c.user?.avatar_url ? <img src={c.user.avatar_url} alt="" className={styles.userAvatarImage} /> : getProfileInitials(c.user, 'U')}
+                  {c.user?.avatar_url ? <Image src={c.user.avatar_url} alt="" className={styles.userAvatarImage} width={32} height={32} /> : getProfileInitials(c.user, 'U')}
                 </span>
                 <span className={styles.commentAuthor}>{getProfileDisplayName(c.user, 'User')}</span>
               </div>

@@ -12,7 +12,7 @@
 }
 
 .subtitle {
-  @apply mt-1;
+  @apply mt-1 max-sm:text-xs;
   color: var(--color-muted);
 }
 
@@ -52,12 +52,12 @@
 }
 
 .td {
-  @apply px-4 py-3.5 text-sm whitespace-nowrap;
+  @apply px-4 py-3.5 text-sm max-sm:text-xs whitespace-nowrap;
   color: var(--color-muted);
 }
 
 .tr {
-  @apply border-b transition-colors;
+  @apply border-b max-sm:text-xs transition-colors;
   border-color: var(--color-border);
 }
 
@@ -85,7 +85,7 @@
 }
 
 .userName {
-  @apply text-sm font-medium;
+  @apply text-sm max-sm:text-xs font-medium;
   color: var(--color-text);
 }
 

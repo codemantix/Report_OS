@@ -36,6 +36,28 @@ export async function createTask(taskData) {
     await logTaskActivity(data.id, taskPayload.created_by, 'task_created', null, null, {
       assignees: assignee_ids,
     });
+
+    // Trigger email notifications (non-blocking)
+    try {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        const token = session?.access_token;
+        if (token) {
+          fetch('/api/tasks/notify-assignees', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              taskId: data.id,
+              assigneeIds: assignee_ids
+            })
+          }).catch((err) => console.error('Notify assignees trigger error:', err));
+        }
+      });
+    } catch (tokenErr) {
+      console.error('Session retrieve error for notification:', tokenErr);
+    }
   }
 
   return { data, error: null };
@@ -151,26 +173,29 @@ export async function fetchTasks(filters = {}) {
 }
 
 export async function fetchTaskById(id) {
-  const { data, error } = await supabase
-    .from('tasks')
-    .select(`
-      *,
-      departments:department_id (id, name),
-      goals:goal_id (id, title, description, success_metric),
-      plans:plan_id (id, title, description, plan_type),
-      created_by_user:created_by (id, full_name, display_name, email, avatar_url),
-      task_assignees (
-        users:user_id (id, full_name, display_name, email, avatar_url, job_title)
-      ),
-      task_comments (
-        *,
-        user:user_id (id, full_name, display_name, email, avatar_url)
-      )
-    `)
-    .eq('id', id)
-    .single();
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
 
-  return { data, error };
+    if (!token) {
+      return { data: null, error: new Error('Unauthorized: Session not found') };
+    }
+
+    const response = await fetch(`/api/tasks/detail?id=${id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const result = await response.json();
+    if (!response.ok) {
+      return { data: null, error: new Error(result.error || 'Failed to fetch task details') };
+    }
+
+    return { data: result.data, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
 }
 
 export async function fetchMyTasks(userId, filters = {}) {
@@ -252,7 +277,51 @@ export async function updateTask(id, updates) {
         .insert(rows);
 
       if (insertError) return { data, error: insertError };
+
+      // Trigger email notifications (non-blocking)
+      try {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          const token = session?.access_token;
+          if (token) {
+            fetch('/api/tasks/notify-assignees', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                taskId: id,
+                assigneeIds: assignee_ids
+              })
+            }).catch((err) => console.error('Notify assignees trigger error:', err));
+          }
+        });
+      } catch (tokenErr) {
+        console.error('Session retrieve error for notification:', tokenErr);
+      }
     }
+  }
+
+  // Trigger update notification (non-blocking)
+  try {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const token = session?.access_token;
+      if (token) {
+        fetch('/api/tasks/notify-update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            taskId: id,
+            actionType: 'details_change'
+          })
+        }).catch((err) => console.error('Notify update details trigger error:', err));
+      }
+    });
+  } catch (tokenErr) {
+    console.error('Session retrieve error for update notification:', tokenErr);
   }
 
   return { data, error: null };
@@ -335,7 +404,26 @@ export async function getTaskActivityLogs(taskId) {
 }
 
 async function logTaskActivity(taskId, userId, action, previousValue, newValue, metadata) {
-  return supabase.from('task_activity_logs').insert([
-    { task_id: taskId, user_id: userId, action, previous_value: previousValue, new_value: newValue, metadata },
-  ]);
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    if (!token) return;
+
+    await fetch('/api/tasks/log-activity', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        taskId,
+        action,
+        previousValue,
+        newValue,
+        metadata
+      })
+    });
+  } catch (err) {
+    console.error('Failed to log task activity:', err);
+  }
 }

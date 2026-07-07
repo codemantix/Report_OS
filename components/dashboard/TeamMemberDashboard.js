@@ -10,6 +10,7 @@ import { formatDate, timeAgo } from '../../utils/dateHelpers';
 import { getProfileDisplayName } from '../../utils/profileHelpers';
 import useDebounce from '../../hooks/useDebounce';
 import styles from './TeamMemberDashboard.module.css';
+import StatCard from './StatCard';
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -49,29 +50,6 @@ function computeStats(reports, goals) {
       : 0;
 
   return { totalReports, avgSuccessRate, pendingTasks, assignedGoals };
-}
-
-function StatCard({ title, value, icon: Icon, variant = 'default' }) {
-  const variantClass =
-    variant === 'success'
-      ? 'border-l-emerald-500'
-      : variant === 'warning'
-      ? 'border-l-amber-500'
-      : variant === 'info'
-      ? 'border-l-blue-500'
-      : 'border-l-blue-600';
-
-  return (
-    <div className={`bg-white rounded-xl border border-gray-100 shadow-sm p-5 border-l-4 ${variantClass}`}>
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-sm text-gray-500 font-medium">{title}</span>
-        <div className="w-8 h-8 rounded-lg bg-blue-600/10 flex items-center justify-center text-blue-600">
-          <Icon className="w-4 h-4" />
-        </div>
-      </div>
-      <div className="text-3xl font-bold text-gray-900">{value}</div>
-    </div>
-  );
 }
 
 export default function TeamMemberDashboard() {

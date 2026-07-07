@@ -3,7 +3,7 @@
 }
 
 .header {
-  @apply flex items-center justify-between;
+  @apply flex items-center justify-between max-sm:justify-end gap-3;
 }
 
 .form {
@@ -115,11 +115,11 @@
 }
 
 .goalItem {
-  @apply p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer dark:border-gray-700 dark:hover:bg-gray-800;
+  @apply block p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer dark:border-gray-700 dark:hover:bg-gray-800;
 }
 
 .goalTitle {
-  @apply text-sm font-medium text-gray-900 dark:text-white;
+  @apply text-sm max-sm:text-xs font-medium text-gray-900 dark:text-white;
 }
 
 .goalDept {

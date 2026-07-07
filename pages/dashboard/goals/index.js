@@ -80,11 +80,11 @@ export default function GoalsPage() {
   return (
     <DashboardLayout>
       <div className={styles.page}>
-        <div className={styles.header}>
           <div>
             <h1 className={styles.title}>Goals</h1>
             <p className={styles.subtitle}>Define and track department goals</p>
           </div>
+        <div className={styles.header}>
           {canCreate && (
             <button
               className={styles.newBtn}

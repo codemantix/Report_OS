@@ -303,7 +303,7 @@ export default function DepartmentDetailPage() {
           <h3 className="text-lg font-semibold text-gray-900 mb-1">Something went wrong</h3>
           <p className="text-sm text-gray-500 mb-6">{error}</p>
           <button
-            className="px-4 py-2 text-sm font-medium text-white bg-brand-deepblue rounded-lg hover:bg-brand-deepblue/90 transition-colors"
+            className="px-4 py-2 text-sm max-sm:text-xs font-medium text-white bg-brand-deepblue rounded-lg hover:bg-brand-deepblue/90 transition-colors"
             onClick={() => router.push('/dashboard/departments')}
           >
             Back to Departments
@@ -323,7 +323,7 @@ export default function DepartmentDetailPage() {
           <h3 className="text-lg font-semibold text-gray-900 mb-1">Department not found</h3>
           <p className="text-sm text-gray-500 mb-6">This department may have been removed.</p>
           <button
-            className="px-4 py-2 text-sm font-medium text-white bg-brand-deepblue rounded-lg hover:bg-brand-deepblue/90 transition-colors"
+            className="px-4 py-2 text-sm max-sm:text-xs font-medium text-white bg-brand-deepblue rounded-lg hover:bg-brand-deepblue/90 transition-colors"
             onClick={() => router.push('/dashboard/departments')}
           >
             Back to Departments
@@ -346,16 +346,16 @@ export default function DepartmentDetailPage() {
         )}
 
         {/* Header */}
-        <div className={styles.header}>
-          <div>
             <button
-              className="text-sm text-brand-slate hover:text-surface-dark transition-colors mb-1 flex items-center gap-1"
+              className="text-sm max-sm:text-xs text-brand-slate hover:text-surface-dark transition-colors mb-1 flex items-center gap-1"
               onClick={() => router.push('/dashboard/departments')}
             >
               &larr; Back to Departments
             </button>
-            <h1 className="text-2xl font-bold text-surface-dark">{department.name}</h1>
+          <div>
+            <h1 className="text-2xl max-sm:text-xl font-bold text-surface-dark">{department.name}</h1>
           </div>
+        <div className={styles.header}>
           <div className="flex items-center gap-3">
             <span
               className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -369,13 +369,13 @@ export default function DepartmentDetailPage() {
             {!editing && (
               <>
                 <button
-                  className="px-4 py-2 text-sm font-medium text-brand-deepblue bg-brand-deepblue/5 rounded-lg hover:bg-brand-deepblue/10 transition-colors"
+                  className="px-4 py-2 text-sm  max-sm:text-xs font-medium text-brand-deepblue bg-brand-deepblue/5 rounded-lg hover:bg-brand-deepblue/10 transition-colors"
                   onClick={() => setEditing(true)}
                 >
                   Edit
                 </button>
                 <button
-                  className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+                  className="px-4 py-2 text-sm max-sm:text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
                   onClick={() => setShowDeleteModal(true)}
                 >
                   Delete
@@ -410,7 +410,7 @@ export default function DepartmentDetailPage() {
                   <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-1">
                     Description
                   </p>
-                  <p className="text-sm text-gray-700">
+                  <p className="text-sm max-sm:text-xs text-gray-700">
                     {department.description || 'No description provided'}
                   </p>
                 </div>
@@ -418,7 +418,7 @@ export default function DepartmentDetailPage() {
                   <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-1">
                     Department Lead
                   </p>
-                  <p className="text-sm text-gray-700">
+                  <p className="text-sm max-sm:text-xs text-gray-700">
                     {department.lead
                                           ? `${getProfileDisplayName(department.lead, 'Lead')} (${department.lead.email})`
                                           : 'Not assigned'}

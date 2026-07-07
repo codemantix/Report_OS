@@ -8,6 +8,7 @@ import { formatDateTime } from '../../../utils/dateHelpers';
 import { getScoreColor, getRiskBadgeColor, getRiskLabel } from '../../../utils/scoreHelpers';
 import { getProfileDisplayName } from '../../../utils/profileHelpers';
 import styles from '../../../components/reports/ReportDetails.module.css';
+import { Edit, Trash2 } from 'lucide-react';
 
 function getLatestAnalysis(analysis) {
   if (!Array.isArray(analysis)) return analysis || null;
@@ -18,6 +19,72 @@ function getLatestAnalysis(analysis) {
     const bTime = b.created_at ? new Date(b.created_at).getTime() : 0;
     return bTime - aTime;
   })[0];
+}
+
+function DeleteReportConfirmModal({ onConfirm, onCancel, deleting }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/40" onClick={onCancel} />
+      <div className="relative bg-white dark:bg-gray-900 rounded-xl shadow-xl p-6 max-w-sm w-full mx-4 border border-gray-100 dark:border-gray-800">
+        <div className="w-12 h-12 rounded-full bg-red-50 dark:bg-red-950/30 flex items-center justify-center mx-auto mb-4">
+          <span className="text-xl">⚠️</span>
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2">Delete Report</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
+          Are you sure you want to delete this report? This will permanently delete the report, its task links, and AI analysis records. This action cannot be undone.
+        </p>
+        <div className="flex gap-3">
+          <button
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            onClick={onCancel}
+            disabled={deleting}
+          >
+            Cancel
+          </button>
+          <button
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={onConfirm}
+            disabled={deleting}
+          >
+            {deleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DeleteCommentConfirmModal({ onConfirm, onCancel, deleting }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/40" onClick={onCancel} />
+      <div className="relative bg-white dark:bg-gray-900 rounded-xl shadow-xl p-6 max-w-sm w-full mx-4 border border-gray-100 dark:border-gray-800">
+        <div className="w-12 h-12 rounded-full bg-red-50 dark:bg-red-950/30 flex items-center justify-center mx-auto mb-4">
+          <span className="text-xl">⚠️</span>
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2">Delete Comment</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
+          Are you sure you want to delete this comment? This action cannot be undone.
+        </p>
+        <div className="flex gap-3">
+          <button
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            onClick={onCancel}
+            disabled={deleting}
+          >
+            Cancel
+          </button>
+          <button
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={onConfirm}
+            disabled={deleting}
+          >
+            {deleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function ReportDetailPage() {
@@ -31,6 +98,12 @@ export default function ReportDetailPage() {
   const [retrying, setRetrying] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const autoAnalysisStartedRef = useRef(new Set());
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingCommentText, setEditingCommentText] = useState('');
+  const [deletingReport, setDeletingReport] = useState(false);
+  const [showDeleteReportModal, setShowDeleteReportModal] = useState(false);
+  const [showDeleteCommentId, setShowDeleteCommentId] = useState(null);
+  const [deletingComment, setDeletingComment] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -95,6 +168,75 @@ export default function ReportDetailPage() {
 
   async function handleRetryAnalysis() {
     await runAnalysis();
+  }
+
+  async function handleEditComment(commentId, text) {
+    if (!text.trim()) return;
+    try {
+      const response = await fetch('/api/admin/reports', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          commentId,
+          comment: text.trim(),
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update comment');
+
+      setEditingCommentId(null);
+      setEditingCommentText('');
+      toast.success('Comment updated');
+      loadReport();
+    } catch (err) {
+      toast.error('Failed to update comment');
+    }
+  }
+
+  function handleDeleteComment(commentId) {
+    setShowDeleteCommentId(commentId);
+  }
+
+  async function handleConfirmDeleteComment(commentId) {
+    setDeletingComment(true);
+    try {
+      const response = await fetch(`/api/admin/reports?commentId=${commentId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('Failed to delete comment');
+
+      toast.success('Comment deleted');
+      loadReport();
+    } catch (err) {
+      toast.error('Failed to delete comment');
+    } finally {
+      setDeletingComment(false);
+      setShowDeleteCommentId(null);
+    }
+  }
+
+  function handleDeleteReport() {
+    setShowDeleteReportModal(true);
+  }
+
+  async function handleConfirmDeleteReport() {
+    setDeletingReport(true);
+    try {
+      const response = await fetch(`/api/admin/reports?reportId=${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('Failed to delete report');
+
+      toast.success('Report deleted');
+      router.push('/dashboard/reports');
+    } catch (err) {
+      toast.error('Failed to delete report');
+      setDeletingReport(false);
+    } finally {
+      setShowDeleteReportModal(false);
+    }
   }
 
   useEffect(() => {
@@ -174,6 +316,20 @@ export default function ReportDetailPage() {
   return (
     <DashboardLayout>
       <div className={styles.page}>
+        {showDeleteReportModal && (
+          <DeleteReportConfirmModal
+            onConfirm={handleConfirmDeleteReport}
+            onCancel={() => setShowDeleteReportModal(false)}
+            deleting={deletingReport}
+          />
+        )}
+        {showDeleteCommentId && (
+          <DeleteCommentConfirmModal
+            onConfirm={() => handleConfirmDeleteComment(showDeleteCommentId)}
+            onCancel={() => setShowDeleteCommentId(null)}
+            deleting={deletingComment}
+          />
+        )}
         {/* Back Button */}
         <button onClick={() => router.push('/dashboard/reports')} className={styles.backBtn}>
           ← Back to Reports
@@ -182,10 +338,10 @@ export default function ReportDetailPage() {
         {/* Header */}
         <div className={styles.header}>
           <div className={styles.headerLeft}>
-            <h1 className="text-2xl font-bold text-surface-dark">{report.project_name || 'Untitled Report'}</h1>
-            <p className="text-gray-500">{report.report_type} report • {formatDateTime(report.submitted_at)}</p>
+            <h1 className="text-2xl font-bold max-sm:text-lg text-surface-dark">{report.project_name || 'Untitled Report'}</h1>
+            <p className="text-gray-500 max-sm:text-xs">{report.report_type} report • {formatDateTime(report.submitted_at)}</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex max-sm:flex-col gap-2">
             {!report.reviewed && canReview && (
               <button onClick={handleMarkReviewed} className={styles.reviewBtn}>
                 Mark as Reviewed
@@ -195,6 +351,15 @@ export default function ReportDetailPage() {
               <span className="badge px-3 py-1.5 text-xs font-medium rounded-full" style={{ background: 'rgba(16,185,129,0.12)', color: '#059669' }}>
                 Reviewed
               </span>
+            )}
+            {canReview && (
+              <button
+                onClick={handleDeleteReport}
+                disabled={deletingReport}
+                className={styles.deleteBtn}
+              >
+                {deletingReport ? 'Deleting...' : 'Delete'}
+              </button>
             )}
           </div>
         </div>
@@ -265,18 +430,18 @@ export default function ReportDetailPage() {
           {report.goals && (
             <div className={styles.section}>
               <h2 className={styles.sectionTitle}>Related Goal</h2>
-              <h3 className="font-semibold text-gray-900">{report.goals.title}</h3>
+              <h3 className="font-semibold max-sm:text-sm text-gray-900">{report.goals.title}</h3>
               {report.goals.description && (
-                <p className="text-sm text-gray-600 mt-1">{report.goals.description}</p>
+                <p className="text-sm max-sm:text-xs text-gray-600 mt-1">{report.goals.description}</p>
               )}
             </div>
           )}
           {report.plans && (
             <div className={styles.section}>
               <h2 className={styles.sectionTitle}>Related Plan</h2>
-              <h3 className="font-semibold text-gray-900">{report.plans.title}</h3>
+              <h3 className="font-semibold max-sm:text-sm text-gray-900">{report.plans.title}</h3>
               {report.plans.plan_type && (
-                <p className="text-sm text-gray-500 mt-1 capitalize">{report.plans.plan_type} plan</p>
+                <p className="text-sm max-sm:text-xs text-gray-500 mt-1 capitalize">{report.plans.plan_type} plan</p>
               )}
             </div>
           )}
@@ -293,7 +458,7 @@ export default function ReportDetailPage() {
             </div>
 
             {analysis.summary && (
-              <p className="text-sm text-gray-700 mb-6 leading-relaxed">{analysis.summary}</p>
+              <p className="text-sm max-sm:text-xs text-gray-700 mb-6 leading-relaxed">{analysis.summary}</p>
             )}
 
             {/* Scores */}
@@ -327,16 +492,16 @@ export default function ReportDetailPage() {
             {/* Admin Recommendation */}
             {canViewAdminRecommendation && analysis.admin_recommendation && (
               <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                <h3 className="text-sm font-semibold text-blue-800 mb-1">Admin Recommendation</h3>
-                <p className="text-sm text-blue-700 whitespace-pre-line">{analysis.admin_recommendation}</p>
+                <h3 className="text-sm max-sm:text-xs font-semibold text-blue-800 mb-1">Admin Recommendation</h3>
+                <p className="text-sm max-sm:text-xs text-blue-700 whitespace-pre-line">{analysis.admin_recommendation}</p>
               </div>
             )}
 
             {/* Analyzed Comment */}
             {analysis.ai_comment && (
               <div className="mt-3 p-4 bg-gray-50 rounded-lg">
-                <h3 className="text-sm font-semibold text-gray-700 mb-1">Analyzed Comment</h3>
-                <p className="text-sm text-gray-600 whitespace-pre-line">{analysis.ai_comment}</p>
+                <h3 className="text-sm max-sm:text-xs font-semibold text-gray-700 mb-1">Analyzed Comment</h3>
+                <p className="text-sm max-sm:text-xs text-gray-600 whitespace-pre-line">{analysis.ai_comment}</p>
               </div>
             )}
           </div>
@@ -350,9 +515,9 @@ export default function ReportDetailPage() {
                   <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <p className="text-sm text-red-600 font-medium">AI analysis failed</p>
+                  <p className="text-sm max-sm:text-xs text-red-600 font-medium">AI analysis failed</p>
                 </div>
-                <p className="text-sm text-gray-500 mb-4">
+                <p className="text-sm max-sm:text-xs text-gray-500 mb-4">
                   The AI analysis encountered an error. You can retry the analysis.
                 </p>
                 {canReview && (
@@ -420,7 +585,7 @@ export default function ReportDetailPage() {
               <button
                 type="submit"
                 disabled={!comment.trim() || submittingComment}
-                className="btn-primary text-sm"
+                className="btn-primary text-sm max-sm:text-xs"
               >
                 {submittingComment ? 'Adding...' : 'Add Comment'}
               </button>
@@ -436,9 +601,60 @@ export default function ReportDetailPage() {
               <div key={c.id} className={styles.commentItem}>
                 <div className="flex items-center justify-between">
                   <span className={styles.commentAuthor}>{getProfileDisplayName(c.admin, 'Admin')}</span>
-                  <span className={styles.commentDate}>{formatDateTime(c.created_at)}</span>
+                  <div className="flex items-center gap-3">
+                    <span className={styles.commentDate}>{formatDateTime(c.created_at)}</span>
+                    {canReview && (
+                      <div className="flex items-center gap-2 ml-2">
+                        <button
+                          onClick={() => {
+                            setEditingCommentId(c.id);
+                            setEditingCommentText(c.comment);
+                          }}
+                          className={styles.commentActionBtn}
+                          title="Edit comment"
+                        >
+                          <Edit className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteComment(c.id)}
+                          className={styles.commentActionBtnDelete}
+                          title="Delete comment"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <p className={styles.commentText}>{c.comment}</p>
+                {editingCommentId === c.id ? (
+                  <div className="mt-2 flex flex-col gap-2">
+                    <textarea
+                      value={editingCommentText}
+                      onChange={(e) => setEditingCommentText(e.target.value)}
+                      className={styles.commentInput}
+                      style={{ minHeight: '60px' }}
+                    />
+                    <div className="flex gap-2 justify-end">
+                      <button
+                        onClick={() => handleEditComment(c.id, editingCommentText)}
+                        className="btn-primary text-xs py-1 px-3"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingCommentId(null);
+                          setEditingCommentText('');
+                        }}
+                        className="btn-secondary text-xs py-1 px-3"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className={styles.commentText}>{c.comment}</p>
+                )}
               </div>
             ))}
           </div>

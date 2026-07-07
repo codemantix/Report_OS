@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { Menu, Search, X } from 'lucide-react';
 import { getProfileDisplayName, getProfileInitials } from '../../utils/profileHelpers';
 import styles from './Topbar.module.css';
+import Image from 'next/image';
 
 export default function Topbar({ title, onMenuClick, user }) {
   const router = useRouter();
@@ -62,7 +63,7 @@ export default function Topbar({ title, onMenuClick, user }) {
         </form>
         <button className={styles.avatarBtn} title={userDisplayName}>
           {user?.avatar_url ? (
-            <img src={user.avatar_url} alt={userDisplayName} className={styles.avatarImage} />
+            <Image width={36} height={36} src={user.avatar_url} alt={userDisplayName} className={styles.avatarImage} />
           ) : (
             userInitials
           )}

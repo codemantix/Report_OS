@@ -91,11 +91,11 @@ export default function TasksPage() {
   return (
     <DashboardLayout>
       <div className={styles.page}>
-        <div className={styles.header}>
           <div>
             <h1 className={styles.title}>Tasks</h1>
             <p className={styles.subtitle}>Manage and track team tasks</p>
           </div>
+        <div className={styles.header}>
           {canCreate && (
             <button className={styles.newBtn} onClick={() => router.push('/dashboard/tasks/new')}>
               New Task

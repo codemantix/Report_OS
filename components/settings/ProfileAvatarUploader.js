@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { Camera, Trash2, Upload } from 'lucide-react';
 import { validateAvatarFile } from '../../utils/validationHelpers';
 import styles from './Settings.module.css';
+import Image from 'next/image';
 
 function getInitials(profile) {
   const source = profile?.display_name || profile?.full_name || profile?.email || 'User';
@@ -36,7 +37,7 @@ export default function ProfileAvatarUploader({ profile, avatarUrl, uploading, o
       <div className={styles.avatarWrap}>
         <div className={styles.avatarPreview}>
           {avatarUrl ? (
-            <img src={avatarUrl} alt="Profile avatar" className={styles.avatarImage} />
+            <Image src={avatarUrl} alt="Profile avatar" className={styles.avatarImage} width={112} height={112} />
           ) : (
             <span>{getInitials(profile)}</span>
           )}

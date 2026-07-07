@@ -225,12 +225,12 @@ export default function ReportsPage() {
   return (
     <DashboardLayout>
       <div className={styles.page}>
-        <div className={styles.header}>
           <div>
             <h1 className={styles.title}>Reports</h1>
             <p className={styles.subtitle}>View and manage all submitted reports</p>
           </div>
-          <div className="flex items-center gap-3">
+        <div className={styles.header}>
+          <div className="flex items-center gap-3 ml-auto">
             {canManageAnalysis && (
               <button
                 type="button"

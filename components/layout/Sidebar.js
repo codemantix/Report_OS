@@ -19,6 +19,7 @@ import {
   CheckSquare,
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
+import Image from 'next/image';
 
 function getNavigationByRole(role) {
   // Base navigation — all roles see these
@@ -146,7 +147,7 @@ export default function Sidebar({ user, activePath, isOpen, onClose }) {
           <div className={styles.userInfo}>
             <div className={styles.userAvatar}>
               {user?.avatar_url ? (
-                <img src={user.avatar_url} alt={userDisplayName} className={styles.userAvatarImage} />
+                <Image width={36} height={36} src={user.avatar_url} alt={userDisplayName} className={styles.userAvatarImage} />
               ) : (
                 userInitials
               )}

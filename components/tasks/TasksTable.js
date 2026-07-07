@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import { formatDate } from '../../utils/dateHelpers';
 import { getProfileDisplayName, getProfileInitials } from '../../utils/profileHelpers';
 import styles from './Tasks.module.css';
+import Image from 'next/image';
 
 const PRIORITY_STYLES = {
   urgent: styles.priorityUrgent,
@@ -66,19 +67,18 @@ export default function TasksTable({ tasks, emptyMessage = 'No tasks found.' }) 
                 <td className={`${styles.td} ${styles.userName}`}>{task.title}</td>
                 <td className={styles.td}>{task.departments?.name || 'N/A'}</td>
                 <td className={styles.td}>
-                  <div className="flex items-center gap-1">
-                    {(task.task_assignees || []).slice(0, 3).map((assignee) => (
-                      <span key={assignee.users?.id || Math.random()} className={styles.userAvatar} title={getProfileDisplayName(assignee.users, 'User')}>
-                        {assignee.users?.avatar_url ? (
-                          <img src={assignee.users.avatar_url} alt="" className={styles.userAvatarImage} />
-                        ) : (
-                          getProfileInitials(assignee.users, 'U')
-                        )}
-                      </span>
-                    ))}
-                    {(task.task_assignees || []).length > 3 && (
-                      <span className="text-xs ml-1" style={{ color: 'var(--color-muted)' }}>+{task.task_assignees.length - 3}</span>
-                    )}
+                  <div
+                    className="text-sm truncate max-w-[180px]"
+                    style={{ color: 'var(--color-text)' }}
+                    title={
+                      task.task_assignees && task.task_assignees.length > 0
+                        ? task.task_assignees.map((a) => getProfileDisplayName(a.users, 'User')).join(', ')
+                        : 'Unassigned'
+                    }
+                  >
+                    {task.task_assignees && task.task_assignees.length > 0
+                      ? task.task_assignees.map((a) => getProfileDisplayName(a.users, 'User')).join(', ')
+                      : 'Unassigned'}
                   </div>
                 </td>
                 <td className={styles.td}>

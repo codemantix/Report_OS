@@ -79,17 +79,17 @@ export default function PlansPage() {
   return (
     <DashboardLayout>
       <div className={styles.page}>
-        <div className={styles.header}>
           <div>
             <h1 className={styles.title}>Department Plans</h1>
             <p className={styles.subtitle}>Create and manage department plans</p>
           </div>
+        <div className={styles.header}>
           {canCreate && (
             <button
               className={styles.newBtn}
               onClick={() => router.push('/dashboard/plans/new')}
             >
-              New Plan
+              + New Plan
             </button>
           )}
         </div>

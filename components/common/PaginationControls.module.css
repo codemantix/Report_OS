@@ -6,7 +6,7 @@
 .paginationInfo,
 .paginationLabel,
 .paginationEllipsis {
-  @apply text-sm;
+  @apply text-sm max-sm:text-xs;
   color: var(--color-muted);
 }
 
@@ -23,7 +23,7 @@
 }
 
 .pageBtn {
-  @apply inline-flex h-8 w-8 items-center justify-center rounded-lg text-sm font-medium transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40;
+  @apply inline-flex h-8 w-8 items-center justify-center rounded-lg text-sm max-sm:text-xs font-medium transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40;
   color: var(--color-muted);
 }
 
@@ -33,11 +33,11 @@
 }
 
 .pageBtnActive {
-  @apply inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-sm font-medium text-white;
+  @apply inline-flex h-8 w-8 max-sm:h-6 max-sm:w-6 items-center justify-center rounded-lg bg-blue-600 text-sm max-sm:text-xs font-medium text-white;
 }
 
 .perPageSelect {
-  @apply rounded-lg border px-2 py-1 text-sm transition-all duration-150 focus:outline-none;
+  @apply rounded-lg border px-2 py-1 text-sm max-sm:text-xs transition-all duration-150 focus:outline-none;
   background: var(--color-surface);
   border-color: var(--color-border);
   color: var(--color-text);

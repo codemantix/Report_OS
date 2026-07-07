@@ -13,6 +13,7 @@ import { getCurrentUserProfile } from '../../../lib/authHelpers';
 import { formatDate, formatDateTime } from '../../../utils/dateHelpers';
 import { getProfileDisplayName } from '../../../utils/profileHelpers';
 import styles from '../../../components/tasks/Tasks.module.css';
+import { supabase } from '../../../lib/supabaseClient';
 
 const STATUS_STYLES = {
   todo: styles.statusTodo, in_progress: styles.statusInProgress, in_review: styles.statusInReview,
@@ -24,6 +25,72 @@ const PRIORITY_STYLES = {
 };
 
 const STATUS_OPTIONS = ['todo', 'in_progress', 'in_review', 'completed', 'blocked', 'delayed', 'cancelled'];
+
+function ArchiveConfirmModal({ onConfirm, onCancel, archiving }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/40" onClick={onCancel} />
+      <div className="relative bg-white dark:bg-gray-900 rounded-xl shadow-xl p-6 max-w-sm w-full mx-4 border border-gray-100 dark:border-gray-800">
+        <div className="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center mx-auto mb-4">
+          <span className="text-xl">📦</span>
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2">Archive Task</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
+          Are you sure you want to archive this task? You can access it later in the archived tasks section.
+        </p>
+        <div className="flex gap-3">
+          <button
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            onClick={onCancel}
+            disabled={archiving}
+          >
+            Cancel
+          </button>
+          <button
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={onConfirm}
+            disabled={archiving}
+          >
+            {archiving ? 'Archiving...' : 'Archive'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DeleteTaskConfirmModal({ onConfirm, onCancel, deleting }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/40" onClick={onCancel} />
+      <div className="relative bg-white dark:bg-gray-900 rounded-xl shadow-xl p-6 max-w-sm w-full mx-4 border border-gray-100 dark:border-gray-800">
+        <div className="w-12 h-12 rounded-full bg-red-50 dark:bg-red-950/30 flex items-center justify-center mx-auto mb-4">
+          <span className="text-xl">⚠️</span>
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2">Delete Task</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
+          Are you sure you want to delete this task permanently? This action cannot be undone.
+        </p>
+        <div className="flex gap-3">
+          <button
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            onClick={onCancel}
+            disabled={deleting}
+          >
+            Cancel
+          </button>
+          <button
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={onConfirm}
+            disabled={deleting}
+          >
+            {deleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function TaskDetailPage() {
   const router = useRouter();
@@ -38,6 +105,11 @@ export default function TaskDetailPage() {
   const [error, setError] = useState(null);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showArchiveModal, setShowArchiveModal] = useState(false);
+  const [archiving, setArchiving] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
 
   useEffect(() => {
     if (!id) return;
@@ -76,6 +148,13 @@ export default function TaskDetailPage() {
   const canManage = user && (user.role === 'admin' || user.role === 'department_lead');
   const isAssignee = user && (task?.task_assignees || []).some((a) => a.users?.id === user.id || a.user_id === user.id);
 
+  const visibleStatuses = STATUS_OPTIONS.filter((s) => {
+    if (s === 'completed') {
+      return canManage;
+    }
+    return true;
+  });
+
   async function handleUpdate(formData) {
     setSaving(true);
     const { error: updateError } = await updateTask(id, formData);
@@ -90,27 +169,95 @@ export default function TaskDetailPage() {
   }
 
   async function handleStatusChange(newStatus) {
-    if (!canManage) return;
-    const { error } = await updateTaskStatus(id, newStatus, user?.id);
-    if (error) { toast.error(error.message); return; }
-    toast.success(`Task status updated to ${newStatus.replace(/_/g, ' ')}`);
-    loadData();
+    if (!canManage && !isAssignee) {
+      toast.error('You do not have permission to update the status of this task');
+      return;
+    }
+    if (newStatus === 'completed' && !canManage) {
+      toast.error('Only department leads and admins can mark tasks as completed');
+      return;
+    }
+
+    setUpdatingStatus(newStatus);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      if (!token) {
+        toast.error('Authentication session not found. Please log in again.');
+        setUpdatingStatus(null);
+        return;
+      }
+
+      const response = await fetch('/api/tasks/status', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          taskId: id,
+          status: newStatus
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to update task status');
+      }
+
+      toast.success(`Task status updated to ${newStatus.replace(/_/g, ' ')}`);
+      loadData();
+    } catch (err) {
+      toast.error(err.message || 'Failed to update task status');
+    } finally {
+      setUpdatingStatus(null);
+    }
   }
 
-  async function handleArchive() {
-    if (!confirm('Archive this task?')) return;
-    const { error } = await archiveTask(id, user?.id);
-    if (error) { toast.error(error.message); return; }
-    toast.success('Task archived');
-    router.push('/dashboard/tasks');
+  function handleArchive() {
+    setShowArchiveModal(true);
   }
 
-  async function handleDelete() {
-    if (!confirm('Delete this task permanently? This cannot be undone.')) return;
-    const { error } = await deleteTask(id);
-    if (error) { toast.error(error.message); return; }
-    toast.success('Task deleted');
-    router.push('/dashboard/tasks');
+  async function handleConfirmArchive() {
+    setArchiving(true);
+    try {
+      const { error } = await archiveTask(id, user?.id);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      toast.success('Task archived');
+      router.push('/dashboard/tasks');
+    } catch (err) {
+      toast.error('Failed to archive task');
+    } finally {
+      setArchiving(false);
+      setShowArchiveModal(false);
+    }
+  }
+
+  function handleDelete() {
+    setShowDeleteModal(true);
+  }
+
+  async function handleConfirmDelete() {
+    setDeleting(true);
+    try {
+      const { error } = await deleteTask(id);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      toast.success('Task deleted');
+      router.push('/dashboard/tasks');
+    } catch (err) {
+      toast.error('Failed to delete task');
+    } finally {
+      setDeleting(false);
+      setShowDeleteModal(false);
+    }
   }
 
   if (loading) {
@@ -158,16 +305,30 @@ export default function TaskDetailPage() {
   return (
     <DashboardLayout>
       <div className={styles.page}>
+        {showArchiveModal && (
+          <ArchiveConfirmModal
+            onConfirm={handleConfirmArchive}
+            onCancel={() => setShowArchiveModal(false)}
+            archiving={archiving}
+          />
+        )}
+        {showDeleteModal && (
+          <DeleteTaskConfirmModal
+            onConfirm={handleConfirmDelete}
+            onCancel={() => setShowDeleteModal(false)}
+            deleting={deleting}
+          />
+        )}
         <button className={styles.backBtn} onClick={() => router.push('/dashboard/tasks')}>← Back to Tasks</button>
 
         <div className={styles.section}>
-          <div className="flex items-start justify-between">
             <div>
               <h1 className={styles.title}>{task.title}</h1>
               <p className={styles.subtitle}>Created {formatDateTime(task.created_at)}</p>
             </div>
+          <div className="flex items-start justify-between max-sm:justify-end">
             {canManage && (
-              <div className="flex gap-2">
+              <div className="flex gap-2 mt-2">
                 <button onClick={() => setEditing(true)} className={styles.submitBtn}>Edit</button>
                 <button onClick={handleArchive} className={styles.cancelBtn}>Archive</button>
                 {user?.role === 'admin' && <button onClick={handleDelete} className={styles.cancelBtn} style={{ color: '#DC2626' }}>Delete</button>}
@@ -177,17 +338,35 @@ export default function TaskDetailPage() {
         </div>
 
         {/* Status quick change */}
-        {canManage && (
+        {(canManage || isAssignee) && (
           <div className={styles.section}>
             <h2 className={styles.sectionTitle}>Status</h2>
             <div className="flex flex-wrap gap-2">
-              {STATUS_OPTIONS.map((s) => (
-                <button key={s} onClick={() => handleStatusChange(s)}
-                  className={`${styles.badge} ${STATUS_STYLES[s]}`}
-                  style={{ cursor: 'pointer', padding: '6px 14px', fontSize: '13px' }}>
-                  {s.replace(/_/g, ' ')}
-                </button>
-              ))}
+              {visibleStatuses.map((s) => {
+                const isCurrentUpdating = updatingStatus === s;
+                const isDisabled = updatingStatus !== null;
+                const isActive = task.status === s;
+                return (
+                  <button
+                    key={s}
+                    onClick={() => handleStatusChange(s)}
+                    disabled={isDisabled}
+                    className={`${styles.badge} ${STATUS_STYLES[s]} flex items-center gap-1.5`}
+                    style={{
+                      cursor: isDisabled ? 'not-allowed' : 'pointer',
+                      padding: '6px 14px',
+                      fontSize: '13px',
+                      opacity: isDisabled && !isCurrentUpdating ? 0.5 : 1,
+                      border: isActive ? '1px solid currentColor' : '1px solid transparent',
+                    }}
+                  >
+                    {isCurrentUpdating && (
+                      <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    )}
+                    {s.replace(/_/g, ' ')}
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}

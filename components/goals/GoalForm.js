@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { getProfileDisplayName, getProfileInitials } from '../../utils/profileHelpers';
 import styles from './Goals.module.css';
+import Image from 'next/image';
 
 const PRIORITY_OPTIONS = [
   { value: 'low', label: 'Low' },
@@ -207,7 +208,7 @@ export default function GoalForm({ initialData, departments, users = [], onSubmi
                   />
                   <span className={styles.assigneeAvatar}>
                     {user.avatar_url ? (
-                      <img src={user.avatar_url} alt={displayName} className={styles.assigneeAvatarImage} />
+                      <Image src={user.avatar_url} alt={displayName} className={styles.assigneeAvatarImage} width={36} height={36} />
                     ) : (
                       getProfileInitials(user, 'U')
                     )}

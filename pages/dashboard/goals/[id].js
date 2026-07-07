@@ -224,13 +224,13 @@ export default function GoalDetailPage() {
           &larr; Back to Goals
         </button>
 
-        <div className={styles.header}>
           <div>
             <h1 className={styles.title}>{goal.title}</h1>
             <p className={styles.subtitle}>
               {goal.departments?.name || 'No department'}
             </p>
           </div>
+        <div className={styles.header}>
           {canManage && (
             <div className="flex items-center gap-2">
               <button
