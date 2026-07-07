@@ -393,7 +393,7 @@ export default function ReportsPage() {
                 <div className={styles.paginationInfo}>
                   Showing {startItem}–{endItem} of {totalCount} reports
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
                   <div className="flex items-center gap-1">
                     <label className={styles.paginationLabel}>Rows per page:</label>
                     <select

@@ -100,7 +100,7 @@
 }
 
 .pagination {
-  @apply flex items-center justify-between px-6 py-3 border-t;
+  @apply flex flex-col gap-3 px-6 py-4 border-t sm:flex-row sm:items-center sm:justify-between;
   border-color: var(--color-border);
 }
 
