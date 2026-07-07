@@ -5,6 +5,7 @@ import { signUpWithEmail } from '../../lib/authHelpers';
 import BrandLogo from '../ui/BrandLogo';
 import PasswordField from './PasswordField';
 import PasswordChecklist, { isPasswordStrong } from './PasswordChecklist';
+import { Home } from 'lucide-react';
 import styles from './Auth.module.css';
 
 export default function RegisterForm() {
@@ -51,6 +52,10 @@ export default function RegisterForm() {
 
   return (
     <div className={styles.container}>
+      <Link href="/" className={styles.homeBtn}>
+        <Home className="w-4 h-4" />
+        <span>Home</span>
+      </Link>
       <div className={styles.card}>
         <div className={styles.header}>
           <BrandLogo variant="authCompact" />

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Mail, KeyRound, Lock, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Mail, KeyRound, Lock, CheckCircle, Home } from 'lucide-react';
 import { sendOtp, verifyOtp } from '../../lib/authHelpers';
 import BrandLogo from '../ui/BrandLogo';
 import PasswordField from './PasswordField';
@@ -183,6 +183,10 @@ export default function ForgotPasswordForm() {
   if (step === STEP_DONE) {
     return (
       <div className={styles.page}>
+        <Link href="/" className={styles.homeBtn}>
+          <Home className="w-4 h-4" />
+          <span>Home</span>
+        </Link>
         <div className={styles.wrapper}>
           <div className={styles.header}>
             <BrandLogo variant="auth" />
@@ -206,6 +210,10 @@ export default function ForgotPasswordForm() {
 
   return (
     <div className={styles.page}>
+      <Link href="/" className={styles.homeBtn}>
+        <Home className="w-4 h-4" />
+        <span>Home</span>
+      </Link>
       <div className={styles.wrapper}>
         <Link href="/auth/login" className={styles.backLink}>
           <ArrowLeft className="w-4 h-4" /> Back to Sign In
