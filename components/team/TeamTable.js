@@ -22,7 +22,7 @@ const statusStyles = {
   suspended: styles.statusSuspended,
 };
 
-export default function TeamTable({ users, departments = [], onUserUpdate }) {
+export default function TeamTable({ users, currentUser = null, departments = [], onUserUpdate }) {
   const [editingUserId, setEditingUserId] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [saving, setSaving] = useState(false);
@@ -111,7 +111,7 @@ export default function TeamTable({ users, departments = [], onUserUpdate }) {
                       </div>
                       <span className={styles.userName}>
                         {displayName}
-                        {user.role === 'admin' && (
+                        {currentUser && user.id === currentUser.id && (
                           <span className={styles.currentUserTag}>(you)</span>
                         )}
                       </span>

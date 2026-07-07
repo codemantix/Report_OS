@@ -170,6 +170,7 @@ export default function TeamPage() {
           <div className={styles.tableCard}>
             <TeamTable
               users={paginatedUsers.data}
+              currentUser={user}
               departments={departments}
               onUserUpdate={handleUserUpdate}
             />
