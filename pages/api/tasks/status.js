@@ -107,7 +107,7 @@ export default async function handler(req, res) {
 
     // 6. Trigger status change email notification (non-blocking)
     try {
-      const appUrl = process.env.APP_URL || 'https://report-os.vercel.app';
+      const appUrl = process.env.APP_URL || 'https://report.codemantixcollective.com/';
       fetch(`${appUrl}/api/tasks/notify-update`, {
         method: 'POST',
         headers: {

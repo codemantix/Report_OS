@@ -282,7 +282,7 @@ export default async function handler(req, res) {
 
     const fromEmail = process.env.FROM_EMAIL || 'hello@codemantixcollective.com';
     const appName = 'Codemantix Report OS';
-    const appUrl = process.env.APP_URL || 'https://report-os.vercel.app';
+    const appUrl = process.env.APP_URL || 'https://report.codemantixcollective.com/';
 
     // 6. Send emails in parallel
     const emailPromises = recipients.map(async (recipient) => {
