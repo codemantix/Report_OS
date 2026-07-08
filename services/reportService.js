@@ -202,7 +202,7 @@ export async function fetchUserReports(userId, limit = 20, filters = {}) {
       departments:department_id (name),
       goals:goal_id (title),
       plans:plan_id (title),
-      report_ai_analysis (risk_level, progress_score, goal_alignment_score, report_quality_score, success_rate, summary, admin_recommendation, ai_comment, created_at)
+      report_ai_analysis (risk_level, progress_score, goal_alignment_score, report_quality_score, success_rate, task_alignment_score, summary, admin_recommendation, ai_comment, created_at)
     `)
     .eq('user_id', userId)
     .order('submitted_at', { ascending: false })

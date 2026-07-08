@@ -119,3 +119,12 @@ export async function deletePlan(id) {
 
   return { error };
 }
+
+export async function deletePlans(ids) {
+  const { error } = await supabase
+    .from('department_plans')
+    .delete()
+    .in('id', ids);
+
+  return { error };
+}

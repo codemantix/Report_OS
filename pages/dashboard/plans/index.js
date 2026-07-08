@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import toast from 'react-hot-toast';
 import DashboardLayout from '../../../components/layout/DashboardLayout';
 import SearchInput from '../../../components/common/SearchInput';
 import PaginationControls from '../../../components/common/PaginationControls';
 import PlansTable from '../../../components/plans/PlansTable';
-import { fetchPlans } from '../../../services/planService';
+import { fetchPlans, deletePlans } from '../../../services/planService';
 import { fetchDepartments } from '../../../services/departmentService';
 import { MONTH_OPTIONS } from '../../../utils/companyGoalConstants';
 import { getCurrentUserProfile } from '../../../lib/authHelpers';
@@ -26,6 +27,11 @@ export default function PlansPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  // Multi-select & Bulk actions state
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [deletingBulk, setDeletingBulk] = useState(false);
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+
   useEffect(() => {
     async function init() {
       const profile = await getCurrentUserProfile();
@@ -44,7 +50,12 @@ export default function PlansPage() {
 
   useEffect(() => {
     setPage(1);
+    setSelectedIds([]);
   }, [filters, debouncedSearch, pageSize, sort]);
+
+  useEffect(() => {
+    setSelectedIds([]);
+  }, [page]);
 
   useEffect(() => {
     if (!user) return;
@@ -81,6 +92,36 @@ export default function PlansPage() {
     }
   }
 
+  async function handleBulkDelete() {
+    setDeletingBulk(true);
+    try {
+      const { error: deleteError } = await deletePlans(selectedIds);
+      if (deleteError) {
+        toast.error(deleteError.message || 'Failed to delete selected plans');
+        return;
+      }
+      toast.success('Plans deleted successfully');
+      setSelectedIds([]);
+      setShowBulkDeleteConfirm(false);
+      
+      const [sortBy, sortDirection] = sort.split(':');
+      const builtFilters = {
+        ...filters,
+        search: debouncedSearch || undefined,
+        sortBy,
+        sortDirection,
+      };
+      if (user.role !== 'admin') {
+        builtFilters.department_id = user.department_id;
+      }
+      loadPlans(builtFilters);
+    } catch (err) {
+      toast.error('An unexpected error occurred');
+    } finally {
+      setDeletingBulk(false);
+    }
+  }
+
   const canCreate = user && (user.role === 'admin' || user.role === 'department_lead');
   const hasActiveFilters = Object.values(filters).some((v) => v !== '') || search.trim() !== '';
   const isSearchLoading = search !== debouncedSearch;
@@ -103,7 +144,7 @@ export default function PlansPage() {
             <h1 className={styles.title}>Department Plans</h1>
             <p className={styles.subtitle}>Create and manage department plans</p>
           </div>
-        <div className={styles.header}>
+        <div className={styles.header} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {canCreate && (
             <button
               className={styles.newBtn}
@@ -113,6 +154,32 @@ export default function PlansPage() {
             </button>
           )}
         </div>
+
+        {/* Floating selection action bar */}
+        {user?.role === 'admin' && selectedIds.length > 0 && (
+          <div className={styles.selectionBar} role="toolbar" aria-label="Selection actions">
+            <span className={styles.selectionCount}>
+              <span className={styles.selectionCountNum}>{selectedIds.length}</span>
+              selected
+            </span>
+            <div className={styles.selectionBarActions}>
+              <button
+                id="cancel-select-plans-btn"
+                className={styles.selectionCancelBtn}
+                onClick={() => setSelectedIds([])}
+              >
+                Cancel
+              </button>
+              <button
+                id="bulk-delete-plans-btn"
+                className={styles.selectionDeleteBtn}
+                onClick={() => setShowBulkDeleteConfirm(true)}
+              >
+                🗑 Delete ({selectedIds.length})
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className={styles.section}>
           <div className="flex flex-wrap gap-3">
@@ -211,7 +278,12 @@ export default function PlansPage() {
           </div>
         ) : (
           <div className={styles.section}>
-            <PlansTable plans={paginatedPlans.data} />
+            <PlansTable
+              plans={paginatedPlans.data}
+              isAdmin={user?.role === 'admin'}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
+            />
             <PaginationControls
               page={paginatedPlans.page}
               pageSize={paginatedPlans.pageSize}
@@ -223,6 +295,34 @@ export default function PlansPage() {
           </div>
         )}
       </div>
+
+      {showBulkDeleteConfirm && (
+        <div className={styles.confirmModal} onClick={() => setShowBulkDeleteConfirm(false)}>
+          <div className={styles.confirmModalContent} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.confirmModalTitle}>Delete Selected Plans?</h3>
+            <p className={styles.confirmModalText}>
+              Are you sure you want to permanently delete the <strong>{selectedIds.length}</strong> selected plans? This action cannot be undone.
+            </p>
+            <div className={styles.confirmModalActions}>
+              <button
+                className={styles.cancelBtn}
+                onClick={() => setShowBulkDeleteConfirm(false)}
+                disabled={deletingBulk}
+              >
+                Cancel
+              </button>
+              <button
+                className={styles.submitBtn}
+                style={{ backgroundColor: '#EF4444' }}
+                onClick={handleBulkDelete}
+                disabled={deletingBulk}
+              >
+                {deletingBulk ? 'Deleting...' : 'Yes, Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 }

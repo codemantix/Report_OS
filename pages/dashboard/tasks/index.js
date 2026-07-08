@@ -1,10 +1,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
+import toast from 'react-hot-toast';
 import DashboardLayout from '../../../components/layout/DashboardLayout';
 import SearchInput from '../../../components/common/SearchInput';
 import PaginationControls from '../../../components/common/PaginationControls';
 import TasksTable from '../../../components/tasks/TasksTable';
-import { fetchTasks } from '../../../services/taskService';
+import { fetchTasks, deleteTasks } from '../../../services/taskService';
 import { fetchDepartments } from '../../../services/departmentService';
 import { fetchGoals } from '../../../services/goalService';
 import { fetchPlans } from '../../../services/planService';
@@ -31,6 +32,11 @@ export default function TasksPage() {
   const [sort, setSort] = useState('created_at:desc');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  
+  // Multi-select & Bulk actions state
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [deletingBulk, setDeletingBulk] = useState(false);
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
 
   useEffect(() => {
     async function init() {
@@ -56,7 +62,12 @@ export default function TasksPage() {
 
   useEffect(() => {
     setPage(1);
+    setSelectedIds([]);
   }, [filters, debouncedSearch, sort, pageSize]);
+
+  useEffect(() => {
+    setSelectedIds([]);
+  }, [page]);
 
   useEffect(() => {
     if (user) loadTasks(user);
@@ -89,6 +100,25 @@ export default function TasksPage() {
     }
   }
 
+  async function handleBulkDelete() {
+    setDeletingBulk(true);
+    try {
+      const { error: deleteError } = await deleteTasks(selectedIds);
+      if (deleteError) {
+        toast.error(deleteError.message || 'Failed to delete selected tasks');
+        return;
+      }
+      toast.success('Tasks deleted successfully');
+      setSelectedIds([]);
+      setShowBulkDeleteConfirm(false);
+      loadTasks(user);
+    } catch (err) {
+      toast.error('An unexpected error occurred');
+    } finally {
+      setDeletingBulk(false);
+    }
+  }
+
   const canCreate = user && (user.role === 'admin' || user.role === 'department_lead');
 
   function updateFilter(key, value) {
@@ -112,13 +142,42 @@ export default function TasksPage() {
             <h1 className={styles.title}>Tasks</h1>
             <p className={styles.subtitle}>Manage and track team tasks</p>
           </div>
-        <div className={styles.header}>
+        <div className={styles.header} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {canCreate && (
-            <button className={styles.newBtn} onClick={() => router.push('/dashboard/tasks/new')}>
+            <button
+              className={styles.newBtn}
+              onClick={() => router.push('/dashboard/tasks/new')}
+            >
               New Task
             </button>
           )}
         </div>
+
+        {/* Floating selection action bar */}
+        {user?.role === 'admin' && selectedIds.length > 0 && (
+          <div className={styles.selectionBar} role="toolbar" aria-label="Selection actions">
+            <span className={styles.selectionCount}>
+              <span className={styles.selectionCountNum}>{selectedIds.length}</span>
+              selected
+            </span>
+            <div className={styles.selectionBarActions}>
+              <button
+                id="cancel-select-tasks-btn"
+                className={styles.selectionCancelBtn}
+                onClick={() => setSelectedIds([])}
+              >
+                Cancel
+              </button>
+              <button
+                id="bulk-delete-tasks-btn"
+                className={styles.selectionDeleteBtn}
+                onClick={() => setShowBulkDeleteConfirm(true)}
+              >
+                🗑 Delete ({selectedIds.length})
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Filters */}
         <div className={styles.section}>
@@ -256,6 +315,9 @@ export default function TasksPage() {
             <TasksTable
               tasks={paginatedTasks.data}
               emptyMessage={hasActiveFilters ? 'No tasks matched your search or filters.' : 'No tasks found.'}
+              isAdmin={user?.role === 'admin'}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
             />
             <PaginationControls
               page={paginatedTasks.page}
@@ -268,6 +330,34 @@ export default function TasksPage() {
           </div>
         )}
       </div>
+
+      {showBulkDeleteConfirm && (
+        <div className={styles.confirmModal} onClick={() => setShowBulkDeleteConfirm(false)}>
+          <div className={styles.confirmModalContent} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.confirmModalTitle}>Delete Selected Tasks?</h3>
+            <p className={styles.confirmModalText}>
+              Are you sure you want to permanently delete the <strong>{selectedIds.length}</strong> selected tasks? This action cannot be undone.
+            </p>
+            <div className={styles.confirmModalActions}>
+              <button
+                className={styles.cancelBtn}
+                onClick={() => setShowBulkDeleteConfirm(false)}
+                disabled={deletingBulk}
+              >
+                Cancel
+              </button>
+              <button
+                className={styles.submitBtn}
+                style={{ backgroundColor: '#EF4444' }}
+                onClick={handleBulkDelete}
+                disabled={deletingBulk}
+              >
+                {deletingBulk ? 'Deleting...' : 'Yes, Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 }

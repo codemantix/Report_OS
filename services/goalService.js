@@ -185,6 +185,15 @@ export async function deleteGoal(id) {
   return { error };
 }
 
+export async function deleteGoals(ids) {
+  const { error } = await supabase
+    .from('goals')
+    .delete()
+    .in('id', ids);
+
+  return { error };
+}
+
 export async function assignGoal(goalId, userId) {
   const { data, error } = await supabase
     .from('goal_assignees')

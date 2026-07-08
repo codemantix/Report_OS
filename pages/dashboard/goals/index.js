@@ -5,7 +5,7 @@ import DashboardLayout from '../../../components/layout/DashboardLayout';
 import SearchInput from '../../../components/common/SearchInput';
 import PaginationControls from '../../../components/common/PaginationControls';
 import GoalsTable from '../../../components/goals/GoalsTable';
-import { fetchGoals } from '../../../services/goalService';
+import { fetchGoals, deleteGoals } from '../../../services/goalService';
 import { fetchDepartments } from '../../../services/departmentService';
 import { fetchActiveCompanyGoals } from '../../../services/companyGoalService';
 import { MONTH_OPTIONS } from '../../../utils/companyGoalConstants';
@@ -29,6 +29,11 @@ export default function GoalsPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  // Multi-select & Bulk actions state
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [deletingBulk, setDeletingBulk] = useState(false);
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+
   useEffect(() => {
     async function init() {
       const profile = await getCurrentUserProfile();
@@ -51,7 +56,12 @@ export default function GoalsPage() {
 
   useEffect(() => {
     setPage(1);
+    setSelectedIds([]);
   }, [filters, debouncedSearch, pageSize, sort]);
+
+  useEffect(() => {
+    setSelectedIds([]);
+  }, [page]);
 
   useEffect(() => {
     if (!user) return;
@@ -88,6 +98,36 @@ export default function GoalsPage() {
     }
   }
 
+  async function handleBulkDelete() {
+    setDeletingBulk(true);
+    try {
+      const { error: deleteError } = await deleteGoals(selectedIds);
+      if (deleteError) {
+        toast.error(deleteError.message || 'Failed to delete selected goals');
+        return;
+      }
+      toast.success('Goals deleted successfully');
+      setSelectedIds([]);
+      setShowBulkDeleteConfirm(false);
+      
+      const [sortBy, sortDirection] = sort.split(':');
+      const builtFilters = {
+        ...filters,
+        search: debouncedSearch || undefined,
+        sortBy,
+        sortDirection,
+      };
+      if (user.role !== 'admin') {
+        builtFilters.department_id = user.department_id;
+      }
+      loadGoals(builtFilters);
+    } catch (err) {
+      toast.error('An unexpected error occurred');
+    } finally {
+      setDeletingBulk(false);
+    }
+  }
+
   const canCreate = user && (user.role === 'admin' || user.role === 'department_lead');
   const hasActiveFilters = Object.values(filters).some((v) => v !== '') || search.trim() !== '';
   const isSearchLoading = search !== debouncedSearch;
@@ -110,7 +150,7 @@ export default function GoalsPage() {
             <h1 className={styles.title}>Goals</h1>
             <p className={styles.subtitle}>Define and track department goals</p>
           </div>
-        <div className={styles.header}>
+        <div className={styles.header} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {canCreate && (
             <button
               className={styles.newBtn}
@@ -120,6 +160,32 @@ export default function GoalsPage() {
             </button>
           )}
         </div>
+
+        {/* Floating selection action bar */}
+        {user?.role === 'admin' && selectedIds.length > 0 && (
+          <div className={styles.selectionBar} role="toolbar" aria-label="Selection actions">
+            <span className={styles.selectionCount}>
+              <span className={styles.selectionCountNum}>{selectedIds.length}</span>
+              selected
+            </span>
+            <div className={styles.selectionBarActions}>
+              <button
+                id="cancel-select-goals-btn"
+                className={styles.selectionCancelBtn}
+                onClick={() => setSelectedIds([])}
+              >
+                Cancel
+              </button>
+              <button
+                id="bulk-delete-goals-btn"
+                className={styles.selectionDeleteBtn}
+                onClick={() => setShowBulkDeleteConfirm(true)}
+              >
+                🗑 Delete ({selectedIds.length})
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className={styles.section}>
           <div className="flex flex-wrap gap-3">
@@ -236,7 +302,12 @@ export default function GoalsPage() {
           </div>
         ) : (
           <div className={styles.section}>
-            <GoalsTable goals={paginatedGoals.data} />
+            <GoalsTable
+              goals={paginatedGoals.data}
+              isAdmin={user?.role === 'admin'}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
+            />
             <PaginationControls
               page={paginatedGoals.page}
               pageSize={paginatedGoals.pageSize}
@@ -248,6 +319,34 @@ export default function GoalsPage() {
           </div>
         )}
       </div>
+
+      {showBulkDeleteConfirm && (
+        <div className={styles.confirmModal} onClick={() => setShowBulkDeleteConfirm(false)}>
+          <div className={styles.confirmModalContent} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.confirmModalTitle}>Delete Selected Goals?</h3>
+            <p className={styles.confirmModalText}>
+              Are you sure you want to permanently delete the <strong>{selectedIds.length}</strong> selected goals? This action cannot be undone.
+            </p>
+            <div className={styles.confirmModalActions}>
+              <button
+                className={styles.cancelBtn}
+                onClick={() => setShowBulkDeleteConfirm(false)}
+                disabled={deletingBulk}
+              >
+                Cancel
+              </button>
+              <button
+                className={styles.submitBtn}
+                style={{ backgroundColor: '#EF4444' }}
+                onClick={handleBulkDelete}
+                disabled={deletingBulk}
+              >
+                {deletingBulk ? 'Deleting...' : 'Yes, Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 }

@@ -416,6 +416,11 @@ export async function deleteTask(id) {
   return { error };
 }
 
+export async function deleteTasks(ids) {
+  const { error } = await supabase.from('tasks').delete().in('id', ids);
+  return { error };
+}
+
 export async function getTaskActivityLogs(taskId) {
   const { data, error } = await supabase
     .from('task_activity_logs')

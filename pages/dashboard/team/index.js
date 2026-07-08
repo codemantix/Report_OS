@@ -111,23 +111,35 @@ export default function TeamPage() {
 
   async function handleUserUpdate(userId, updates) {
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
       let res;
       if (updates.role !== undefined) {
         res = await fetch(`/api/team/${userId}/admin-actions`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            Authorization: token ? `Bearer ${token}` : '',
+          },
           body: JSON.stringify({ action: 'change_role', value: updates.role })
         });
       } else if (updates.department_id !== undefined) {
         res = await fetch(`/api/team/${userId}/admin-actions`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            Authorization: token ? `Bearer ${token}` : '',
+          },
           body: JSON.stringify({ action: 'change_department', value: updates.department_id })
         });
       } else if (updates.status !== undefined) {
         res = await fetch(`/api/team/${userId}/admin-actions`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            Authorization: token ? `Bearer ${token}` : '',
+          },
           body: JSON.stringify({ action: 'change_status', value: updates.status })
         });
       }
@@ -148,9 +160,15 @@ export default function TeamPage() {
 
   async function handleUserDelete(userId) {
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
       const res = await fetch(`/api/team/${userId}/admin-actions`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : '',
+        },
         body: JSON.stringify({ action: 'change_status', value: 'suspended' }) // Safe deactivation MVP
       });
 

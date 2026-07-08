@@ -22,28 +22,28 @@ function getLatestAnalysis(analysis) {
   })[0];
 }
 
-function DeleteReportConfirmModal({ onConfirm, onCancel, deleting }) {
+  function DeleteReportConfirmModal({ onConfirm, onCancel, deleting }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onCancel} />
-      <div className="relative bg-white dark:bg-gray-900 rounded-xl shadow-xl p-6 max-w-sm w-full mx-4 border border-gray-100 dark:border-gray-800">
-        <div className="w-12 h-12 rounded-full bg-red-50 dark:bg-red-950/30 flex items-center justify-center mx-auto mb-4">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onCancel} />
+      <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-7 max-w-sm w-full mx-4 border border-gray-100 dark:border-gray-800">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/30 dark:to-red-900/20 flex items-center justify-center mx-auto mb-4 border border-red-100 dark:border-red-900/30">
           <span className="text-xl">⚠️</span>
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2">Delete Report</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
+        <h3 className="text-base font-bold text-gray-900 dark:text-white text-center mb-2">Delete Report</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6 leading-relaxed">
           Are you sure you want to delete this report? This will permanently delete the report, its task links, and AI analysis records. This action cannot be undone.
         </p>
         <div className="flex gap-3">
           <button
-            className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            style={{ flex: 1, padding: '9px 0', fontSize: '0.875rem', fontWeight: 500, borderRadius: 10, border: '1.5px solid var(--color-border, #e2e8f0)', background: 'transparent', color: 'var(--color-text)', cursor: 'pointer', transition: 'background 0.15s' }}
             onClick={onCancel}
             disabled={deleting}
           >
             Cancel
           </button>
           <button
-            className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ flex: 1, padding: '9px 0', fontSize: '0.875rem', fontWeight: 600, borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#EF4444 0%,#DC2626 100%)', color: '#fff', cursor: 'pointer', boxShadow: '0 2px 10px rgba(239,68,68,0.28)', transition: 'all 0.15s', opacity: deleting ? 0.6 : 1 }}
             onClick={onConfirm}
             disabled={deleting}
           >
@@ -58,25 +58,25 @@ function DeleteReportConfirmModal({ onConfirm, onCancel, deleting }) {
 function DeleteCommentConfirmModal({ onConfirm, onCancel, deleting }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onCancel} />
-      <div className="relative bg-white dark:bg-gray-900 rounded-xl shadow-xl p-6 max-w-sm w-full mx-4 border border-gray-100 dark:border-gray-800">
-        <div className="w-12 h-12 rounded-full bg-red-50 dark:bg-red-950/30 flex items-center justify-center mx-auto mb-4">
-          <span className="text-xl">⚠️</span>
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onCancel} />
+      <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-7 max-w-sm w-full mx-4 border border-gray-100 dark:border-gray-800">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/30 dark:to-red-900/20 flex items-center justify-center mx-auto mb-4 border border-red-100 dark:border-red-900/30">
+          <span className="text-xl">🗑</span>
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2">Delete Comment</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
+        <h3 className="text-base font-bold text-gray-900 dark:text-white text-center mb-2">Delete Comment</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6 leading-relaxed">
           Are you sure you want to delete this comment? This action cannot be undone.
         </p>
         <div className="flex gap-3">
           <button
-            className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            style={{ flex: 1, padding: '9px 0', fontSize: '0.875rem', fontWeight: 500, borderRadius: 10, border: '1.5px solid var(--color-border, #e2e8f0)', background: 'transparent', color: 'var(--color-text)', cursor: 'pointer', transition: 'background 0.15s' }}
             onClick={onCancel}
             disabled={deleting}
           >
             Cancel
           </button>
           <button
-            className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ flex: 1, padding: '9px 0', fontSize: '0.875rem', fontWeight: 600, borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#EF4444 0%,#DC2626 100%)', color: '#fff', cursor: 'pointer', boxShadow: '0 2px 10px rgba(239,68,68,0.28)', transition: 'all 0.15s', opacity: deleting ? 0.6 : 1 }}
             onClick={onConfirm}
             disabled={deleting}
           >
@@ -543,7 +543,7 @@ export default function ReportDetailPage() {
                   <button
                     onClick={handleRetryAnalysis}
                     disabled={retrying}
-                    className="btn-primary text-sm inline-flex items-center gap-2"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 20px', fontSize: '0.875rem', fontWeight: 600, borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#2563EB 0%,#1d4ed8 100%)', color: '#fff', cursor: retrying ? 'not-allowed' : 'pointer', boxShadow: '0 2px 12px rgba(37,99,235,0.28)', transition: 'all 0.15s', opacity: retrying ? 0.65 : 1 }}
                   >
                     {retrying ? (
                       <>
@@ -577,7 +577,7 @@ export default function ReportDetailPage() {
                 <button
                   onClick={handleRetryAnalysis}
                   disabled={retrying}
-                  className="btn-primary text-sm inline-flex items-center gap-2"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 20px', fontSize: '0.875rem', fontWeight: 600, borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#2563EB 0%,#1d4ed8 100%)', color: '#fff', cursor: retrying ? 'not-allowed' : 'pointer', boxShadow: '0 2px 12px rgba(37,99,235,0.28)', transition: 'all 0.15s', opacity: retrying ? 0.65 : 1 }}
                 >
                   {retrying ? 'Analyzing...' : 'Start Analysis'}
                 </button>
@@ -604,7 +604,7 @@ export default function ReportDetailPage() {
               <button
                 type="submit"
                 disabled={!comment.trim() || submittingComment}
-                className="btn-primary text-sm max-sm:text-xs"
+                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '9px 22px', fontSize: '0.875rem', fontWeight: 600, borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#2563EB 0%,#1d4ed8 100%)', color: '#fff', cursor: (!comment.trim() || submittingComment) ? 'not-allowed' : 'pointer', boxShadow: '0 2px 12px rgba(37,99,235,0.28)', transition: 'all 0.15s', opacity: (!comment.trim() || submittingComment) ? 0.55 : 1, alignSelf: 'flex-start' }}
               >
                 {submittingComment ? 'Adding...' : 'Add Comment'}
               </button>
@@ -656,7 +656,7 @@ export default function ReportDetailPage() {
                     <div className="flex gap-2 justify-end">
                       <button
                         onClick={() => handleEditComment(c.id, editingCommentText)}
-                        className="btn-primary text-xs py-1 px-3"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 16px', fontSize: '0.8rem', fontWeight: 600, borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#2563EB 0%,#1d4ed8 100%)', color: '#fff', cursor: 'pointer', boxShadow: '0 1px 8px rgba(37,99,235,0.22)', transition: 'all 0.15s' }}
                       >
                         Save
                       </button>
@@ -665,7 +665,7 @@ export default function ReportDetailPage() {
                           setEditingCommentId(null);
                           setEditingCommentText('');
                         }}
-                        className="btn-secondary text-xs py-1 px-3"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: '0.8rem', fontWeight: 500, borderRadius: 8, border: '1.5px solid var(--color-border,#e2e8f0)', background: 'transparent', color: 'var(--color-text)', cursor: 'pointer', transition: 'all 0.15s' }}
                       >
                         Cancel
                       </button>

@@ -210,13 +210,13 @@ export default function PlanDetailPage() {
           &larr; Back to Plans
         </button>
 
+        <div>
+          <h1 className={styles.title}>{plan.title}</h1>
+          <p className={styles.subtitle}>
+            {plan.departments?.name || 'No department'}
+          </p>
+        </div>
         <div className={styles.header}>
-          <div>
-            <h1 className={styles.title}>{plan.title}</h1>
-            <p className={styles.subtitle}>
-              {plan.departments?.name || 'No department'}
-            </p>
-          </div>
           {canManage && (
             <div className="flex items-center gap-2">
               <button

@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router';
+import { useRef } from 'react';
 import { formatDate } from '../../utils/dateHelpers';
 import { getProfileDisplayName, getProfileInitials } from '../../utils/profileHelpers';
 import styles from './Tasks.module.css';
@@ -21,13 +22,73 @@ const STATUS_STYLES = {
   cancelled: styles.statusCancelled,
 };
 
-export default function TasksTable({ tasks, emptyMessage = 'No tasks found.' }) {
+export default function TasksTable({ tasks, emptyMessage = 'No tasks found.', isAdmin = false, selectedIds = [], onSelectionChange }) {
   const router = useRouter();
+  
+  const timerRef = useRef(null);
+  const isLongPressRef = useRef(false);
 
   function isOverdue(dueDate, status) {
     if (!dueDate || status === 'completed' || status === 'cancelled') return false;
     return new Date(dueDate) < new Date();
   }
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      onSelectionChange(tasks.map((t) => t.id));
+    } else {
+      onSelectionChange([]);
+    }
+  };
+
+  const handleSelectOne = (e, taskId) => {
+    e.stopPropagation();
+    if (e.target.checked) {
+      onSelectionChange([...selectedIds, taskId]);
+    } else {
+      onSelectionChange(selectedIds.filter((id) => id !== taskId));
+    }
+  };
+
+  const startPress = (e, taskId) => {
+    if (!isAdmin) return;
+    if (selectedIds.length > 0) return; // already in selection mode
+    
+    // Only handle left click on mouse
+    if (e.type === 'mousedown' && e.button !== 0) return;
+
+    isLongPressRef.current = false;
+    timerRef.current = setTimeout(() => {
+      isLongPressRef.current = true;
+      onSelectionChange([taskId]);
+      if (navigator.vibrate) navigator.vibrate(50);
+    }, 600);
+  };
+
+  const cancelPress = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+  };
+
+  const handleRowClick = (e, task) => {
+    // If a long press was triggered, reset status and ignore this click
+    if (isLongPressRef.current) {
+      isLongPressRef.current = false;
+      return;
+    }
+
+    if (selectedIds.length > 0) {
+      e.preventDefault();
+      if (selectedIds.includes(task.id)) {
+        onSelectionChange(selectedIds.filter((id) => id !== task.id));
+      } else {
+        onSelectionChange([...selectedIds, task.id]);
+      }
+    } else {
+      router.push(`/dashboard/tasks/${task.id}`);
+    }
+  };
 
   if (!tasks || tasks.length === 0) {
     return (
@@ -40,11 +101,25 @@ export default function TasksTable({ tasks, emptyMessage = 'No tasks found.' }) 
     );
   }
 
+  const isSelectionActive = isAdmin && selectedIds.length > 0;
+
   return (
     <div className={styles.tableWrapper}>
       <table className={styles.table}>
         <thead>
           <tr>
+            {isSelectionActive && (
+              <th className={styles.th} style={{ width: '40px', paddingLeft: '16px' }}>
+                <input
+                  type="checkbox"
+                  id="select-all-tasks"
+                  checked={tasks.length > 0 && selectedIds.length === tasks.length}
+                  onChange={handleSelectAll}
+                  className="rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
+                  aria-label="Select all tasks"
+                />
+              </th>
+            )}
             <th className={styles.th}>Title</th>
             <th className={styles.th}>Department</th>
             <th className={styles.th}>Assignees</th>
@@ -57,13 +132,32 @@ export default function TasksTable({ tasks, emptyMessage = 'No tasks found.' }) 
         <tbody>
           {tasks.map((task) => {
             const overdue = isOverdue(task.due_date, task.status);
+            const isSelected = selectedIds.includes(task.id);
             return (
               <tr
                 key={task.id}
-                className={styles.tr}
-                onClick={() => router.push(`/dashboard/tasks/${task.id}`)}
-                style={{ cursor: 'pointer' }}
+                className={`${styles.tr} ${isSelected ? 'bg-blue-50/20 dark:bg-blue-900/10' : ''}`}
+                onMouseDown={(e) => startPress(e, task.id)}
+                onMouseUp={cancelPress}
+                onMouseLeave={cancelPress}
+                onTouchStart={(e) => startPress(e, task.id)}
+                onTouchEnd={cancelPress}
+                onTouchMove={cancelPress}
+                onClick={(e) => handleRowClick(e, task)}
+                style={{ cursor: 'pointer', userSelect: 'none' }}
               >
+                {isSelectionActive && (
+                  <td className={styles.td} style={{ paddingLeft: '16px' }} onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="checkbox"
+                      id={`checkbox-task-${task.id}`}
+                      checked={isSelected}
+                      onChange={(e) => handleSelectOne(e, task.id)}
+                      className="rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
+                      aria-label={`Select task ${task.title}`}
+                    />
+                  </td>
+                )}
                 <td className={`${styles.td} ${styles.userName}`}>{task.title}</td>
                 <td className={styles.td}>{task.departments?.name || 'N/A'}</td>
                 <td className={styles.td}>

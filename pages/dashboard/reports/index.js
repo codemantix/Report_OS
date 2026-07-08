@@ -12,6 +12,7 @@ import { useRealtimeSubscription } from '../../../lib/realtimeHelpers';
 import useDebounce from '../../../hooks/useDebounce';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import styles from '../../../components/reports/ReportsPage.module.css';
+import reportsStyles from '../../../components/reports/Reports.module.css';
 
 const reportTypes = [
   { value: '', label: 'All Types' },
@@ -277,15 +278,6 @@ export default function ReportsPage() {
           </div>
         <div className={styles.header}>
           <div className="flex items-center gap-3 ml-auto">
-            {userRole === 'admin' && selectedReportIds.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setShowDeleteConfirm(true)}
-                className="btn-danger inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg hover:bg-red-700 active:bg-red-800 transition-colors"
-              >
-                Delete Selected ({selectedReportIds.length})
-              </button>
-            )}
             {canManageAnalysis && (
               <button
                 type="button"
@@ -443,8 +435,7 @@ export default function ReportsPage() {
               reports={reports}
               emptyMessage={hasActiveFilters ? 'No reports matched your search or filters.' : 'No reports have been submitted yet.'}
               selectedReportIds={selectedReportIds}
-              onSelectReport={handleSelectReport}
-              onSelectAll={handleSelectAll}
+              onSelectionChange={setSelectedReportIds}
               isAdmin={userRole === 'admin'}
             />
             {totalCount > 0 && (
@@ -502,6 +493,32 @@ export default function ReportsPage() {
           </div>
         )}
       </div>
+
+      {/* Floating selection action bar */}
+      {userRole === 'admin' && selectedReportIds.length > 0 && (
+        <div className={reportsStyles.selectionBar} role="toolbar" aria-label="Selection actions">
+          <span className={reportsStyles.selectionCount}>
+            <span className={reportsStyles.selectionCountNum}>{selectedReportIds.length}</span>
+            selected
+          </span>
+          <div className={reportsStyles.selectionBarActions}>
+            <button
+              id="cancel-select-reports-btn"
+              className={reportsStyles.selectionCancelBtn}
+              onClick={() => setSelectedReportIds([])}
+            >
+              Cancel
+            </button>
+            <button
+              id="bulk-delete-reports-btn"
+              className={reportsStyles.selectionDeleteBtn}
+              onClick={() => setShowDeleteConfirm(true)}
+            >
+              🗑 Delete ({selectedReportIds.length})
+            </button>
+          </div>
+        </div>
+      )}
 
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">

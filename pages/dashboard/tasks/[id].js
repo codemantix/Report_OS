@@ -331,9 +331,9 @@ export default function TaskDetailPage() {
               <h1 className={styles.title}>{task.title}</h1>
               <p className={styles.subtitle}>Created {formatDateTime(task.created_at)}</p>
             </div>
-          <div className="flex items-start justify-between max-sm:justify-end">
+          <div className="flex items-start justify-end max-sm:justify-end">
             {canManage && (
-              <div className="flex gap-2 mt-2">
+              <div className="flex gap-2 mt-4">
                 <button onClick={() => setEditing(true)} className={styles.submitBtn}>Edit</button>
                 <button onClick={handleArchive} className={styles.cancelBtn}>Archive</button>
                 {user?.role === 'admin' && <button onClick={handleDelete} className={styles.cancelBtn} style={{ color: '#DC2626' }}>Delete</button>}

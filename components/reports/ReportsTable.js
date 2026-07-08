@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
-import { Eye, FileText, MessageSquare, CheckCircle } from 'lucide-react';
+import { useRef } from 'react';
+import { FileText } from 'lucide-react';
 import { formatDateTime, timeAgo } from '../../utils/dateHelpers';
 import { getProfileDisplayName, getProfileInitials } from '../../utils/profileHelpers';
 import styles from './Reports.module.css';
@@ -41,11 +42,13 @@ export default function ReportsTable({
   reports,
   emptyMessage = 'No reports found',
   selectedReportIds = [],
-  onSelectReport,
-  onSelectAll,
+  onSelectionChange,
   isAdmin = false,
 }) {
   const router = useRouter();
+
+  const timerRef = useRef(null);
+  const isLongPressRef = useRef(false);
 
   if (!reports || reports.length === 0) {
     return (
@@ -56,19 +59,76 @@ export default function ReportsTable({
     );
   }
 
+  const isSelectionActive = isAdmin && selectedReportIds.length > 0;
   const allSelected = reports.length > 0 && reports.every((r) => selectedReportIds.includes(r.id));
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      onSelectionChange([...new Set([...selectedReportIds, ...reports.map((r) => r.id)])]);
+    } else {
+      const onPageIds = new Set(reports.map((r) => r.id));
+      onSelectionChange(selectedReportIds.filter((id) => !onPageIds.has(id)));
+    }
+  };
+
+  const handleSelectOne = (e, reportId) => {
+    e.stopPropagation();
+    if (e.target.checked) {
+      onSelectionChange([...selectedReportIds, reportId]);
+    } else {
+      onSelectionChange(selectedReportIds.filter((id) => id !== reportId));
+    }
+  };
+
+  const startPress = (e, reportId) => {
+    if (!isAdmin) return;
+    if (selectedReportIds.length > 0) return; // already in selection mode
+
+    // Only handle left click on mouse
+    if (e.type === 'mousedown' && e.button !== 0) return;
+
+    isLongPressRef.current = false;
+    timerRef.current = setTimeout(() => {
+      isLongPressRef.current = true;
+      onSelectionChange([reportId]);
+      if (navigator.vibrate) navigator.vibrate(50);
+    }, 600);
+  };
+
+  const cancelPress = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  };
+
+  const handleRowClick = (e, report) => {
+    // If a long press was triggered, absorb this click
+    if (isLongPressRef.current) {
+      isLongPressRef.current = false;
+      return;
+    }
+
+    if (selectedReportIds.length > 0) {
+      e.preventDefault();
+      if (selectedReportIds.includes(report.id)) {
+        onSelectionChange(selectedReportIds.filter((id) => id !== report.id));
+      } else {
+        onSelectionChange([...selectedReportIds, report.id]);
+      }
+    } else {
+      router.push(`/dashboard/reports/${report.id}`);
+    }
+  };
 
   return (
     <div className={styles.tableWrapper}>
       <table className={styles.table}>
         <thead>
           <tr>
-            {isAdmin && (
+            {isSelectionActive && (
               <th className={styles.th} style={{ width: '40px' }}>
                 <input
                   type="checkbox"
                   checked={allSelected}
-                  onChange={onSelectAll}
+                  onChange={handleSelectAll}
                   className="w-4 h-4 rounded border-gray-300 text-blue-600 cursor-pointer"
                   aria-label="Select all reports"
                 />
@@ -96,13 +156,24 @@ export default function ReportsTable({
             const isSelected = selectedReportIds.includes(report.id);
 
             return (
-              <tr key={report.id} className={styles.tr}>
-                {isAdmin && (
-                  <td className={styles.td}>
+              <tr
+                key={report.id}
+                className={`${styles.tr} ${isSelected ? styles.trSelected : ''}`}
+                onMouseDown={(e) => startPress(e, report.id)}
+                onMouseUp={cancelPress}
+                onMouseLeave={cancelPress}
+                onTouchStart={(e) => startPress(e, report.id)}
+                onTouchEnd={cancelPress}
+                onTouchMove={cancelPress}
+                onClick={(e) => handleRowClick(e, report)}
+                style={{ cursor: 'pointer', userSelect: 'none' }}
+              >
+                {isSelectionActive && (
+                  <td className={styles.td} onClick={(e) => e.stopPropagation()}>
                     <input
                       type="checkbox"
                       checked={isSelected}
-                      onChange={() => onSelectReport(report.id)}
+                      onChange={(e) => handleSelectOne(e, report.id)}
                       className="w-4 h-4 rounded border-gray-300 text-blue-600 cursor-pointer"
                       aria-label={`Select report by ${userName}`}
                     />
@@ -160,14 +231,17 @@ export default function ReportsTable({
                     <span className={styles.unreviewedBadge}>Unreviewed</span>
                   )}
                 </td>
-                <td className={styles.td}>
+                <td className={styles.td} onClick={(e) => e.stopPropagation()}>
                   <div className={styles.actionGroup}>
                     <button
                       onClick={() => router.push(`/dashboard/reports/${report.id}`)}
                       className={styles.actionBtn}
                       title="View Report"
                     >
-                      <Eye className="w-4 h-4" />
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
                     </button>
                   </div>
                 </td>
@@ -179,3 +253,4 @@ export default function ReportsTable({
     </div>
   );
 }
+
