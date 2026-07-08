@@ -1,5 +1,5 @@
 .container {
-  @apply relative min-h-screen flex items-center justify-center px-4 py-12 transition-colors duration-200;
+  @apply relative min-h-dvh flex items-center justify-center px-4 py-12 transition-colors duration-200;
   background:
     radial-gradient(circle at top left, rgba(30, 58, 138, 0.12), transparent 32rem),
     radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.10), transparent 28rem),
