@@ -8,6 +8,7 @@ import { fetchDepartments } from '../../../services/departmentService';
 import { fetchGoals } from '../../../services/goalService';
 import { fetchPlans } from '../../../services/planService';
 import { fetchUsers } from '../../../services/userService';
+import { fetchActiveCompanyGoals } from '../../../services/companyGoalService';
 import { getCurrentUserProfile } from '../../../lib/authHelpers';
 import styles from '../../../components/tasks/Tasks.module.css';
 
@@ -17,6 +18,7 @@ export default function NewTaskPage() {
   const [goals, setGoals] = useState([]);
   const [plans, setPlans] = useState([]);
   const [users, setUsers] = useState([]);
+  const [companyGoals, setCompanyGoals] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -27,16 +29,18 @@ export default function NewTaskPage() {
       if (!profile) return router.push('/auth/login');
       setUser(profile);
 
-      const [deptRes, goalRes, planRes, userRes] = await Promise.all([
+      const [deptRes, goalRes, planRes, userRes, companyGoalRes] = await Promise.all([
         fetchDepartments(),
         fetchGoals(),
         fetchPlans(),
         fetchUsers({ status: 'active' }),
+        fetchActiveCompanyGoals(),
       ]);
       setDepartments(deptRes.data || []);
       setGoals(goalRes.data || []);
       setPlans(planRes.data || []);
       setUsers(userRes.data || []);
+      setCompanyGoals(companyGoalRes.data || []);
       setLoading(false);
     }
     init();
@@ -49,10 +53,6 @@ export default function NewTaskPage() {
     }
     if (!formData.department_id) {
       toast.error('Department is required');
-      return;
-    }
-    if (!formData.assignee_ids?.length) {
-      toast.error('At least one assignee is required');
       return;
     }
 
@@ -94,6 +94,7 @@ export default function NewTaskPage() {
             goals={goals}
             plans={plans}
             users={users}
+            companyGoals={companyGoals}
             onSubmit={handleSubmit}
             onCancel={() => router.push('/dashboard/tasks')}
             loading={saving}

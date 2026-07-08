@@ -37,7 +37,14 @@ function getLatestAnalysis(analysis) {
   })[0];
 }
 
-export default function ReportsTable({ reports, emptyMessage = 'No reports found' }) {
+export default function ReportsTable({
+  reports,
+  emptyMessage = 'No reports found',
+  selectedReportIds = [],
+  onSelectReport,
+  onSelectAll,
+  isAdmin = false,
+}) {
   const router = useRouter();
 
   if (!reports || reports.length === 0) {
@@ -49,11 +56,24 @@ export default function ReportsTable({ reports, emptyMessage = 'No reports found
     );
   }
 
+  const allSelected = reports.length > 0 && reports.every((r) => selectedReportIds.includes(r.id));
+
   return (
     <div className={styles.tableWrapper}>
       <table className={styles.table}>
         <thead>
           <tr>
+            {isAdmin && (
+              <th className={styles.th} style={{ width: '40px' }}>
+                <input
+                  type="checkbox"
+                  checked={allSelected}
+                  onChange={onSelectAll}
+                  className="w-4 h-4 rounded border-gray-300 text-blue-600 cursor-pointer"
+                  aria-label="Select all reports"
+                />
+              </th>
+            )}
             <th className={styles.th}>Team Member</th>
             <th className={styles.th}>Department</th>
             <th className={styles.th}>Type</th>
@@ -73,9 +93,21 @@ export default function ReportsTable({ reports, emptyMessage = 'No reports found
             const userName = getProfileDisplayName(report.users, 'Unknown');
             const initials = getProfileInitials(report.users, 'U');
             const aiData = getLatestAnalysis(report.report_ai_analysis);
+            const isSelected = selectedReportIds.includes(report.id);
 
             return (
               <tr key={report.id} className={styles.tr}>
+                {isAdmin && (
+                  <td className={styles.td}>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => onSelectReport(report.id)}
+                      className="w-4 h-4 rounded border-gray-300 text-blue-600 cursor-pointer"
+                      aria-label={`Select report by ${userName}`}
+                    />
+                  </td>
+                )}
                 <td className={styles.td}>
                   <div className={styles.userCell}>
                     <div className={styles.userAvatar}>

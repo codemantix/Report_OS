@@ -19,8 +19,9 @@ const STATUS_OPTIONS = [
   { value: 'cancelled', label: 'Cancelled' },
 ];
 
-export default function GoalForm({ initialData, departments, users = [], onSubmit, onCancel, loading }) {
+export default function GoalForm({ initialData, departments, users = [], companyGoals = [], onSubmit, onCancel, loading }) {
   const [formData, setFormData] = useState({
+    company_goal_id: initialData?.company_goal_id || '',
     department_id: initialData?.department_id || '',
     title: initialData?.title || '',
     description: initialData?.description || '',
@@ -72,6 +73,7 @@ export default function GoalForm({ initialData, departments, users = [], onSubmi
   function handleSubmit(e) {
     e.preventDefault();
     const payload = { ...formData };
+    if (!payload.company_goal_id) payload.company_goal_id = null;
     if (!payload.department_id) payload.department_id = null;
     if (!payload.start_date) payload.start_date = null;
     if (!payload.due_date) payload.due_date = null;
@@ -80,6 +82,28 @@ export default function GoalForm({ initialData, departments, users = [], onSubmi
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
+      {companyGoals.length > 0 && (
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="company_goal_id">
+            Related Company Monthly Goal
+          </label>
+          <select
+            id="company_goal_id"
+            name="company_goal_id"
+            className={styles.select}
+            value={formData.company_goal_id}
+            onChange={handleChange}
+          >
+            <option value="">None</option>
+            {companyGoals.map((cg) => (
+              <option key={cg.id} value={cg.id}>
+                {cg.title} ({cg.month}/{cg.year})
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <div className={styles.row}>
         <div className={styles.field}>
           <label className={styles.label} htmlFor="department_id">

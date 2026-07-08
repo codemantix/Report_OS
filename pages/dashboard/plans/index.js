@@ -5,6 +5,8 @@ import SearchInput from '../../../components/common/SearchInput';
 import PaginationControls from '../../../components/common/PaginationControls';
 import PlansTable from '../../../components/plans/PlansTable';
 import { fetchPlans } from '../../../services/planService';
+import { fetchDepartments } from '../../../services/departmentService';
+import { MONTH_OPTIONS } from '../../../utils/companyGoalConstants';
 import { getCurrentUserProfile } from '../../../lib/authHelpers';
 import useDebounce from '../../../hooks/useDebounce';
 import { paginateItems } from '../../../utils/pagination';
@@ -16,11 +18,13 @@ export default function PlansPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
+  const [departments, setDepartments] = useState([]);
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 400);
+  const [filters, setFilters] = useState({ department_id: '', plan_type: '', month: '', year: '' });
+  const [sort, setSort] = useState('created_at:desc');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [sort, setSort] = useState('created_at:desc');
 
   useEffect(() => {
     async function init() {
@@ -30,29 +34,35 @@ export default function PlansPage() {
         return;
       }
       setUser(profile);
+
+      // Load department filters
+      const deptRes = await fetchDepartments();
+      setDepartments(deptRes.data || []);
     }
     init();
   }, []);
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, pageSize, sort]);
+  }, [filters, debouncedSearch, pageSize, sort]);
 
   useEffect(() => {
     if (!user) return;
 
-    const filters = {};
-    if (user.role !== 'admin') {
-      filters.department_id = user.department_id;
-    }
-    if (debouncedSearch) {
-      filters.search = debouncedSearch;
-    }
     const [sortBy, sortDirection] = sort.split(':');
-    filters.sortBy = sortBy;
-    filters.sortDirection = sortDirection;
-    loadPlans(filters);
-  }, [user, debouncedSearch, sort]);
+    const builtFilters = {
+      ...filters,
+      search: debouncedSearch || undefined,
+      sortBy,
+      sortDirection,
+    };
+    
+    if (user.role !== 'admin') {
+      builtFilters.department_id = user.department_id;
+    }
+    
+    loadPlans(builtFilters);
+  }, [user, filters, debouncedSearch, sort]);
 
   async function loadPlans(filters = {}) {
     setLoading(true);
@@ -72,9 +82,19 @@ export default function PlansPage() {
   }
 
   const canCreate = user && (user.role === 'admin' || user.role === 'department_lead');
-  const hasActiveSearch = search.trim() !== '';
+  const hasActiveFilters = Object.values(filters).some((v) => v !== '') || search.trim() !== '';
   const isSearchLoading = search !== debouncedSearch;
   const paginatedPlans = paginateItems(plans, page, pageSize);
+
+  function updateFilter(key, value) {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function clearFilters() {
+    setFilters({ department_id: '', plan_type: '', month: '', year: '' });
+    setSearch('');
+    setSort('created_at:desc');
+  }
 
   return (
     <DashboardLayout>
@@ -103,12 +123,57 @@ export default function PlansPage() {
               loading={isSearchLoading}
               label="Search plans"
             />
-            <select value={sort} onChange={(e) => setSort(e.target.value)} className={styles.select} aria-label="Sort plans">
+            <select value={sort} onChange={(e) => setSort(e.target.value)} className={styles.select} style={{ maxWidth: '160px' }} aria-label="Sort plans">
               <option value="created_at:desc">Newest first</option>
               <option value="created_at:asc">Oldest first</option>
               <option value="title:asc">Title A–Z</option>
               <option value="plan_type:asc">Plan type</option>
             </select>
+            {user?.role === 'admin' && (
+              <select value={filters.department_id} onChange={(e) => updateFilter('department_id', e.target.value)} className={styles.select} style={{ maxWidth: '180px' }} aria-label="Filter by department">
+                <option value="">All Departments</option>
+                {departments.map((dept) => (
+                  <option key={dept.id} value={dept.id}>{dept.name}</option>
+                ))}
+              </select>
+            )}
+            <select value={filters.plan_type} onChange={(e) => updateFilter('plan_type', e.target.value)} className={styles.select} style={{ maxWidth: '150px' }} aria-label="Filter by plan type">
+              <option value="">All Plan Types</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="quarterly">Quarterly</option>
+              <option value="project">Project</option>
+            </select>
+            <select
+              value={filters.month}
+              onChange={(e) => updateFilter('month', e.target.value)}
+              className={styles.select}
+              style={{ maxWidth: '140px' }}
+              aria-label="Filter by month"
+            >
+              <option value="">All Months</option>
+              {MONTH_OPTIONS.map((m) => (
+                <option key={m.value} value={m.value}>{m.label}</option>
+              ))}
+            </select>
+            <select
+              value={filters.year}
+              onChange={(e) => updateFilter('year', e.target.value)}
+              className={styles.select}
+              style={{ maxWidth: '120px' }}
+              aria-label="Filter by year"
+            >
+              <option value="">All Years</option>
+              {[new Date().getFullYear() - 1, new Date().getFullYear(), new Date().getFullYear() + 1, new Date().getFullYear() + 2].map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+            {hasActiveFilters && (
+              <button onClick={clearFilters} className={styles.cancelBtn} style={{ padding: '8px 16px' }}>
+                Clear
+              </button>
+            )}
           </div>
         </div>
 
@@ -140,7 +205,7 @@ export default function PlansPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776" />
               </svg>
               <p className={styles.emptyText}>
-                {hasActiveSearch ? 'No plans matched your search.' : 'No plans yet. Plans will appear here once created by admins.'}
+                {hasActiveFilters ? 'No plans matched your search filters.' : 'No plans yet. Plans will appear here once created by admins.'}
               </p>
             </div>
           </div>

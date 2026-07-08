@@ -5,7 +5,7 @@ import DashboardLayout from '../../../components/layout/DashboardLayout';
 import SearchInput from '../../../components/common/SearchInput';
 import PaginationControls from '../../../components/common/PaginationControls';
 import TeamTable from '../../../components/team/TeamTable';
-import { fetchUsers, updateUser } from '../../../services/userService';
+import { fetchUsers, updateUser, deleteUser } from '../../../services/userService';
 import { fetchDepartments } from '../../../services/departmentService';
 import { getCurrentUserProfile } from '../../../lib/authHelpers';
 import useDebounce from '../../../hooks/useDebounce';
@@ -108,6 +108,21 @@ export default function TeamPage() {
     }
   }
 
+  async function handleUserDelete(userId) {
+    try {
+      const { error } = await deleteUser(userId);
+      if (error) throw error;
+
+      // Optimistically remove from state
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
+      toast.success('Team member removed successfully');
+    } catch (err) {
+      console.error('Failed to remove user:', err);
+      toast.error(err.message || 'Failed to remove team member');
+      throw err;
+    }
+  }
+
   return (
     <DashboardLayout>
       <div className={styles.page}>
@@ -173,6 +188,7 @@ export default function TeamPage() {
               currentUser={user}
               departments={departments}
               onUserUpdate={handleUserUpdate}
+              onUserDelete={handleUserDelete}
             />
             <PaginationControls
               page={paginatedUsers.page}

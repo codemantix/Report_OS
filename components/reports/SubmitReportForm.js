@@ -7,6 +7,7 @@ import { fetchDepartments } from '../../services/departmentService';
 import { fetchGoals } from '../../services/goalService';
 import { fetchPlans } from '../../services/planService';
 import { fetchMyTasks } from '../../services/taskService';
+import { fetchActiveCompanyGoals } from '../../services/companyGoalService';
 import { createReport } from '../../services/reportService';
 import { uploadFiles } from '../../services/uploadService';
 import FileUpload from './FileUpload';
@@ -27,6 +28,7 @@ export default function SubmitReportForm() {
   const [goals, setGoals] = useState([]);
   const [plans, setPlans] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [companyGoals, setCompanyGoals] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -43,6 +45,7 @@ export default function SubmitReportForm() {
     goal_id: '',
     plan_id: '',
     task_id: '',
+    company_goal_id: '',
     worked_on: '',
     completed_tasks: '',
     pending_tasks: '',
@@ -76,6 +79,19 @@ export default function SubmitReportForm() {
     loadData();
   }, [router]);
 
+  // Load company goals
+  useEffect(() => {
+    async function loadCompanyGoals() {
+      try {
+        const { data } = await fetchActiveCompanyGoals();
+        setCompanyGoals(data || []);
+      } catch {
+        // Non-critical
+      }
+    }
+    loadCompanyGoals();
+  }, []);
+
   useEffect(() => {
     async function loadRelatedData() {
       if (selectedDept) {
@@ -105,8 +121,24 @@ export default function SubmitReportForm() {
 
     if (name === 'department_id') {
       setSelectedDept(value);
-      setFormData((prev) => ({ ...prev, goal_id: '', plan_id: '', task_id: '' }));
+      setFormData((prev) => ({ ...prev, goal_id: '', plan_id: '', task_id: '', company_goal_id: '' }));
       setSelectedTask(null);
+    }
+
+    // Auto-inherit company_goal_id from selected task
+    if (name === 'task_id' && value) {
+      const taskItem = tasks.find((t) => t.tasks?.id === value);
+      if (taskItem?.tasks?.company_goal_id) {
+        setFormData((prev) => ({ ...prev, company_goal_id: taskItem.tasks.company_goal_id }));
+      }
+    }
+
+    // Auto-inherit company_goal_id from selected goal
+    if (name === 'goal_id' && value) {
+      const selectedGoal = goals.find((g) => g.id === value);
+      if (selectedGoal?.company_goal_id) {
+        setFormData((prev) => ({ ...prev, company_goal_id: selectedGoal.company_goal_id }));
+      }
     }
   }
 
@@ -163,6 +195,7 @@ export default function SubmitReportForm() {
         department_id: formData.department_id || null,
         goal_id: formData.goal_id || null,
         plan_id: formData.plan_id || null,
+        company_goal_id: formData.company_goal_id || null,
         report_type: formData.report_type,
         project_name: formData.project_name || null,
         worked_on: formData.worked_on,
@@ -351,6 +384,34 @@ export default function SubmitReportForm() {
             </div>
           </div>
         </div>
+
+        {/* Company Goal Link */}
+        {companyGoals.length > 0 && (
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>Company Direction</h2>
+            <div className={styles.field}>
+              <label className={styles.label}>Related Company Goal</label>
+              <select
+                name="company_goal_id"
+                value={formData.company_goal_id}
+                onChange={handleChange}
+                className={styles.select}
+              >
+                <option value="">None</option>
+                {companyGoals.map((cg) => (
+                  <option key={cg.id} value={cg.id}>
+                    {cg.title} ({cg.month}/{cg.year})
+                  </option>
+                ))}
+              </select>
+              {formData.company_goal_id && (
+                <p className={styles.hint} style={{ color: 'var(--color-muted)', marginTop: '4px', fontSize: '12px' }}>
+                  This report is linked to a company-wide monthly goal.
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Work Details */}
         <div className={styles.section}>

@@ -30,6 +30,14 @@ const taskFields = [
   { key: 'due_date', label: 'Due Date' },
 ];
 
+const companyGoalFields = [
+  { key: 'title', label: 'Title' },
+  { key: 'description', label: 'Description' },
+  { key: 'success_metric', label: 'Success Metric' },
+  { key: 'expected_summary', label: 'Expected Summary' },
+  { key: 'priority', label: 'Priority' },
+];
+
 function taskScoring(task) {
   if (!task) {
     return [
@@ -45,11 +53,11 @@ function taskScoring(task) {
     '"task_progress_score": <0-100 integer based on task completion progress>',
     '"task_status_recommendation": "<todo|in_progress|in_review|completed|blocked|delayed>"',
     '"task_feedback": "Feedback on how the report relates to the assigned task"',
-    '"success_rate": <0-100 integer calculated as (task_alignment * 0.25) + (task_progress * 0.25) + (goal_alignment * 0.20) + (plan_alignment * 0.15) + (quality * 0.15)>',
+    '"success_rate": <0-100 integer calculated as (task_alignment * 0.25) + (task_progress * 0.25) + (goal_alignment * 0.20) + (company_goal_alignment * 0.15) + (expected_outcome_progress * 0.15)>',
   ].join(',\n  ');
 }
 
-export function buildAnalysisPrompt(report, goal, plan, task) {
+export function buildAnalysisPrompt(report, goal, plan, task, companyGoal) {
   return [
     'You are analyzing a work report for the Codemantix Collective team.',
     '',
@@ -65,6 +73,10 @@ export function buildAnalysisPrompt(report, goal, plan, task) {
     `- **Completion Percentage**: ${report.completion_percentage || 0}%`,
     `- **Additional Notes**: ${report.additional_notes || 'None'}`,
     '',
+    buildSection('Related Company Monthly Goal', companyGoal, companyGoalFields),
+    ...(companyGoal && companyGoal.objectives ? [`- **Objectives**: ${JSON.stringify(companyGoal.objectives)}`] : []),
+    ...(companyGoal && companyGoal.expected_outcomes ? [`- **Expected Outcomes**: ${JSON.stringify(companyGoal.expected_outcomes)}`] : []),
+    '',
     buildSection('Related Goal', goal, goalFields),
     '',
     buildSection('Related Department Plan', plan, planFields),
@@ -73,7 +85,7 @@ export function buildAnalysisPrompt(report, goal, plan, task) {
     '',
     '## Analysis Task',
     'Analyze this report in detail and return a JSON object only. Do not include markdown formatting or code blocks.',
-    'Base the analysis on the submitted work, linked goal, linked plan, linked task, blockers, pending items, completion percentage, and report clarity.',
+    'Base the analysis on the submitted work, linked company monthly goal, linked department goal, linked plan, linked task, blockers, pending items, completion percentage, and report clarity.',
     'Be specific: mention concrete completed work, gaps, risks, and practical next steps where applicable.',
     '',
     '{',
@@ -81,7 +93,10 @@ export function buildAnalysisPrompt(report, goal, plan, task) {
     '  "completed_tasks": ["List of completed tasks as an array of strings"],',
     '  "pending_tasks": ["List of pending tasks as an array of strings"],',
     '  "blockers": ["List of blockers as an array of strings"],',
-    '  "goal_alignment_score": <0-100 integer based on how well the work connects to the goal\'s success metrics and deliverables>,',
+    '  "goal_alignment_score": <0-100 integer based on how well the work connects to the department goal\'s success metrics and deliverables>,',
+    '  "company_goal_alignment_score": <0-100 integer based on how well the work connects to the company monthly goal\'s success metrics and direction. Use 50 as neutral if company goal is linked but report doesn\'t explicitly mention it, or 0 if unrelated. If no company goal is linked, return null>,',
+    '  "expected_outcome_progress_score": <0-100 integer based on estimated progress towards the company goal\'s expected outcomes. If no company goal is linked, return null>,',
+    '  "company_alignment_summary": "A brief 2-3 sentence explanation of how the report\'s achievements align with the company monthly goal, objectives, and expected outcomes. If no company goal is linked, return null/empty string",',
     '  "progress_score": <0-100 integer based on completed tasks, completion percentage, and movement toward outcomes>,',
     '  "report_quality_score": <0-100 integer based on clarity, specificity, measurable output, and detail>,',
     '  ' + taskScoring(task),

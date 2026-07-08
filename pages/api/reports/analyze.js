@@ -12,8 +12,9 @@ export async function runAiAnalysis(reportId) {
     .from('reports')
     .select(`
       *,
-      goals:goal_id (id, title, description, success_metric, expected_deliverables, priority, due_date),
-      plans:plan_id (id, title, description, plan_type)
+      goals:goal_id (id, title, description, success_metric, expected_deliverables, priority, due_date, company_goal_id),
+      plans:plan_id (id, title, description, plan_type),
+      company_goals:company_goal_id (id, title, description, success_metric, expected_summary, priority, status, objectives, expected_outcomes)
     `)
     .eq('id', reportId)
     .single();
@@ -26,9 +27,11 @@ export async function runAiAnalysis(reportId) {
   // Extract goal and plan from the embedded data
   const goal = report.goals || null;
   const plan = report.plans || null;
+  let companyGoal = report.company_goals || null;
   let task = null;
   delete report.goals;
   delete report.plans;
+  delete report.company_goals;
 
   // Fetch linked task from report_tasks pivot (simple query, no RLS issues)
   try {
@@ -42,13 +45,34 @@ export async function runAiAnalysis(reportId) {
     if (reportTasks?.task_id) {
       const { data: taskData } = await supabaseAdmin
         .from('tasks')
-        .select('id, title, description, expected_output, priority, status, due_date')
+        .select('id, title, description, expected_output, priority, status, due_date, company_goal_id')
         .eq('id', reportTasks.task_id)
         .single();
       task = taskData;
     }
   } catch (e) {
     console.error('Task lookup (optional) failed:', e?.message || e);
+  }
+
+  // If no direct company goal, try inheriting from task or department goal
+  if (!companyGoal) {
+    const inheritedCompanyGoalId = task?.company_goal_id || goal?.company_goal_id;
+    if (inheritedCompanyGoalId) {
+      try {
+        const { data: cgData } = await supabaseAdmin
+          .from('company_monthly_goals')
+          .select('id, title, description, success_metric, expected_summary, priority, status, objectives, expected_outcomes')
+          .eq('id', inheritedCompanyGoalId)
+          .single();
+        if (cgData) {
+          companyGoal = cgData;
+          // Backport to reports table so the link is saved
+          await supabaseAdmin.from('reports').update({ company_goal_id: inheritedCompanyGoalId }).eq('id', reportId);
+        }
+      } catch (cgErr) {
+        console.error('Inherited company goal fetch failed:', cgErr?.message || cgErr);
+      }
+    }
   }
 
   // Get AI client
@@ -76,7 +100,7 @@ export async function runAiAnalysis(reportId) {
   }
 
   // Build the AI prompt
-  const prompt = buildAnalysisPrompt(report, goal, plan, task);
+  const prompt = buildAnalysisPrompt(report, goal, plan, task, companyGoal);
   console.log('AI prompt built, length:', prompt.length);
 
   // Call AI
@@ -112,6 +136,15 @@ export async function runAiAnalysis(reportId) {
     throw new Error('Invalid AI response format');
   }
 
+  // Programmatically calculate success rate to ensure consistency with the formula
+  const calculatedSuccessRate = Math.round(
+    (analysis.task_alignment_score || 0) * 0.25 +
+    (analysis.task_progress_score || 0) * 0.25 +
+    (analysis.goal_alignment_score || 0) * 0.20 +
+    (analysis.company_goal_alignment_score || 0) * 0.15 +
+    (analysis.expected_outcome_progress_score || 0) * 0.15
+  );
+
   // Save the analysis to the database. Remove stale placeholder/failed retry rows first
   // so pages read the newest result instead of an older zero-score analysis.
   await supabaseAdmin.from('report_ai_analysis').delete().eq('report_id', reportId);
@@ -124,9 +157,12 @@ export async function runAiAnalysis(reportId) {
       pending_tasks: analysis.pending_tasks || [],
       blockers: analysis.blockers || [],
       goal_alignment_score: Math.min(100, Math.max(0, analysis.goal_alignment_score || 0)),
+      company_goal_alignment_score: analysis.company_goal_alignment_score !== null && analysis.company_goal_alignment_score !== undefined ? Math.min(100, Math.max(0, analysis.company_goal_alignment_score)) : null,
+      expected_outcome_progress_score: analysis.expected_outcome_progress_score !== null && analysis.expected_outcome_progress_score !== undefined ? Math.min(100, Math.max(0, analysis.expected_outcome_progress_score)) : null,
+      company_alignment_summary: analysis.company_alignment_summary || null,
       progress_score: Math.min(100, Math.max(0, analysis.progress_score || 0)),
       report_quality_score: Math.min(100, Math.max(0, analysis.report_quality_score || 0)),
-      success_rate: Math.min(100, Math.max(0, analysis.success_rate || 0)),
+      success_rate: Math.min(100, Math.max(0, calculatedSuccessRate || analysis.success_rate || 0)),
       risk_level: analysis.risk_level || 'low',
       status: analysis.status || 'in_progress',
       admin_recommendation: analysis.admin_recommendation || '',

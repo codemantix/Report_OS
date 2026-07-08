@@ -17,6 +17,7 @@ import {
   LogOut,
   UserCheck,
   CheckSquare,
+  Landmark,
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
 import Image from 'next/image';
@@ -41,6 +42,7 @@ function getNavigationByRole(role) {
   switch (role) {
     case 'admin':
       managementSection.items = [
+        { href: '/dashboard/company-goals', label: 'Company Goals', icon: Landmark },
         { href: '/dashboard/reports', label: 'Reports', icon: FileText },
         { href: '/dashboard/tasks', label: 'Tasks', icon: CheckSquare },
         { href: '/dashboard/departments', label: 'Departments', icon: Building2 },
@@ -52,6 +54,7 @@ function getNavigationByRole(role) {
 
     case 'department_lead':
       managementSection.items = [
+        { href: '/dashboard/company-goals', label: 'Company Goals', icon: Landmark },
         { href: '/dashboard/reports', label: 'Department Reports', icon: FileText },
         { href: '/dashboard/tasks', label: 'Tasks', icon: CheckSquare },
         { href: '/dashboard/goals', label: 'Goals', icon: Target },
@@ -63,6 +66,7 @@ function getNavigationByRole(role) {
     case 'team_member':
     default:
       managementSection.items = [
+        { href: '/dashboard/company-goals', label: 'Company Direction', icon: Landmark },
         { href: '/dashboard/reports', label: 'My Reports', icon: FileText },
         { href: '/dashboard/my-tasks', label: 'My Tasks', icon: CheckSquare },
         { href: '/dashboard/goals', label: 'My Goals', icon: Target },

@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import DashboardLayout from '../../../components/layout/DashboardLayout';
 import SearchInput from '../../../components/common/SearchInput';
 import ReportsTable from '../../../components/reports/ReportsTable';
-import { fetchReportsPaginated } from '../../../services/reportService';
+import { fetchReportsPaginated, deleteReports } from '../../../services/reportService';
 import { fetchDepartments } from '../../../services/departmentService';
 import { fetchUsers } from '../../../services/userService';
 import { getCurrentUserProfile } from '../../../lib/authHelpers';
@@ -52,6 +52,9 @@ export default function ReportsPage() {
   const [userId, setUserId] = useState(null);
   const [userDepartmentId, setUserDepartmentId] = useState(null);
   const [analyzingPending, setAnalyzingPending] = useState(false);
+  const [selectedReportIds, setSelectedReportIds] = useState([]);
+  const [deletingReports, setDeletingReports] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     async function init() {
@@ -76,7 +79,12 @@ export default function ReportsPage() {
   // Reset to page 1 whenever filters, search, or pageSize change
   useEffect(() => {
     setPage(1);
+    setSelectedReportIds([]);
   }, [filters, debouncedSearch, pageSize, sort]);
+
+  useEffect(() => {
+    setSelectedReportIds([]);
+  }, [page]);
 
   function buildApiFilters() {
     const apiFilters = {};
@@ -145,6 +153,44 @@ export default function ReportsPage() {
     if (newPage < 1 || newPage > totalPages) return;
     setPage(newPage);
   }
+
+  const handleSelectReport = (id) => {
+    setSelectedReportIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = () => {
+    const allOnPageIds = reports.map((r) => r.id);
+    const allSelected = allOnPageIds.every((id) => selectedReportIds.includes(id));
+    if (allSelected) {
+      setSelectedReportIds((prev) => prev.filter((id) => !allOnPageIds.includes(id)));
+    } else {
+      setSelectedReportIds((prev) => {
+        const union = new Set([...prev, ...allOnPageIds]);
+        return Array.from(union);
+      });
+    }
+  };
+
+  const handleDeleteSelected = async () => {
+    setDeletingReports(true);
+    try {
+      const { error: deleteError } = await deleteReports(selectedReportIds);
+      if (deleteError) {
+        toast.error(deleteError.message || 'Failed to delete reports');
+        return;
+      }
+      toast.success('Selected reports deleted successfully');
+      setSelectedReportIds([]);
+      loadReports();
+    } catch (err) {
+      toast.error('An unexpected error occurred');
+    } finally {
+      setDeletingReports(false);
+      setShowDeleteConfirm(false);
+    }
+  };
 
   function getPageNumbers() {
     const pages = [];
@@ -231,6 +277,15 @@ export default function ReportsPage() {
           </div>
         <div className={styles.header}>
           <div className="flex items-center gap-3 ml-auto">
+            {userRole === 'admin' && selectedReportIds.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setShowDeleteConfirm(true)}
+                className="btn-danger inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg hover:bg-red-700 active:bg-red-800 transition-colors"
+              >
+                Delete Selected ({selectedReportIds.length})
+              </button>
+            )}
             {canManageAnalysis && (
               <button
                 type="button"
@@ -387,6 +442,10 @@ export default function ReportsPage() {
             <ReportsTable
               reports={reports}
               emptyMessage={hasActiveFilters ? 'No reports matched your search or filters.' : 'No reports have been submitted yet.'}
+              selectedReportIds={selectedReportIds}
+              onSelectReport={handleSelectReport}
+              onSelectAll={handleSelectAll}
+              isAdmin={userRole === 'admin'}
             />
             {totalCount > 0 && (
               <div className={styles.pagination}>
@@ -443,6 +502,33 @@ export default function ReportsPage() {
           </div>
         )}
       </div>
+
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl p-6 max-w-sm w-full mx-4 border border-gray-100 dark:border-gray-800">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Delete Reports</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+              Are you sure you want to delete the {selectedReportIds.length} selected reports permanently? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={deletingReports}
+                className="px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteSelected}
+                disabled={deletingReports}
+                className="px-4 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 active:bg-red-800 transition-colors disabled:opacity-50"
+              >
+                {deletingReports ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 }

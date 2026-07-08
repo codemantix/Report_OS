@@ -1,0 +1,385 @@
+/* ============================================================
+   Company Monthly Goals — Premium Strategic Module Styles
+   ============================================================ */
+
+/* Layout */
+.page { @apply space-y-6; }
+.header { @apply flex items-center justify-end; }
+.title { @apply text-2xl max-sm:text-xl font-bold text-gray-900; }
+.subtitle { @apply max-sm:text-xs text-gray-500 mt-1; }
+
+/* Sections */
+.section {
+  @apply rounded-xl shadow-sm border p-6 max-sm:p-4;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+.sectionTitle {
+  @apply text-base font-semibold mb-4 pb-3 border-b;
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+/* Strategic Hero Card */
+.heroCard {
+  @apply relative overflow-hidden rounded-2xl p-8 max-sm:p-5;
+  background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #06B6D4 100%);
+  box-shadow: 0 10px 40px -10px rgba(30, 58, 138, 0.35);
+}
+.heroCardContent {
+  @apply relative z-10;
+}
+.heroTitle {
+  @apply text-2xl max-sm:text-lg font-bold text-white mb-1;
+  font-family: 'Playfair Display', Georgia, serif;
+}
+.heroSubtitle {
+  @apply text-sm text-blue-100 mb-4;
+}
+.heroStats {
+  @apply flex flex-wrap gap-6 mt-6;
+}
+.heroStat {
+  @apply flex flex-col;
+}
+.heroStatValue {
+  @apply text-2xl max-sm:text-xl font-bold text-white;
+}
+.heroStatLabel {
+  @apply text-xs text-blue-200 uppercase tracking-wider mt-0.5;
+}
+.heroGlow {
+  @apply absolute -top-20 -right-20 w-60 h-60 rounded-full opacity-20;
+  background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+}
+
+/* Goal Cards Grid */
+.goalsGrid {
+  @apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5;
+}
+
+/* Goal Card */
+.goalCard {
+  @apply relative rounded-xl border p-5 max-sm:p-4 transition-all duration-200 cursor-pointer;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+.goalCard:hover {
+  box-shadow: var(--shadow-premium);
+  transform: translateY(-2px);
+}
+.goalCardHeader {
+  @apply flex items-start justify-between gap-3 mb-3;
+}
+.goalCardTitle {
+  @apply text-base font-semibold line-clamp-2;
+  color: var(--color-text);
+}
+.goalCardMeta {
+  @apply flex items-center gap-2 text-xs mt-1;
+  color: var(--color-muted);
+}
+.goalCardBody {
+  @apply text-sm line-clamp-2 mb-4;
+  color: var(--color-muted);
+}
+.goalCardFooter {
+  @apply flex items-center justify-between pt-3 border-t;
+  border-color: var(--color-border);
+}
+
+/* Progress Bar */
+.progressBar {
+  @apply w-full rounded-full h-2 overflow-hidden;
+  background: var(--color-surface-soft);
+}
+.progressFill {
+  @apply h-full rounded-full transition-all duration-500;
+  background: linear-gradient(90deg, #3B82F6, #06B6D4);
+}
+.progressFillSuccess {
+  @apply h-full rounded-full transition-all duration-500;
+  background: linear-gradient(90deg, #10B981, #34D399);
+}
+.progressLabel {
+  @apply flex items-center justify-between text-xs mb-1.5;
+  color: var(--color-muted);
+}
+
+/* Badges */
+.badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap;
+}
+.badgeIcon {
+  @apply w-3 h-3 mr-1;
+}
+
+/* Form Styles */
+.form { @apply space-y-5; }
+.row { @apply grid grid-cols-1 md:grid-cols-2 gap-4; }
+.rowThree { @apply grid grid-cols-1 md:grid-cols-3 gap-4; }
+.field { @apply space-y-1.5; }
+.label {
+  @apply block text-sm max-sm:text-xs font-medium;
+  color: var(--color-text);
+}
+.input {
+  @apply w-full max-sm:px-2 max-sm:py-1 max-sm:text-xs px-3.5 py-2.5 rounded-lg transition-all duration-150;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+.input::placeholder { color: var(--color-muted); opacity: 0.6; }
+.input:focus { outline: none; border-color: #1E3A8A; box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12); }
+.textarea {
+  @apply w-full max-sm:px-2 max-sm:py-1 max-sm:text-xs px-3.5 py-2.5 rounded-lg transition-all duration-150 min-h-[100px] resize-y;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+.textarea::placeholder { color: var(--color-muted); opacity: 0.6; }
+.textarea:focus { outline: none; border-color: #1E3A8A; box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12); }
+.select {
+  @apply w-full max-sm:px-2 max-sm:py-1 max-sm:text-xs px-3.5 py-2.5 rounded-lg transition-all duration-150 appearance-none cursor-pointer;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+.select:focus { outline: none; border-color: #1E3A8A; box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12); }
+
+/* Actions */
+.actions { @apply flex items-center justify-end gap-3 pt-4; }
+.submitBtn {
+  @apply inline-flex max-sm:text-sm items-center justify-center gap-2 px-6 py-2.5 max-sm:px-4 max-sm:py-1.5 max-sm:text-xs text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  background: #1E3A8A;
+}
+.submitBtn:hover { background: #1E40AF; }
+.cancelBtn {
+  @apply max-sm:text-xs inline-flex items-center justify-center gap-2 px-4 py-2.5 font-medium rounded-lg border transition-colors;
+  color: var(--color-text);
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+.cancelBtn:hover { background: var(--color-surface-soft); }
+
+/* Detail Grid */
+.detailGrid { @apply grid grid-cols-2 sm:grid-cols-4 gap-4; }
+.detailLabel {
+  @apply text-xs uppercase tracking-wider;
+  color: var(--color-muted);
+}
+.detailValue {
+  @apply text-sm font-medium mt-0.5;
+  color: var(--color-text);
+}
+
+/* List Input (Objectives / Outcomes) */
+.listInput { @apply space-y-3; }
+.listInputHeader {
+  @apply flex items-center justify-between;
+}
+.listItem {
+  @apply flex items-start gap-3 p-4 rounded-lg border transition-colors;
+  background: var(--color-surface-soft);
+  border-color: var(--color-border);
+}
+.listItemFields { @apply flex-1 space-y-2; }
+.listItemSmallInput {
+  @apply w-full px-3 py-2 text-sm rounded-lg transition-all duration-150;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+.listItemSmallInput:focus { outline: none; border-color: #1E3A8A; box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12); }
+.addBtn {
+  @apply inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-dashed transition-colors cursor-pointer;
+  color: #3B82F6;
+  border-color: #93C5FD;
+}
+.addBtn:hover { background: rgba(59, 130, 246, 0.08); }
+.removeBtn {
+  @apply flex-shrink-0 mt-1 p-1 rounded text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors;
+}
+
+/* Execution Chain */
+.chainWrapper {
+  @apply flex flex-col items-center gap-0 py-4;
+}
+.chainNode {
+  @apply flex items-center gap-3 px-5 py-3 rounded-xl border text-sm font-medium max-w-xs w-full transition-all;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.chainNodeActive {
+  @apply flex items-center gap-3 px-5 py-3 rounded-xl border-2 text-sm font-semibold max-w-xs w-full;
+  background: rgba(59, 130, 246, 0.08);
+  border-color: #3B82F6;
+  color: #1E3A8A;
+}
+.chainConnector {
+  @apply w-0.5 h-6;
+  background: var(--color-border);
+}
+.chainIcon {
+  @apply w-5 h-5 flex-shrink-0;
+}
+
+/* Summary Cards */
+.summaryGrid {
+  @apply grid grid-cols-2 lg:grid-cols-4 gap-4;
+}
+.summaryCard {
+  @apply rounded-xl border p-4 text-center;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+.summaryValue {
+  @apply text-2xl max-sm:text-xl font-bold;
+  color: var(--color-text);
+}
+.summaryLabel {
+  @apply text-xs mt-1 uppercase tracking-wider;
+  color: var(--color-muted);
+}
+
+/* Alignment Card */
+.alignmentCard {
+  @apply rounded-xl border p-4;
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.06) 0%, rgba(6, 182, 212, 0.06) 100%);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+.alignmentTitle {
+  @apply text-xs font-semibold uppercase tracking-wider mb-3;
+  color: #3B82F6;
+}
+.alignmentScore {
+  @apply text-3xl font-bold;
+  color: var(--color-text);
+}
+.alignmentSummary {
+  @apply text-sm mt-2 leading-relaxed;
+  color: var(--color-muted);
+}
+
+/* Linked Items */
+.linkedList { @apply space-y-2; }
+.linkedItem {
+  @apply flex items-center justify-between p-3 rounded-lg border transition-colors cursor-pointer;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+.linkedItem:hover { background: var(--color-surface-soft); }
+.linkedItemTitle {
+  @apply text-sm font-medium;
+  color: var(--color-text);
+}
+.linkedItemMeta {
+  @apply text-xs;
+  color: var(--color-muted);
+}
+
+/* Checklist */
+.checklistItem {
+  @apply flex items-start gap-3 py-2;
+}
+.checklistCheckbox {
+  @apply w-4 h-4 rounded border-gray-300 text-blue-600 mt-0.5 flex-shrink-0 cursor-default;
+}
+.checklistTitle {
+  @apply text-sm font-medium;
+  color: var(--color-text);
+}
+.checklistTarget {
+  @apply text-xs;
+  color: var(--color-muted);
+}
+.checklistDone {
+  @apply line-through opacity-60;
+}
+
+/* Utility */
+.backBtn {
+  @apply inline-flex items-center gap-1.5 text-sm hover:text-gray-700 mb-4 transition-colors;
+  color: var(--color-muted);
+}
+.editBtn {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors;
+}
+.archiveBtn {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-amber-600 rounded-lg border border-amber-200 hover:bg-amber-50 transition-colors;
+}
+.newBtn {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-white text-sm font-medium rounded-lg transition-colors;
+  background: #1E3A8A;
+}
+.newBtn:hover { background: #1E40AF; }
+
+/* States */
+.emptyState { @apply text-center py-12; }
+.emptyIcon { @apply w-12 h-12 mx-auto mb-3; color: var(--color-muted); opacity: 0.5; }
+.emptyText { @apply text-sm; color: var(--color-muted); }
+.loadingWrapper { @apply flex items-center justify-center py-16; }
+.spinner { @apply w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin; }
+.skeleton { @apply h-16 rounded-lg animate-pulse; background: var(--color-border); }
+.errorState { @apply flex flex-col items-center justify-center py-16 text-center; }
+.errorIcon { @apply w-14 h-14 mb-4 text-red-400; }
+.errorText { @apply text-sm mb-1; color: var(--color-muted); }
+.errorMessage { @apply text-sm text-red-500; }
+.retryBtn {
+  @apply mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border transition-colors;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.retryBtn:hover { background: var(--color-surface-soft); }
+
+/* Confirm Modal */
+.confirmModal { @apply fixed inset-0 z-50 flex items-center justify-center bg-black/40; }
+.confirmModalContent {
+  @apply rounded-xl shadow-xl p-6 max-w-sm w-full mx-4;
+  background: var(--color-surface);
+}
+.confirmModalTitle {
+  @apply text-lg font-semibold mb-2;
+  color: var(--color-text);
+}
+.confirmModalText {
+  @apply text-sm mb-6;
+  color: var(--color-muted);
+}
+.confirmModalActions { @apply flex items-center justify-end gap-3; }
+
+/* Filters toolbar */
+.filtersRow { @apply flex flex-wrap gap-3; }
+
+/* Dark mode overrides for chain nodes */
+:global(.dark) .chainNodeActive {
+  background: rgba(59, 130, 246, 0.14);
+  color: #93C5FD;
+  border-color: #60A5FA;
+}
+:global(.dark) .heroCard {
+  background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #164E63 100%);
+  box-shadow: 0 10px 40px -10px rgba(15, 23, 42, 0.6);
+}
+:global(.dark) .alignmentCard {
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%);
+  border-color: rgba(96, 165, 250, 0.25);
+}
+:global(.dark) .addBtn {
+  color: #60A5FA;
+  border-color: rgba(96, 165, 250, 0.4);
+}
+:global(.dark) .addBtn:hover {
+  background: rgba(59, 130, 246, 0.14);
+}
+:global(.dark) .removeBtn:hover {
+  color: #F87171;
+  background: rgba(239, 68, 68, 0.15);
+}
+:global(.dark) .goalCard:hover {
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.5);
+}

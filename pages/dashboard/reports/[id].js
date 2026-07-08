@@ -9,6 +9,7 @@ import { getScoreColor, getRiskBadgeColor, getRiskLabel } from '../../../utils/s
 import { getProfileDisplayName } from '../../../utils/profileHelpers';
 import styles from '../../../components/reports/ReportDetails.module.css';
 import { Edit, Trash2 } from 'lucide-react';
+import CompanyAlignmentCard from '../../../components/company/CompanyAlignmentCard';
 
 function getLatestAnalysis(analysis) {
   if (!Array.isArray(analysis)) return analysis || null;
@@ -427,6 +428,13 @@ export default function ReportDetailPage() {
 
         {/* Goal & Plan Alignment */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {report.company_goals && (
+            <div className={styles.section}>
+              <h2 className={styles.sectionTitle}>Related Company Goal</h2>
+              <h3 className="font-semibold max-sm:text-sm text-gray-900">{report.company_goals.title}</h3>
+              <p className="text-sm max-sm:text-xs text-gray-500 mt-1">Month: {report.company_goals.month}/{report.company_goals.year}</p>
+            </div>
+          )}
           {report.goals && (
             <div className={styles.section}>
               <h2 className={styles.sectionTitle}>Related Goal</h2>
@@ -459,6 +467,17 @@ export default function ReportDetailPage() {
 
             {analysis.summary && (
               <p className="text-sm max-sm:text-xs text-gray-700 mb-6 leading-relaxed">{analysis.summary}</p>
+            )}
+
+            {analysis.company_goal_alignment_score !== null && analysis.company_goal_alignment_score !== undefined && (
+              <div className="mb-6">
+                <CompanyAlignmentCard
+                  score={analysis.company_goal_alignment_score}
+                  outcomeScore={analysis.expected_outcome_progress_score}
+                  summary={analysis.company_alignment_summary}
+                  goalTitle={report.company_goals?.title}
+                />
+              </div>
             )}
 
             {/* Scores */}

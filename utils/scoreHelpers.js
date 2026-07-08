@@ -11,12 +11,36 @@
  * @param {number} params.taskCompletion - Task completion score (0-100)
  * @returns {number} Weighted success rate (0-100)
  */
-export function calculateSuccessRate({ goalAlignment, progress, quality, taskCompletion }) {
+export function calculateSuccessRate({
+  taskAlignment,
+  taskProgress,
+  goalAlignment,
+  companyGoalAlignment,
+  expectedOutcomeProgress,
+  progress,
+  quality,
+  taskCompletion
+}) {
+  // If new metrics are missing, fall back to old formula
+  if (
+    taskAlignment === undefined &&
+    taskProgress === undefined &&
+    companyGoalAlignment === undefined
+  ) {
+    return Math.round(
+      (goalAlignment || 0) * 0.35 +
+      (progress || 0) * 0.35 +
+      (quality || 0) * 0.15 +
+      (taskCompletion || 0) * 0.15
+    );
+  }
+
   return Math.round(
-    (goalAlignment || 0) * 0.35 +
-    (progress || 0) * 0.35 +
-    (quality || 0) * 0.15 +
-    (taskCompletion || 0) * 0.15
+    (taskAlignment || 0) * 0.25 +
+    (taskProgress || 0) * 0.25 +
+    (goalAlignment || 0) * 0.20 +
+    (companyGoalAlignment || 0) * 0.15 +
+    (expectedOutcomeProgress || 0) * 0.15
   );
 }
 

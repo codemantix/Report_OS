@@ -6,6 +6,10 @@ import PaginationControls from '../../../components/common/PaginationControls';
 import TasksTable from '../../../components/tasks/TasksTable';
 import { fetchTasks } from '../../../services/taskService';
 import { fetchDepartments } from '../../../services/departmentService';
+import { fetchGoals } from '../../../services/goalService';
+import { fetchPlans } from '../../../services/planService';
+import { fetchActiveCompanyGoals } from '../../../services/companyGoalService';
+import { MONTH_OPTIONS } from '../../../utils/companyGoalConstants';
 import { getCurrentUserProfile } from '../../../lib/authHelpers';
 import useDebounce from '../../../hooks/useDebounce';
 import { paginateItems } from '../../../utils/pagination';
@@ -15,12 +19,15 @@ export default function TasksPage() {
   const router = useRouter();
   const [tasks, setTasks] = useState([]);
   const [departments, setDepartments] = useState([]);
+  const [goals, setGoals] = useState([]);
+  const [plans, setPlans] = useState([]);
+  const [companyGoals, setCompanyGoals] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 400);
-  const [filters, setFilters] = useState({ department_id: '', status: '', priority: '' });
+  const [filters, setFilters] = useState({ department_id: '', status: '', priority: '', company_goal_id: '', goal_id: '', plan_id: '', month: '', year: '' });
   const [sort, setSort] = useState('created_at:desc');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -30,8 +37,18 @@ export default function TasksPage() {
       const profile = await getCurrentUserProfile();
       if (!profile) return router.push('/auth/login');
       setUser(profile);
-      const deptRes = await fetchDepartments();
+
+      // Load filters metadata
+      const [deptRes, goalRes, planRes, cgRes] = await Promise.all([
+        fetchDepartments(),
+        fetchGoals(),
+        fetchPlans(),
+        fetchActiveCompanyGoals(),
+      ]);
       setDepartments(deptRes.data || []);
+      setGoals(goalRes.data || []);
+      setPlans(planRes.data || []);
+      setCompanyGoals(cgRes.data || []);
       setLoading(false);
     }
     init();
@@ -78,12 +95,12 @@ export default function TasksPage() {
     setFilters((prev) => ({ ...prev, [key]: value }));
   }
 
-  const hasActiveFilters = Object.values(filters).some((v) => v !== '') || search;
+  const hasActiveFilters = Object.values(filters).some((v) => v !== '') || search.trim() !== '';
   const isSearchLoading = search !== debouncedSearch;
   const paginatedTasks = paginateItems(tasks, page, pageSize);
 
   function clearFilters() {
-    setFilters({ department_id: '', status: '', priority: '' });
+    setFilters({ department_id: '', status: '', priority: '', company_goal_id: '', goal_id: '', plan_id: '', month: '', year: '' });
     setSearch('');
     setSort('created_at:desc');
   }
@@ -105,7 +122,7 @@ export default function TasksPage() {
 
         {/* Filters */}
         <div className={styles.section}>
-          <div className={styles.filterRow}>
+          <div className={styles.filterRow} style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
             <SearchInput
               value={search}
               onChange={setSearch}
@@ -113,7 +130,7 @@ export default function TasksPage() {
               loading={isSearchLoading}
               label="Search tasks"
             />
-            <select value={sort} onChange={(e) => setSort(e.target.value)} className={styles.filterSelect} aria-label="Sort tasks">
+            <select value={sort} onChange={(e) => setSort(e.target.value)} className={styles.filterSelect} style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-text)', minWidth: '150px' }} aria-label="Sort tasks">
               <option value="created_at:desc">Newest first</option>
               <option value="created_at:asc">Oldest first</option>
               <option value="due_date:asc">Due date ascending</option>
@@ -121,7 +138,15 @@ export default function TasksPage() {
               <option value="priority:asc">Priority</option>
               <option value="status:asc">Status</option>
             </select>
-            <select value={filters.status} onChange={(e) => updateFilter('status', e.target.value)} className={styles.filterSelect}>
+            {user?.role === 'admin' && (
+              <select value={filters.department_id} onChange={(e) => updateFilter('department_id', e.target.value)} className={styles.filterSelect} style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-text)' }}>
+                <option value="">All Departments</option>
+                {departments.map((dept) => (
+                  <option key={dept.id} value={dept.id}>{dept.name}</option>
+                ))}
+              </select>
+            )}
+            <select value={filters.status} onChange={(e) => updateFilter('status', e.target.value)} className={styles.filterSelect} style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-text)' }}>
               <option value="">All Status</option>
               <option value="todo">Todo</option>
               <option value="in_progress">In Progress</option>
@@ -131,15 +156,67 @@ export default function TasksPage() {
               <option value="delayed">Delayed</option>
               <option value="cancelled">Cancelled</option>
             </select>
-            <select value={filters.priority} onChange={(e) => updateFilter('priority', e.target.value)} className={styles.filterSelect}>
+            <select value={filters.priority} onChange={(e) => updateFilter('priority', e.target.value)} className={styles.filterSelect} style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-text)' }}>
               <option value="">All Priority</option>
               <option value="low">Low</option>
               <option value="medium">Medium</option>
               <option value="high">High</option>
               <option value="urgent">Urgent</option>
             </select>
+            {companyGoals.length > 0 && (
+              <select value={filters.company_goal_id} onChange={(e) => updateFilter('company_goal_id', e.target.value)} className={styles.filterSelect} style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-text)', maxWidth: '200px' }}>
+                <option value="">All Company Goals</option>
+                {companyGoals.map((cg) => (
+                  <option key={cg.id} value={cg.id}>{cg.title}</option>
+                ))}
+              </select>
+            )}
+            {goals.length > 0 && (
+              <select value={filters.goal_id} onChange={(e) => updateFilter('goal_id', e.target.value)} className={styles.filterSelect} style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-text)', maxWidth: '200px' }}>
+                <option value="">All Dept Goals</option>
+                {goals
+                  .filter((g) => !filters.department_id || g.department_id === filters.department_id)
+                  .map((g) => (
+                    <option key={g.id} value={g.id}>{g.title}</option>
+                  ))}
+              </select>
+            )}
+            {plans.length > 0 && (
+              <select value={filters.plan_id} onChange={(e) => updateFilter('plan_id', e.target.value)} className={styles.filterSelect} style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-text)', maxWidth: '200px' }}>
+                <option value="">All Plans</option>
+                {plans
+                  .filter((p) => !filters.department_id || p.department_id === filters.department_id)
+                  .map((p) => (
+                    <option key={p.id} value={p.id}>{p.title}</option>
+                  ))}
+              </select>
+            )}
+            <select
+              value={filters.month}
+              onChange={(e) => updateFilter('month', e.target.value)}
+              className={styles.filterSelect}
+              style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-text)', maxWidth: '140px' }}
+              aria-label="Filter by month"
+            >
+              <option value="">All Months</option>
+              {MONTH_OPTIONS.map((m) => (
+                <option key={m.value} value={m.value}>{m.label}</option>
+              ))}
+            </select>
+            <select
+              value={filters.year}
+              onChange={(e) => updateFilter('year', e.target.value)}
+              className={styles.filterSelect}
+              style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-text)', maxWidth: '120px' }}
+              aria-label="Filter by year"
+            >
+              <option value="">All Years</option>
+              {[new Date().getFullYear() - 1, new Date().getFullYear(), new Date().getFullYear() + 1, new Date().getFullYear() + 2].map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
             {hasActiveFilters && (
-              <button onClick={clearFilters} style={{ color: 'var(--color-muted)' }} className={styles.retryBtn}>
+              <button onClick={clearFilters} className={styles.cancelBtn} style={{ padding: '8px 16px', fontSize: '14px' }}>
                 Clear Filters
               </button>
             )}

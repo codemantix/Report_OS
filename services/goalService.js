@@ -32,6 +32,7 @@ export async function fetchGoals(filters = {}) {
     .select(`
       *,
       departments:department_id (id, name),
+      company_goals:company_goal_id (id, title, month, year),
       goal_assignees (
         users:user_id (id, full_name, display_name, email, avatar_url, job_title)
       )
@@ -44,6 +45,36 @@ export async function fetchGoals(filters = {}) {
 
   if (filters.status) {
     query = query.eq('status', filters.status);
+  }
+
+  if (filters.priority) {
+    query = query.eq('priority', filters.priority);
+  }
+
+  if (filters.company_goal_id) {
+    query = query.eq('company_goal_id', filters.company_goal_id);
+  }
+
+  if (filters.year) {
+    const year = parseInt(filters.year, 10);
+    if (filters.month) {
+      const month = parseInt(filters.month, 10);
+      const monthStr = String(month).padStart(2, '0');
+      const lastDay = new Date(year, month, 0).getDate();
+      query = query.gte('due_date', `${year}-${monthStr}-01T00:00:00Z`)
+                   .lte('due_date', `${year}-${monthStr}-${lastDay}T23:59:59Z`);
+    } else {
+      query = query.gte('due_date', `${year}-01-01T00:00:00Z`)
+                   .lte('due_date', `${year}-12-31T23:59:59Z`);
+    }
+  } else if (filters.month) {
+    // If only month is selected, default to current year
+    const year = new Date().getFullYear();
+    const month = parseInt(filters.month, 10);
+    const monthStr = String(month).padStart(2, '0');
+    const lastDay = new Date(year, month, 0).getDate();
+    query = query.gte('due_date', `${year}-${monthStr}-01T00:00:00Z`)
+                 .lte('due_date', `${year}-${monthStr}-${lastDay}T23:59:59Z`);
   }
 
   if (filters.search) {
@@ -60,6 +91,7 @@ export async function fetchGoalById(id) {
     .select(`
       *,
       departments:department_id (id, name),
+      company_goals:company_goal_id (id, title, month, year),
       goal_assignees (
         users:user_id (id, full_name, display_name, email, avatar_url, job_title)
       )

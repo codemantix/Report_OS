@@ -6,6 +6,7 @@ import GoalForm from '../../../components/goals/GoalForm';
 import { fetchGoalById, updateGoal, deleteGoal } from '../../../services/goalService';
 import { fetchDepartments } from '../../../services/departmentService';
 import { fetchUsers } from '../../../services/userService';
+import { fetchActiveCompanyGoals } from '../../../services/companyGoalService';
 import { getCurrentUserProfile } from '../../../lib/authHelpers';
 import { formatDate, formatDateForInput } from '../../../utils/dateHelpers';
 import { getProfileDisplayName, getProfileInitials } from '../../../utils/profileHelpers';
@@ -34,6 +35,7 @@ export default function GoalDetailPage() {
   const [goal, setGoal] = useState(null);
   const [departments, setDepartments] = useState([]);
   const [users, setUsers] = useState([]);
+  const [companyGoals, setCompanyGoals] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -51,10 +53,11 @@ export default function GoalDetailPage() {
     setLoading(true);
     setError(null);
     try {
-      const [goalResult, deptResult, usersResult] = await Promise.all([
+      const [goalResult, deptResult, usersResult, companyGoalsResult] = await Promise.all([
         fetchGoalById(id),
         fetchDepartments(),
         fetchUsers({ status: 'active' }),
+        fetchActiveCompanyGoals(),
       ]);
 
       if (goalResult.error) {
@@ -70,6 +73,7 @@ export default function GoalDetailPage() {
       setGoal(goalResult.data);
       setDepartments(deptResult.data || []);
       setUsers(usersResult.data || []);
+      setCompanyGoals(companyGoalsResult.data || []);
     } catch {
       setError('Failed to load goal');
     } finally {
@@ -204,6 +208,7 @@ export default function GoalDetailPage() {
               initialData={goal}
               departments={departments}
               users={users}
+              companyGoals={companyGoals}
               onSubmit={handleUpdate}
               onCancel={() => setEditing(false)}
               loading={saving}

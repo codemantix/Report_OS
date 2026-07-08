@@ -9,9 +9,11 @@ import { fetchDepartments } from '../../../services/departmentService';
 import { fetchGoals } from '../../../services/goalService';
 import { fetchPlans } from '../../../services/planService';
 import { fetchUsers } from '../../../services/userService';
+import { fetchActiveCompanyGoals } from '../../../services/companyGoalService';
 import { getCurrentUserProfile } from '../../../lib/authHelpers';
 import { formatDate, formatDateTime } from '../../../utils/dateHelpers';
 import { getProfileDisplayName } from '../../../utils/profileHelpers';
+import CompanyAlignmentCard from '../../../components/company/CompanyAlignmentCard';
 import styles from '../../../components/tasks/Tasks.module.css';
 import { supabase } from '../../../lib/supabaseClient';
 
@@ -101,6 +103,7 @@ export default function TaskDetailPage() {
   const [goals, setGoals] = useState([]);
   const [plans, setPlans] = useState([]);
   const [users, setUsers] = useState([]);
+  const [companyGoals, setCompanyGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editing, setEditing] = useState(false);
@@ -122,12 +125,13 @@ export default function TaskDetailPage() {
     setUser(profile);
 
     try {
-      const [taskRes, deptRes, goalRes, planRes, userRes] = await Promise.all([
+      const [taskRes, deptRes, goalRes, planRes, userRes, companyGoalsRes] = await Promise.all([
         fetchTaskById(id),
         fetchDepartments(),
         fetchGoals(),
         fetchPlans(),
         fetchUsers({ status: 'active' }),
+        fetchActiveCompanyGoals(),
       ]);
 
       if (taskRes.error) throw taskRes.error;
@@ -138,6 +142,7 @@ export default function TaskDetailPage() {
       setGoals(goalRes.data || []);
       setPlans(planRes.data || []);
       setUsers(userRes.data || []);
+      setCompanyGoals(companyGoalsRes.data || []);
     } catch (err) {
       setError(err.message || 'Failed to load task');
     } finally {
@@ -294,7 +299,7 @@ export default function TaskDetailPage() {
           <div className={styles.header}><h1 className={styles.title}>Edit Task</h1></div>
           <div className={styles.section}>
             <h2 className={styles.sectionTitle}>Task Details</h2>
-            <TaskForm initialData={task} departments={departments} goals={goals} plans={plans} users={users}
+            <TaskForm initialData={task} departments={departments} goals={goals} plans={plans} users={users} companyGoals={companyGoals}
               onSubmit={handleUpdate} onCancel={() => setEditing(false)} loading={saving} />
           </div>
         </div>
@@ -384,6 +389,16 @@ export default function TaskDetailPage() {
           </div>
         </div>
 
+        {/* Company Goal Alignment Card */}
+        {task.company_goals && (
+          <div className="mb-6">
+            <CompanyAlignmentCard
+              goalTitle={task.company_goals.title}
+              summary={`This task contributes directly to the monthly company goal: ${task.company_goals.title} (${task.company_goals.month}/${task.company_goals.year})`}
+            />
+          </div>
+        )}
+
         {/* Description */}
         {task.description && (
           <div className={styles.section}>
@@ -404,6 +419,7 @@ export default function TaskDetailPage() {
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Related Items</h2>
           <div className={styles.detailGrid}>
+            <div><p className={styles.detailLabel}>Related Company Goal</p><p className={styles.detailValue}>{task.company_goals?.title || 'None'}</p></div>
             <div><p className={styles.detailLabel}>Related Goal</p><p className={styles.detailValue}>{task.goals?.title || 'None'}</p></div>
             <div><p className={styles.detailLabel}>Related Plan</p><p className={styles.detailValue}>{task.plans?.title || 'None'}</p></div>
           </div>

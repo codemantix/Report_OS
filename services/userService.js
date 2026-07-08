@@ -204,3 +204,33 @@ export async function fetchUsersByDepartment(departmentId) {
 
   return { data, error };
 }
+
+/**
+ * Delete a user from the public users table, clearing dependencies safely.
+ * @param {string} id - User ID to delete
+ */
+export async function deleteUser(id) {
+  try {
+    // 1. Clean up pivot assignments
+    await supabase.from('task_assignees').delete().eq('user_id', id);
+    await supabase.from('goal_assignees').delete().eq('user_id', id);
+
+    // 2. Set historical creator/owner/reviewer IDs to null so historical data is preserved
+    await supabase.from('reports').update({ user_id: null }).eq('user_id', id);
+    await supabase.from('reports').update({ reviewed_by: null }).eq('reviewed_by', id);
+    await supabase.from('tasks').update({ created_by: null }).eq('created_by', id);
+    await supabase.from('goals').update({ owner_id: null }).eq('owner_id', id);
+    await supabase.from('company_monthly_goals').update({ owner_id: null }).eq('owner_id', id);
+    await supabase.from('company_monthly_goals').update({ created_by: null }).eq('created_by', id);
+
+    // 3. Delete from public users table
+    const { error } = await supabase
+      .from('users')
+      .delete()
+      .eq('id', id);
+
+    return { error };
+  } catch (err) {
+    return { error: err };
+  }
+}

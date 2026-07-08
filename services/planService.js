@@ -47,6 +47,28 @@ export async function fetchPlans(filters = {}) {
     query = query.eq('status', filters.status);
   }
 
+  if (filters.year) {
+    const year = parseInt(filters.year, 10);
+    if (filters.month) {
+      const month = parseInt(filters.month, 10);
+      const monthStr = String(month).padStart(2, '0');
+      const lastDay = new Date(year, month, 0).getDate();
+      query = query.gte('end_date', `${year}-${monthStr}-01T00:00:00Z`)
+                   .lte('end_date', `${year}-${monthStr}-${lastDay}T23:59:59Z`);
+    } else {
+      query = query.gte('end_date', `${year}-01-01T00:00:00Z`)
+                   .lte('end_date', `${year}-12-31T23:59:59Z`);
+    }
+  } else if (filters.month) {
+    // If only month is selected, default to current year
+    const year = new Date().getFullYear();
+    const month = parseInt(filters.month, 10);
+    const monthStr = String(month).padStart(2, '0');
+    const lastDay = new Date(year, month, 0).getDate();
+    query = query.gte('end_date', `${year}-${monthStr}-01T00:00:00Z`)
+                 .lte('end_date', `${year}-${monthStr}-${lastDay}T23:59:59Z`);
+  }
+
   if (filters.search) {
     query = applySearchOr(query, await buildPlanSearchClauses(filters.search));
   }

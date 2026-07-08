@@ -122,6 +122,7 @@ export async function fetchTasks(filters = {}) {
       departments:department_id (id, name),
       goals:goal_id (id, title),
       plans:plan_id (id, title),
+      company_goals:company_goal_id (id, title, month, year),
       created_by_user:created_by (id, full_name, display_name, email, avatar_url),
       task_assignees (
         users:user_id (id, full_name, display_name, email, avatar_url, job_title)
@@ -146,6 +147,30 @@ export async function fetchTasks(filters = {}) {
   }
   if (filters.archived !== undefined) {
     query = query.eq('archived', filters.archived);
+  }
+  if (filters.company_goal_id) {
+    query = query.eq('company_goal_id', filters.company_goal_id);
+  }
+  if (filters.year) {
+    const year = parseInt(filters.year, 10);
+    if (filters.month) {
+      const month = parseInt(filters.month, 10);
+      const monthStr = String(month).padStart(2, '0');
+      const lastDay = new Date(year, month, 0).getDate();
+      query = query.gte('due_date', `${year}-${monthStr}-01T00:00:00Z`)
+                   .lte('due_date', `${year}-${monthStr}-${lastDay}T23:59:59Z`);
+    } else {
+      query = query.gte('due_date', `${year}-01-01T00:00:00Z`)
+                   .lte('due_date', `${year}-12-31T23:59:59Z`);
+    }
+  } else if (filters.month) {
+    // If only month is selected, default to current year
+    const year = new Date().getFullYear();
+    const month = parseInt(filters.month, 10);
+    const monthStr = String(month).padStart(2, '0');
+    const lastDay = new Date(year, month, 0).getDate();
+    query = query.gte('due_date', `${year}-${monthStr}-01T00:00:00Z`)
+                 .lte('due_date', `${year}-${monthStr}-${lastDay}T23:59:59Z`);
   }
   if (filters.assignee_id) {
     const { data: assignments } = await supabase
@@ -219,6 +244,7 @@ export async function fetchMyTasks(userId, filters = {}) {
       departments:department_id (id, name),
       goals:goal_id (id, title),
       plans:plan_id (id, title),
+      company_goals:company_goal_id (id, title, month, year),
       created_by_user:created_by (id, full_name, display_name, email, avatar_url)
     `)
     .in('id', taskIds)

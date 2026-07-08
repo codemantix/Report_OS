@@ -6,24 +6,28 @@ import GoalForm from '../../../components/goals/GoalForm';
 import { createGoal } from '../../../services/goalService';
 import { fetchDepartments } from '../../../services/departmentService';
 import { fetchUsers } from '../../../services/userService';
+import { fetchActiveCompanyGoals } from '../../../services/companyGoalService';
 import styles from '../../../components/goals/Goals.module.css';
 
 export default function NewGoalPage() {
   const router = useRouter();
   const [departments, setDepartments] = useState([]);
   const [users, setUsers] = useState([]);
+  const [companyGoals, setCompanyGoals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
     async function init() {
       try {
-        const [deptResult, usersResult] = await Promise.all([
+        const [deptResult, usersResult, companyGoalsResult] = await Promise.all([
           fetchDepartments(),
           fetchUsers({ status: 'active' }),
+          fetchActiveCompanyGoals(),
         ]);
         setDepartments(deptResult.data || []);
         setUsers(usersResult.data || []);
+        setCompanyGoals(companyGoalsResult.data || []);
       } catch {
         toast.error('Failed to load departments');
       } finally {
@@ -79,6 +83,7 @@ export default function NewGoalPage() {
           <GoalForm
             departments={departments}
             users={users}
+            companyGoals={companyGoals}
             onSubmit={handleSubmit}
             onCancel={handleCancel}
             loading={loading}

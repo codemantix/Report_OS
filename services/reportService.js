@@ -10,6 +10,7 @@ export async function fetchReports(filters = {}) {
       departments:department_id (id, name),
       goals:goal_id (id, title),
       plans:plan_id (id, title),
+      company_goals:company_goal_id (id, title, month, year),
       report_ai_analysis (*)
     `)
     .order(filters.sortBy || 'submitted_at', { ascending: filters.sortDirection === 'asc' });
@@ -98,6 +99,10 @@ async function applyFilters(query, filters = {}) {
     query = query.eq('ai_status', filters.ai_status);
   }
 
+  if (filters.company_goal_id) {
+    query = query.eq('company_goal_id', filters.company_goal_id);
+  }
+
   if (filters.reviewed !== undefined) {
     query = query.eq('reviewed', filters.reviewed);
   }
@@ -152,6 +157,7 @@ export async function fetchReportsPaginated(filters = {}, page = 1, pageSize = 1
       departments:department_id (id, name),
       goals:goal_id (id, title),
       plans:plan_id (id, title),
+      company_goals:company_goal_id (id, title, month, year),
       report_ai_analysis (*)
     `)
     .order(filters.sortBy || 'submitted_at', { ascending: filters.sortDirection === 'asc' })
@@ -175,6 +181,7 @@ export async function fetchReportById(id) {
       departments:department_id (id, name),
       goals:goal_id (id, title, description, success_metric),
       plans:plan_id (id, title, description, plan_type),
+      company_goals:company_goal_id (id, title, description, month, year, objectives, expected_outcomes, success_metric, expected_summary),
       report_ai_analysis (*),
       admin_comments (
         *,
@@ -261,4 +268,28 @@ export async function fetchHighRiskReports() {
     .order('created_at', { ascending: false });
 
   return { data, error };
+}
+
+/**
+ * Bulk delete reports by IDs, clearing child table references first.
+ * @param {string[]} ids - Array of report UUIDs
+ */
+export async function deleteReports(ids) {
+  if (!Array.isArray(ids) || ids.length === 0) return { error: null };
+
+  try {
+    // Clean up dependent tables first
+    await supabase.from('report_tasks').delete().in('report_id', ids);
+    await supabase.from('report_ai_analysis').delete().in('report_id', ids);
+    await supabase.from('admin_comments').delete().in('report_id', ids);
+
+    const { error } = await supabase
+      .from('reports')
+      .delete()
+      .in('id', ids);
+
+    return { error };
+  } catch (err) {
+    return { error: err };
+  }
 }
