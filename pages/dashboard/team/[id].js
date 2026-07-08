@@ -156,8 +156,8 @@ export default function TeamMemberProfilePage() {
         <TeamProfileStats stats={stats} />
 
         {/* Navigation Tabs */}
-        <div className="flex border-b border-gray-150 dark:border-gray-800">
-          <div className="flex gap-2 -mb-px">
+        <div className="flex border-b border-gray-150 dark:border-gray-800 overflow-x-auto scrollbar-hide">
+          <div className="flex gap-2 -mb-px min-w-max">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const active = activeTab === tab.id;
