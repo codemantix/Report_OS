@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Pencil, X, Check, ShieldAlert, Trash2 } from 'lucide-react';
+import { Pencil, X, Check, ShieldAlert, Trash2, Eye } from 'lucide-react';
+import Link from 'next/link';
 import { getProfileDisplayName, getProfileInitials } from '../../utils/profileHelpers';
 import styles from './Team.module.css';
 import Image from 'next/image';
@@ -28,6 +29,8 @@ export default function TeamTable({ users, currentUser = null, departments = [],
   const [saving, setSaving] = useState(false);
   const [confirmModal, setConfirmModal] = useState(null); // { user, newRole }
   const [deleteConfirmModal, setDeleteConfirmModal] = useState(null); // user object
+
+  const isAdmin = currentUser?.role === 'admin';
 
   function startEdit(user) {
     setEditingUserId(user.id);
@@ -100,9 +103,10 @@ export default function TeamTable({ users, currentUser = null, departments = [],
             <tr>
               <th className={styles.th}>Name</th>
               <th className={styles.th}>Email</th>
-              <th className={styles.th}>Department</th>
+              {isAdmin && <th className={styles.th}>Department</th>}
               <th className={styles.th}>Role</th>
               <th className={styles.th}>Status</th>
+              <th className={styles.th}>Job Title</th>
               <th className={styles.th}>Actions</th>
             </tr>
           </thead>
@@ -132,26 +136,28 @@ export default function TeamTable({ users, currentUser = null, departments = [],
                     </div>
                   </td>
                   <td className={styles.td}>{user.email}</td>
-                  <td className={styles.td}>
-                    {isEditing ? (
-                      <select
-                        value={editForm.department_id}
-                        onChange={(e) => setEditForm((f) => ({ ...f, department_id: e.target.value }))}
-                        className={styles.select}
-                        style={{ padding: '4px 8px', fontSize: '12px', minWidth: '140px' }}
-                        disabled={saving}
-                      >
-                        <option value="">No Department</option>
-                        {departments.map((dept) => (
-                          <option key={dept.id} value={dept.id}>
-                            {dept.name}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      user.departments?.name || 'N/A'
-                    )}
-                  </td>
+                  {isAdmin && (
+                    <td className={styles.td}>
+                      {isEditing ? (
+                        <select
+                          value={editForm.department_id}
+                          onChange={(e) => setEditForm((f) => ({ ...f, department_id: e.target.value }))}
+                          className={styles.select}
+                          style={{ padding: '4px 8px', fontSize: '12px', minWidth: '140px' }}
+                          disabled={saving}
+                        >
+                          <option value="">No Department</option>
+                          {departments.map((dept) => (
+                            <option key={dept.id} value={dept.id}>
+                              {dept.name}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        user.departments?.name || 'N/A'
+                      )}
+                    </td>
+                  )}
                   <td className={styles.td}>
                     {isEditing ? (
                       <select
@@ -191,6 +197,9 @@ export default function TeamTable({ users, currentUser = null, departments = [],
                     )}
                   </td>
                   <td className={styles.td}>
+                    {user.job_title || 'No Title'}
+                  </td>
+                  <td className={styles.td}>
                     <div className={styles.actions}>
                       {isEditing ? (
                         <>
@@ -214,8 +223,15 @@ export default function TeamTable({ users, currentUser = null, departments = [],
                           </button>
                         </>
                       ) : (
-                        <>
-                          {currentUser?.role === 'admin' && (
+                        <div className="flex items-center gap-1">
+                          <Link
+                            href={`/dashboard/team/${user.id}`}
+                            className={styles.actionBtn}
+                            title="View Profile"
+                          >
+                            <Eye size={16} />
+                          </Link>
+                          {isAdmin && (
                             <button
                               onClick={() => startEdit(user)}
                               className={styles.actionBtn}
@@ -234,7 +250,7 @@ export default function TeamTable({ users, currentUser = null, departments = [],
                               <Trash2 size={16} />
                             </button>
                           )} */}
-                        </>
+                        </div>
                       )}
                     </div>
                   </td>

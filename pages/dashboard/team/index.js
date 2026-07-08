@@ -2,14 +2,15 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import DashboardLayout from '../../../components/layout/DashboardLayout';
-import SearchInput from '../../../components/common/SearchInput';
+import TeamFilters from '../../../components/team/TeamFilters';
 import PaginationControls from '../../../components/common/PaginationControls';
 import TeamTable from '../../../components/team/TeamTable';
-import { fetchUsers, updateUser, deleteUser } from '../../../services/userService';
 import { fetchDepartments } from '../../../services/departmentService';
 import { getCurrentUserProfile } from '../../../lib/authHelpers';
 import useDebounce from '../../../hooks/useDebounce';
 import { paginateItems } from '../../../utils/pagination';
+import { ShieldAlert, Shield } from 'lucide-react';
+import { supabase } from '../../../lib/supabaseClient';
 import styles from '../../../components/team/Team.module.css';
 
 export default function TeamPage() {
@@ -19,55 +20,78 @@ export default function TeamPage() {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Search and robust filter states
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 400);
+  const [filters, setFilters] = useState({
+    department_id: '',
+    role: '',
+    status: '',
+  });
+
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
     async function init() {
-      // Check user role first
       const profile = await getCurrentUserProfile();
       if (!profile) {
         router.push('/auth/login');
         return;
       }
-      if (profile.role === 'team_member') {
-        router.push('/dashboard');
-        return;
-      }
       setUser(profile);
+      
+      // Load departments for admin filters
+      if (profile.role === 'admin') {
+        const deptsRes = await fetchDepartments();
+        if (!deptsRes.error) {
+          setDepartments(deptsRes.data || []);
+        }
+      }
     }
     init();
   }, []);
 
+  // Reset page on search or filter change
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, pageSize]);
+  }, [debouncedSearch, filters, pageSize]);
 
+  // Reload team list when filters, search, or user changes
   useEffect(() => {
-    if (user) loadData({ search: debouncedSearch || undefined });
-  }, [user, debouncedSearch]);
+    if (user && user.role !== 'team_member') {
+      loadData();
+    } else if (user && user.role === 'team_member') {
+      setLoading(false);
+    }
+  }, [user, debouncedSearch, filters]);
 
-  async function loadData(filters = {}) {
+  async function loadData() {
     setLoading(true);
     setError(null);
     try {
-      const effectiveFilters = { ...filters };
-      if (user?.role !== 'admin' && user?.department_id) {
-        effectiveFilters.department_id = user.department_id;
+      const queryParams = new URLSearchParams();
+      if (debouncedSearch.trim()) queryParams.append('search', debouncedSearch);
+      if (filters.department_id) queryParams.append('department_id', filters.department_id);
+      if (filters.role) queryParams.append('role', filters.role);
+      if (filters.status) queryParams.append('status', filters.status);
+
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      const res = await fetch(`/api/team?${queryParams.toString()}`, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',
+        },
+      });
+      const payload = await res.json();
+
+      if (!res.ok) {
+        throw new Error(payload.error || 'Failed to fetch team members');
       }
 
-      const [usersRes, deptsRes] = await Promise.all([
-        fetchUsers(effectiveFilters),
-        fetchDepartments(),
-      ]);
-
-      if (usersRes.error) throw usersRes.error;
-      if (deptsRes.error) throw deptsRes.error;
-
-      setUsers(usersRes.data || []);
-      setDepartments(deptsRes.data || []);
+      setUsers(payload.members || []);
     } catch (err) {
       console.error('Failed to load team data:', err);
       setError(err.message || 'Failed to load team data');
@@ -76,31 +100,45 @@ export default function TeamPage() {
     }
   }
 
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
   const paginatedUsers = paginateItems(users, page, pageSize);
 
   async function handleUserUpdate(userId, updates) {
     try {
-      const { data, error: updateError } = await updateUser(userId, updates);
-      if (updateError) throw updateError;
+      let res;
+      if (updates.role !== undefined) {
+        res = await fetch(`/api/team/${userId}/admin-actions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'change_role', value: updates.role })
+        });
+      } else if (updates.department_id !== undefined) {
+        res = await fetch(`/api/team/${userId}/admin-actions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'change_department', value: updates.department_id })
+        });
+      } else if (updates.status !== undefined) {
+        res = await fetch(`/api/team/${userId}/admin-actions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'change_status', value: updates.status })
+        });
+      }
 
-      // Optimistically update local state
-      setUsers((prev) =>
-        prev.map((u) => {
-          if (u.id === userId) {
-            return {
-              ...u,
-              ...updates,
-              departments:
-                updates.department_id !== undefined
-                  ? departments.find((d) => d.id === updates.department_id) || u.departments
-                  : u.departments,
-            };
-          }
-          return u;
-        })
-      );
+      if (res && !res.ok) {
+        const payload = await res.json();
+        throw new Error(payload.error || 'Failed to update user');
+      }
 
       toast.success('User updated successfully');
+      loadData();
     } catch (err) {
       console.error('Failed to update user:', err);
       toast.error(err.message || 'Failed to update user');
@@ -110,40 +148,87 @@ export default function TeamPage() {
 
   async function handleUserDelete(userId) {
     try {
-      const { error } = await deleteUser(userId);
-      if (error) throw error;
+      const res = await fetch(`/api/team/${userId}/admin-actions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'change_status', value: 'suspended' }) // Safe deactivation MVP
+      });
 
-      // Optimistically remove from state
-      setUsers((prev) => prev.filter((u) => u.id !== userId));
-      toast.success('Team member removed successfully');
+      if (!res.ok) {
+        const payload = await res.json();
+        throw new Error(payload.error || 'Failed to suspend user');
+      }
+
+      toast.success('Team member suspended successfully');
+      loadData();
     } catch (err) {
-      console.error('Failed to remove user:', err);
-      toast.error(err.message || 'Failed to remove team member');
+      console.error('Failed to suspend user:', err);
+      toast.error(err.message || 'Failed to suspend user');
       throw err;
     }
   }
+
+  // 1. Team Member restricted access rendering
+  if (user && user.role === 'team_member') {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6 bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-2xl shadow-sm transition-colors duration-200">
+          <div className="p-4 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 rounded-full mb-4">
+            <ShieldAlert size={40} />
+          </div>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            Access Restricted
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm leading-relaxed mb-6">
+            Team directory access is limited to admins and department leads.
+          </p>
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg shadow-sm transition-all"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const isAdmin = user?.role === 'admin';
 
   return (
     <DashboardLayout>
       <div className={styles.page}>
         <div className={styles.header}>
           <div>
-            <h1 className={styles.title}>Team</h1>
+            <h1 className={styles.title}>Team Directory</h1>
             <p className={styles.subtitle}>
-              View team members and manage roles, status, and department assignments
+              {isAdmin 
+                ? 'View team members and manage roles, status, and department assignments.'
+                : 'View members assigned to your department.'}
             </p>
           </div>
         </div>
 
-        <div className={styles.surfaceCard}>
-          <SearchInput
-            value={search}
-            onChange={setSearch}
-            placeholder="Search team members by name, email, role..."
-            loading={search !== debouncedSearch}
-            label="Search team members"
-          />
-        </div>
+        {/* Read-only notice for Department Leads */}
+        {!isAdmin && user && (
+          <div className="flex items-center gap-3 p-4 bg-blue-50/50 dark:bg-blue-950/10 border border-blue-100 dark:border-blue-900/30 rounded-xl transition-all duration-200">
+            <Shield className="w-5 h-5 text-blue-500 dark:text-blue-400 flex-shrink-0" />
+            <span className="text-xs text-blue-700 dark:text-blue-300 font-medium">
+              You are viewing members assigned to your department. Account changes are managed by admins.
+            </span>
+          </div>
+        )}
+
+        {/* Filters */}
+        <TeamFilters
+          search={search}
+          onSearchChange={setSearch}
+          debouncedSearch={debouncedSearch}
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          departments={departments}
+          isAdmin={isAdmin}
+        />
 
         {loading ? (
           <div className={`${styles.surfaceCard} space-y-3`}>
@@ -155,7 +240,7 @@ export default function TeamPage() {
           <div className={styles.emptyCard}>
             <div className={styles.errorState}>
               <p className={styles.errorText}>{error}</p>
-              <button onClick={() => loadData({ search: debouncedSearch || undefined })} className={styles.retryBtn}>
+              <button onClick={loadData} className={styles.retryBtn}>
                 Try Again
               </button>
             </div>
@@ -177,7 +262,9 @@ export default function TeamPage() {
                 />
               </svg>
               <p className={styles.emptyText}>
-                {search.trim() ? 'No team members matched your search.' : 'No team members yet. Members will appear here once they register.'}
+                {isAdmin 
+                  ? 'No team members found.' 
+                  : 'No team members are currently assigned to your department.'}
               </p>
             </div>
           </div>
