@@ -12,7 +12,7 @@ import { createReport } from '../../services/reportService';
 import { uploadFiles } from '../../services/uploadService';
 import { getDefaultDateRange, isInPeriod, isDateInPeriod } from '../../utils/reportDateRange';
 import ReportPeriodSelector from './ReportPeriodSelector';
-import FileUpload from './FileUpload';
+import FileUpload from '../common/FileUpload';
 import styles from './ReportForm.module.css';
 
 const reportTypes = [

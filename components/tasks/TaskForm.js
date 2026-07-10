@@ -1,5 +1,8 @@
 import { useMemo, useState } from 'react';
 import { getProfileDisplayName, getProfileInitials } from '../../utils/profileHelpers';
+import { uploadFiles } from '../../services/uploadService';
+import { parseAttachments } from '../common/AttachmentsList';
+import AttachmentsField from '../common/AttachmentsField';
 import styles from './Tasks.module.css';
 import Image from 'next/image';
 
@@ -35,6 +38,14 @@ export default function TaskForm({ initialData, departments, goals, plans, users
     due_date: initialData?.due_date ? initialData.due_date.slice(0, 10) : '',
     assignee_ids: initialData?.task_assignees?.map((item) => item.users?.id || item.user_id).filter(Boolean) || [],
   });
+
+  const [existingAttachments, setExistingAttachments] = useState(() => parseAttachments(initialData?.attachments));
+  const [newFiles, setNewFiles] = useState([]);
+  const [uploading, setUploading] = useState(false);
+
+  function handleRemoveExistingAttachment(index) {
+    setExistingAttachments((prev) => prev.filter((_, i) => i !== index));
+  }
 
   const availableAssignees = useMemo(() => {
     if (!formData.department_id) return users || [];
@@ -82,7 +93,7 @@ export default function TaskForm({ initialData, departments, goals, plans, users
     });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const payload = { ...formData };
     if (!payload.company_goal_id) payload.company_goal_id = null;
@@ -91,6 +102,22 @@ export default function TaskForm({ initialData, departments, goals, plans, users
     if (!payload.plan_id) payload.plan_id = null;
     if (!payload.start_date) payload.start_date = null;
     if (!payload.due_date) payload.due_date = null;
+
+    let uploadedAttachments = [];
+    if (newFiles.length > 0) {
+      setUploading(true);
+      try {
+        uploadedAttachments = await uploadFiles(newFiles);
+      } catch (err) {
+        console.error('Attachment upload error:', err);
+      } finally {
+        setUploading(false);
+      }
+    }
+
+    const mergedAttachments = [...existingAttachments, ...uploadedAttachments];
+    payload.attachments = mergedAttachments.length > 0 ? JSON.stringify(mergedAttachments) : null;
+
     onSubmit(payload);
   }
 
@@ -156,6 +183,17 @@ export default function TaskForm({ initialData, departments, goals, plans, users
         <textarea id="expected_output" name="expected_output" className={styles.textarea} placeholder="What should be delivered?" value={formData.expected_output} onChange={handleChange} rows={2} />
       </div>
 
+      <div className={styles.field}>
+        <label className={styles.label}>Attachments</label>
+        <AttachmentsField
+          existingAttachments={existingAttachments}
+          onRemoveExisting={handleRemoveExistingAttachment}
+          newFiles={newFiles}
+          onNewFilesChange={setNewFiles}
+          disabled={loading || uploading}
+        />
+      </div>
+
       <div className={styles.row}>
         <div className={styles.field}>
           <label className={styles.label} htmlFor="start_date">Start Date</label>
@@ -206,9 +244,9 @@ export default function TaskForm({ initialData, departments, goals, plans, users
       </div>
 
       <div className={styles.actions}>
-        {onCancel && <button type="button" className={styles.cancelBtn} onClick={onCancel} disabled={loading}>Cancel</button>}
-        <button type="submit" className={styles.submitBtn} disabled={loading}>
-          {loading ? 'Saving...' : initialData ? 'Update Task' : 'Create Task'}
+        {onCancel && <button type="button" className={styles.cancelBtn} onClick={onCancel} disabled={loading || uploading}>Cancel</button>}
+        <button type="submit" className={styles.submitBtn} disabled={loading || uploading}>
+          {uploading ? 'Uploading files...' : loading ? 'Saving...' : initialData ? 'Update Task' : 'Create Task'}
         </button>
       </div>
     </form>

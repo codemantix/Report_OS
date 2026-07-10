@@ -7,6 +7,7 @@ import { fetchPlanById, updatePlan, deletePlan } from '../../../services/planSer
 import { fetchDepartments } from '../../../services/departmentService';
 import { getCurrentUserProfile } from '../../../lib/authHelpers';
 import { formatDate } from '../../../utils/dateHelpers';
+import AttachmentsList, { parseAttachments } from '../../../components/common/AttachmentsList';
 import styles from '../../../components/plans/Plans.module.css';
 
 const TYPE_COLORS = {
@@ -265,6 +266,13 @@ export default function PlanDetailPage() {
           <div className={styles.section}>
             <h2 className={styles.sectionTitle}>Description</h2>
             <p className="text-sm text-gray-700 whitespace-pre-wrap">{plan.description}</p>
+          </div>
+        )}
+
+        {parseAttachments(plan.attachments).length > 0 && (
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>Attachments</h2>
+            <AttachmentsList attachments={plan.attachments} />
           </div>
         )}
       </div>

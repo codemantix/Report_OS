@@ -1,0 +1,125 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-soft);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.card:hover {
+  border-color: #93c5fd;
+  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.10);
+}
+
+.cardFailed {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px dashed rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.04);
+}
+
+.preview {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fileIconLg {
+  width: 18px;
+  height: 18px;
+  color: #2563EB;
+}
+
+.cardFailed .fileIconLg {
+  color: #EF4444;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.size {
+  font-size: 0.6875rem;
+  color: var(--color-muted);
+  margin-top: 1px;
+}
+
+.errorText {
+  font-size: 0.6875rem;
+  color: #EF4444;
+  margin-top: 1px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: var(--color-muted);
+  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+}
+
+.actionBtn:hover {
+  background: rgba(37, 99, 235, 0.10);
+  color: #2563EB;
+}
+
+:global(.dark) .actionBtn:hover {
+  background: rgba(59, 130, 246, 0.14);
+  color: #60A5FA;
+}
+
+:global(.dark) .card {
+  background: var(--color-surface-soft);
+  border-color: var(--color-border);
+}
+
+:global(.dark) .preview {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}

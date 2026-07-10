@@ -10,6 +10,7 @@ import { fetchActiveCompanyGoals } from '../../../services/companyGoalService';
 import { getCurrentUserProfile } from '../../../lib/authHelpers';
 import { formatDate, formatDateForInput } from '../../../utils/dateHelpers';
 import { getProfileDisplayName, getProfileInitials } from '../../../utils/profileHelpers';
+import AttachmentsList, { parseAttachments } from '../../../components/common/AttachmentsList';
 import styles from '../../../components/goals/Goals.module.css';
 
 const PRIORITY_COLORS = {
@@ -302,6 +303,13 @@ export default function GoalDetailPage() {
           <div className={styles.section}>
             <h2 className={styles.sectionTitle}>Expected Deliverables</h2>
             <p className="text-sm text-gray-700 whitespace-pre-wrap">{goal.expected_deliverables}</p>
+          </div>
+        )}
+
+        {parseAttachments(goal.attachments).length > 0 && (
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>Attachments</h2>
+            <AttachmentsList attachments={goal.attachments} />
           </div>
         )}
 

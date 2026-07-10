@@ -10,6 +10,7 @@ import { getProfileDisplayName } from '../../../utils/profileHelpers';
 import styles from '../../../components/reports/ReportDetails.module.css';
 import { Edit, Trash2 } from 'lucide-react';
 import CompanyAlignmentCard from '../../../components/company/CompanyAlignmentCard';
+import AttachmentsList, { parseAttachments } from '../../../components/common/AttachmentsList';
 
 function getLatestAnalysis(analysis) {
   if (!Array.isArray(analysis)) return analysis || null;
@@ -425,6 +426,14 @@ export default function ReportDetailPage() {
             )}
           </div>
         </div>
+
+        {/* Attachments */}
+        {parseAttachments(report.attachments).length > 0 && (
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>Attachments</h2>
+            <AttachmentsList attachments={report.attachments} />
+          </div>
+        )}
 
         {/* Goal & Plan Alignment */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

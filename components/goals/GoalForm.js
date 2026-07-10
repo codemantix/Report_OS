@@ -1,5 +1,8 @@
 import { useMemo, useState } from 'react';
 import { getProfileDisplayName, getProfileInitials } from '../../utils/profileHelpers';
+import { uploadFiles } from '../../services/uploadService';
+import { parseAttachments } from '../common/AttachmentsList';
+import AttachmentsField from '../common/AttachmentsField';
 import styles from './Goals.module.css';
 import Image from 'next/image';
 
@@ -33,6 +36,14 @@ export default function GoalForm({ initialData, departments, users = [], company
     status: initialData?.status || 'not_started',
     assignee_ids: initialData?.goal_assignees?.map((item) => item.users?.id || item.user_id).filter(Boolean) || [],
   });
+
+  const [existingAttachments, setExistingAttachments] = useState(() => parseAttachments(initialData?.attachments));
+  const [newFiles, setNewFiles] = useState([]);
+  const [uploading, setUploading] = useState(false);
+
+  function handleRemoveExistingAttachment(index) {
+    setExistingAttachments((prev) => prev.filter((_, i) => i !== index));
+  }
 
   const availableAssignees = useMemo(() => {
     if (!formData.department_id) return users;
@@ -70,13 +81,29 @@ export default function GoalForm({ initialData, departments, users = [], company
     });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const payload = { ...formData };
     if (!payload.company_goal_id) payload.company_goal_id = null;
     if (!payload.department_id) payload.department_id = null;
     if (!payload.start_date) payload.start_date = null;
     if (!payload.due_date) payload.due_date = null;
+
+    let uploadedAttachments = [];
+    if (newFiles.length > 0) {
+      setUploading(true);
+      try {
+        uploadedAttachments = await uploadFiles(newFiles);
+      } catch (err) {
+        console.error('Attachment upload error:', err);
+      } finally {
+        setUploading(false);
+      }
+    }
+
+    const mergedAttachments = [...existingAttachments, ...uploadedAttachments];
+    payload.attachments = mergedAttachments.length > 0 ? JSON.stringify(mergedAttachments) : null;
+
     onSubmit(payload);
   }
 
@@ -276,6 +303,17 @@ export default function GoalForm({ initialData, departments, users = [], company
         />
       </div>
 
+      <div className={styles.field}>
+        <label className={styles.label}>Attachments</label>
+        <AttachmentsField
+          existingAttachments={existingAttachments}
+          onRemoveExisting={handleRemoveExistingAttachment}
+          newFiles={newFiles}
+          onNewFilesChange={setNewFiles}
+          disabled={loading || uploading}
+        />
+      </div>
+
       {initialData && (
         <div className={styles.field}>
           <label className={styles.label} htmlFor="status">
@@ -299,12 +337,12 @@ export default function GoalForm({ initialData, departments, users = [], company
 
       <div className={styles.actions}>
         {onCancel && (
-          <button type="button" className={styles.cancelBtn} onClick={onCancel} disabled={loading}>
+          <button type="button" className={styles.cancelBtn} onClick={onCancel} disabled={loading || uploading}>
             Cancel
           </button>
         )}
-        <button type="submit" className={styles.submitBtn} disabled={loading}>
-          {loading ? 'Saving...' : initialData ? 'Update Goal' : 'Create Goal'}
+        <button type="submit" className={styles.submitBtn} disabled={loading || uploading}>
+          {uploading ? 'Uploading files...' : loading ? 'Saving...' : initialData ? 'Update Goal' : 'Create Goal'}
         </button>
       </div>
     </form>

@@ -14,6 +14,7 @@ import { getCurrentUserProfile } from '../../../lib/authHelpers';
 import { formatDate, formatDateTime } from '../../../utils/dateHelpers';
 import { getProfileDisplayName } from '../../../utils/profileHelpers';
 import CompanyAlignmentCard from '../../../components/company/CompanyAlignmentCard';
+import AttachmentsList, { parseAttachments } from '../../../components/common/AttachmentsList';
 import styles from '../../../components/tasks/Tasks.module.css';
 import { supabase } from '../../../lib/supabaseClient';
 
@@ -412,6 +413,14 @@ export default function TaskDetailPage() {
           <div className={styles.section}>
             <h2 className={styles.sectionTitle}>Expected Output</h2>
             <p style={{ color: 'var(--color-text)', whiteSpace: 'pre-wrap' }}>{task.expected_output}</p>
+          </div>
+        )}
+
+        {/* Attachments */}
+        {parseAttachments(task.attachments).length > 0 && (
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>Attachments</h2>
+            <AttachmentsList attachments={task.attachments} />
           </div>
         )}
 

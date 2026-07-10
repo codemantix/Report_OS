@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { uploadFiles } from '../../services/uploadService';
+import { parseAttachments } from '../common/AttachmentsList';
+import AttachmentsField from '../common/AttachmentsField';
 import styles from './Plans.module.css';
 
 const PLAN_TYPE_OPTIONS = [
@@ -19,17 +22,41 @@ export default function PlanForm({ initialData, departments, onSubmit, onCancel,
     end_date: initialData?.end_date ? initialData.end_date.slice(0, 10) : '',
   });
 
+  const [existingAttachments, setExistingAttachments] = useState(() => parseAttachments(initialData?.attachments));
+  const [newFiles, setNewFiles] = useState([]);
+  const [uploading, setUploading] = useState(false);
+
+  function handleRemoveExistingAttachment(index) {
+    setExistingAttachments((prev) => prev.filter((_, i) => i !== index));
+  }
+
   function handleChange(e) {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const payload = { ...formData };
     if (!payload.department_id) payload.department_id = null;
     if (!payload.start_date) payload.start_date = null;
     if (!payload.end_date) payload.end_date = null;
+
+    let uploadedAttachments = [];
+    if (newFiles.length > 0) {
+      setUploading(true);
+      try {
+        uploadedAttachments = await uploadFiles(newFiles);
+      } catch (err) {
+        console.error('Attachment upload error:', err);
+      } finally {
+        setUploading(false);
+      }
+    }
+
+    const mergedAttachments = [...existingAttachments, ...uploadedAttachments];
+    payload.attachments = mergedAttachments.length > 0 ? JSON.stringify(mergedAttachments) : null;
+
     onSubmit(payload);
   }
 
@@ -106,6 +133,17 @@ export default function PlanForm({ initialData, departments, onSubmit, onCancel,
         />
       </div>
 
+      <div className={styles.field}>
+        <label className={styles.label}>Attachments</label>
+        <AttachmentsField
+          existingAttachments={existingAttachments}
+          onRemoveExisting={handleRemoveExistingAttachment}
+          newFiles={newFiles}
+          onNewFilesChange={setNewFiles}
+          disabled={loading || uploading}
+        />
+      </div>
+
       <div className={styles.row}>
         <div className={styles.field}>
           <label className={styles.label} htmlFor="start_date">
@@ -138,12 +176,12 @@ export default function PlanForm({ initialData, departments, onSubmit, onCancel,
 
       <div className={styles.actions}>
         {onCancel && (
-          <button type="button" className={styles.cancelBtn} onClick={onCancel} disabled={loading}>
+          <button type="button" className={styles.cancelBtn} onClick={onCancel} disabled={loading || uploading}>
             Cancel
           </button>
         )}
-        <button type="submit" className={styles.submitBtn} disabled={loading}>
-          {loading ? 'Saving...' : initialData ? 'Update Plan' : 'Create Plan'}
+        <button type="submit" className={styles.submitBtn} disabled={loading || uploading}>
+          {uploading ? 'Uploading files...' : loading ? 'Saving...' : initialData ? 'Update Plan' : 'Create Plan'}
         </button>
       </div>
     </form>
