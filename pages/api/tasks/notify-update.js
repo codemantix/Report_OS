@@ -245,10 +245,11 @@ export default async function handler(req, res) {
 
     const updaterName = updater?.display_name || updater?.full_name || 'A team member';
 
-    // 3. Fetch task assignees
+    // 3. Fetch assignees for this specific task only
     const { data: assignments, error: assignmentsError } = await supabaseAdmin
       .from('task_assignees')
-      .select('user_id');
+      .select('user_id')
+      .eq('task_id', taskId);
 
     const assigneeIds = (assignments || []).map((a) => a.user_id).filter(Boolean);
 
