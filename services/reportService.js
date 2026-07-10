@@ -182,6 +182,7 @@ export async function fetchReportById(id) {
       goals:goal_id (id, title, description, success_metric),
       plans:plan_id (id, title, description, plan_type),
       company_goals:company_goal_id (id, title, description, month, year, objectives, expected_outcomes, success_metric, expected_summary),
+      tasks:task_id (id, title, description, expected_output, priority, status, due_date),
       report_ai_analysis (*),
       admin_comments (
         *,

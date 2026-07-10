@@ -14,15 +14,22 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Report ID is required' });
     }
 
-    // Link report to task if provided
+    // Link report to task if provided.
+    // Uses the admin client (service role) because this route runs
+    // server-side with no forwarded user session, so the anon-key client
+    // has no auth.uid() context and gets silently blocked by RLS.
     if (taskId) {
       try {
-        await supabase
+        const supabaseAdmin = getAdminClient();
+        const { error: linkError } = await supabaseAdmin
           .from('report_tasks')
           .upsert(
             { report_id: reportId, task_id: taskId },
             { onConflict: 'report_id,task_id' }
           );
+        if (linkError) {
+          console.error('Task linking error:', linkError);
+        }
       } catch (linkErr) {
         console.error('Task linking error:', linkErr);
       }

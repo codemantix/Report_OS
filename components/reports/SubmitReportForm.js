@@ -260,6 +260,7 @@ export default function SubmitReportForm() {
         department_id: formData.department_id || null,
         goal_id: formData.goal_id || null,
         plan_id: formData.plan_id || null,
+        task_id: formData.task_id || null,
         company_goal_id: formData.company_goal_id || null,
         report_type: formData.report_type,
         project_name: formData.project_name || null,

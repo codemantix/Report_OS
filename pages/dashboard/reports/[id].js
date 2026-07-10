@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import toast from 'react-hot-toast';
 import DashboardLayout from '../../../components/layout/DashboardLayout';
 import { fetchReportById, markReportReviewed, updateReport } from '../../../services/reportService';
 import { getCurrentUserProfile } from '../../../lib/authHelpers';
-import { formatDateTime } from '../../../utils/dateHelpers';
+import { formatDate, formatDateTime } from '../../../utils/dateHelpers';
 import { getScoreColor, getRiskBadgeColor, getRiskLabel } from '../../../utils/scoreHelpers';
 import { getProfileDisplayName } from '../../../utils/profileHelpers';
 import styles from '../../../components/reports/ReportDetails.module.css';
@@ -314,6 +315,7 @@ export default function ReportDetailPage() {
   const canViewAdminRecommendation = currentUser?.role === 'admin';
   const analysis = getLatestAnalysis(report.report_ai_analysis);
   const userName = getProfileDisplayName(report.users, 'Unknown');
+  const relatedTask = report.tasks || null;
 
   return (
     <DashboardLayout>
@@ -460,6 +462,19 @@ export default function ReportDetailPage() {
               {report.plans.plan_type && (
                 <p className="text-sm max-sm:text-xs text-gray-500 mt-1 capitalize">{report.plans.plan_type} plan</p>
               )}
+            </div>
+          )}
+          {relatedTask && (
+            <div className={styles.section}>
+              <h2 className={styles.sectionTitle}>Related Task</h2>
+              <h3 className="font-semibold max-sm:text-sm text-gray-900">{relatedTask.title}</h3>
+              <p className="text-sm max-sm:text-xs text-gray-500 mt-1 capitalize">
+                {relatedTask.status?.replace(/_/g, ' ')} &middot; {relatedTask.priority} priority
+                {relatedTask.due_date && ` \u00b7 Due ${formatDate(relatedTask.due_date)}`}
+              </p>
+              <Link href={`/dashboard/tasks/${relatedTask.id}`} className="text-xs text-blue-600 hover:underline mt-2 inline-block">
+                View Task &rarr;
+              </Link>
             </div>
           )}
         </div>
