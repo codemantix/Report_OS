@@ -130,6 +130,35 @@
 .cancelBtn:hover { background: var(--color-surface-soft); border-color: #94a3b8; transform: translateY(-1px); }
 .cancelBtn:active { transform: translateY(0); }
 
+/* ── Reporting Period ── */
+
+.periodBadge {
+  @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium mb-4;
+  background: rgba(37, 99, 235, 0.08);
+  color: #2563EB;
+  border: 1px solid rgba(37, 99, 235, 0.16);
+}
+
+.periodRow {
+  @apply grid grid-cols-1 sm:grid-cols-2 gap-4;
+}
+
+.periodMeta {
+  @apply text-xs mt-3 flex items-center gap-1.5;
+  color: var(--color-muted, #94a3b8);
+}
+
+.periodMetaLoading {
+  @apply inline-flex items-center gap-1.5;
+  color: var(--color-muted, #94a3b8);
+}
+
+:global(.dark) .periodBadge {
+  background: rgba(59, 130, 246, 0.12);
+  color: #60A5FA;
+  border-color: rgba(59, 130, 246, 0.22);
+}
+
 :global(.dark) .section {
   background: var(--color-surface);
   border-color: var(--color-border);

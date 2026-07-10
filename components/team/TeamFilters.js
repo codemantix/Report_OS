@@ -1,6 +1,6 @@
 import React from 'react';
 import SearchInput from '../common/SearchInput';
-import styles from './Team.module.css';
+import FilterDropdown, { FilterGroup } from '../common/FilterDropdown';
 
 export default function TeamFilters({
   search,
@@ -11,9 +11,30 @@ export default function TeamFilters({
   departments = [],
   isAdmin = false,
 }) {
+  const hasActiveFilters = isAdmin && Object.values(filters).some((v) => v !== '');
+  const activeCount = isAdmin ? Object.values(filters).filter((v) => v !== '').length : 0;
+
+  function clearFilters() {
+    onFilterChange('department_id', '');
+    onFilterChange('role', '');
+    onFilterChange('status', '');
+  }
+
   return (
-    <div className="flex flex-col md:flex-row gap-4 items-end bg-white dark:bg-gray-900 p-5 rounded-xl border border-gray-150 dark:border-gray-800 shadow-sm transition-colors duration-200">
-      <div className="flex-1 min-w-[200px] w-full">
+    <div
+      style={{
+        display: 'flex',
+        gap: '10px',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        background: 'var(--color-surface)',
+        padding: '16px 20px',
+        borderRadius: '12px',
+        border: '1px solid var(--color-border)',
+        boxShadow: 'var(--shadow-card)',
+      }}
+    >
+      <div style={{ flex: 1, minWidth: '200px' }}>
         <SearchInput
           value={search}
           onChange={onSearchChange}
@@ -24,13 +45,15 @@ export default function TeamFilters({
       </div>
 
       {isAdmin && (
-        <div className="flex flex-wrap gap-3 w-full md:w-auto">
-          <div className="flex flex-col gap-1 min-w-[140px] flex-grow md:flex-grow-0">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Department</span>
+        <FilterDropdown
+          hasActiveFilters={hasActiveFilters}
+          activeCount={activeCount}
+          onClear={clearFilters}
+        >
+          <FilterGroup label="Department">
             <select
               value={filters.department_id || ''}
               onChange={(e) => onFilterChange('department_id', e.target.value)}
-              className={styles.select}
             >
               <option value="">All Departments</option>
               {departments.map((dept) => (
@@ -39,36 +62,30 @@ export default function TeamFilters({
                 </option>
               ))}
             </select>
-          </div>
-
-          <div className="flex flex-col gap-1 min-w-[120px] flex-grow md:flex-grow-0">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Role</span>
+          </FilterGroup>
+          <FilterGroup label="Role">
             <select
               value={filters.role || ''}
               onChange={(e) => onFilterChange('role', e.target.value)}
-              className={styles.select}
             >
               <option value="">All Roles</option>
               <option value="admin">Admin</option>
               <option value="department_lead">Dept. Lead</option>
               <option value="team_member">Member</option>
             </select>
-          </div>
-
-          <div className="flex flex-col gap-1 min-w-[120px] flex-grow md:flex-grow-0">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Status</span>
+          </FilterGroup>
+          <FilterGroup label="Status">
             <select
               value={filters.status || ''}
               onChange={(e) => onFilterChange('status', e.target.value)}
-              className={styles.select}
             >
               <option value="">All Statuses</option>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
               <option value="suspended">Suspended</option>
             </select>
-          </div>
-        </div>
+          </FilterGroup>
+        </FilterDropdown>
       )}
     </div>
   );

@@ -13,6 +13,7 @@ import { getCurrentUserProfile } from '../../../lib/authHelpers';
 import useDebounce from '../../../hooks/useDebounce';
 import { paginateItems } from '../../../utils/pagination';
 import styles from '../../../components/goals/Goals.module.css';
+import FilterDropdown, { FilterGroup } from '../../../components/common/FilterDropdown';
 
 export default function GoalsPage() {
   const router = useRouter();
@@ -188,7 +189,7 @@ export default function GoalsPage() {
         )}
 
         <div className={styles.section}>
-          <div className="flex flex-wrap gap-3">
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
             <SearchInput
               value={search}
               onChange={setSearch}
@@ -196,75 +197,78 @@ export default function GoalsPage() {
               loading={isSearchLoading}
               label="Search goals"
             />
-            <select value={sort} onChange={(e) => setSort(e.target.value)} className={styles.select} style={{ maxWidth: '160px' }} aria-label="Sort goals">
-              <option value="created_at:desc">Newest first</option>
-              <option value="created_at:asc">Oldest first</option>
-              <option value="due_date:asc">Due date ascending</option>
-              <option value="due_date:desc">Due date descending</option>
-              <option value="priority:asc">Priority</option>
-              <option value="status:asc">Status</option>
-            </select>
-            {user?.role === 'admin' && (
-              <select value={filters.department_id} onChange={(e) => updateFilter('department_id', e.target.value)} className={styles.select} style={{ maxWidth: '180px' }} aria-label="Filter by department">
-                <option value="">All Departments</option>
-                {departments.map((dept) => (
-                  <option key={dept.id} value={dept.id}>{dept.name}</option>
-                ))}
-              </select>
-            )}
-            <select value={filters.status} onChange={(e) => updateFilter('status', e.target.value)} className={styles.select} style={{ maxWidth: '150px' }} aria-label="Filter by status">
-              <option value="">All Status</option>
-              <option value="not_started">Not Started</option>
-              <option value="in_progress">In Progress</option>
-              <option value="completed">Completed</option>
-              <option value="delayed">Delayed</option>
-              <option value="blocked">Blocked</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-            <select value={filters.priority} onChange={(e) => updateFilter('priority', e.target.value)} className={styles.select} style={{ maxWidth: '140px' }} aria-label="Filter by priority">
-              <option value="">All Priority</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="urgent">Urgent</option>
-            </select>
-            {companyGoals.length > 0 && (
-              <select value={filters.company_goal_id} onChange={(e) => updateFilter('company_goal_id', e.target.value)} className={styles.select} style={{ maxWidth: '200px' }} aria-label="Filter by company goal">
-                <option value="">All Company Goals</option>
-                {companyGoals.map((cg) => (
-                  <option key={cg.id} value={cg.id}>{cg.title}</option>
-                ))}
-              </select>
-            )}
-            <select
-              value={filters.month}
-              onChange={(e) => updateFilter('month', e.target.value)}
-              className={styles.select}
-              style={{ maxWidth: '140px' }}
-              aria-label="Filter by month"
+            <FilterDropdown
+              hasActiveFilters={Object.values(filters).some((v) => v !== '')}
+              activeCount={Object.values(filters).filter((v) => v !== '').length}
+              onClear={clearFilters}
             >
-              <option value="">All Months</option>
-              {MONTH_OPTIONS.map((m) => (
-                <option key={m.value} value={m.value}>{m.label}</option>
-              ))}
-            </select>
-            <select
-              value={filters.year}
-              onChange={(e) => updateFilter('year', e.target.value)}
-              className={styles.select}
-              style={{ maxWidth: '120px' }}
-              aria-label="Filter by year"
-            >
-              <option value="">All Years</option>
-              {[new Date().getFullYear() - 1, new Date().getFullYear(), new Date().getFullYear() + 1, new Date().getFullYear() + 2].map((y) => (
-                <option key={y} value={y}>{y}</option>
-              ))}
-            </select>
-            {hasActiveFilters && (
-              <button onClick={clearFilters} className={styles.cancelBtn} style={{ padding: '8px 16px' }}>
-                Clear
-              </button>
-            )}
+              <FilterGroup label="Sort">
+                <select value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Sort goals">
+                  <option value="created_at:desc">Newest first</option>
+                  <option value="created_at:asc">Oldest first</option>
+                  <option value="due_date:asc">Due date ascending</option>
+                  <option value="due_date:desc">Due date descending</option>
+                  <option value="priority:asc">Priority</option>
+                  <option value="status:asc">Status</option>
+                </select>
+              </FilterGroup>
+              {user?.role === 'admin' && (
+                <FilterGroup label="Department">
+                  <select value={filters.department_id} onChange={(e) => updateFilter('department_id', e.target.value)} aria-label="Filter by department">
+                    <option value="">All Departments</option>
+                    {departments.map((dept) => (
+                      <option key={dept.id} value={dept.id}>{dept.name}</option>
+                    ))}
+                  </select>
+                </FilterGroup>
+              )}
+              <FilterGroup label="Status">
+                <select value={filters.status} onChange={(e) => updateFilter('status', e.target.value)} aria-label="Filter by status">
+                  <option value="">All Status</option>
+                  <option value="not_started">Not Started</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="completed">Completed</option>
+                  <option value="delayed">Delayed</option>
+                  <option value="blocked">Blocked</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </FilterGroup>
+              <FilterGroup label="Priority">
+                <select value={filters.priority} onChange={(e) => updateFilter('priority', e.target.value)} aria-label="Filter by priority">
+                  <option value="">All Priority</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+              </FilterGroup>
+              {companyGoals.length > 0 && (
+                <FilterGroup label="Company Goal">
+                  <select value={filters.company_goal_id} onChange={(e) => updateFilter('company_goal_id', e.target.value)} aria-label="Filter by company goal">
+                    <option value="">All Company Goals</option>
+                    {companyGoals.map((cg) => (
+                      <option key={cg.id} value={cg.id}>{cg.title}</option>
+                    ))}
+                  </select>
+                </FilterGroup>
+              )}
+              <FilterGroup label="Month">
+                <select value={filters.month} onChange={(e) => updateFilter('month', e.target.value)} aria-label="Filter by month">
+                  <option value="">All Months</option>
+                  {MONTH_OPTIONS.map((m) => (
+                    <option key={m.value} value={m.value}>{m.label}</option>
+                  ))}
+                </select>
+              </FilterGroup>
+              <FilterGroup label="Year">
+                <select value={filters.year} onChange={(e) => updateFilter('year', e.target.value)} aria-label="Filter by year">
+                  <option value="">All Years</option>
+                  {[new Date().getFullYear() - 1, new Date().getFullYear(), new Date().getFullYear() + 1, new Date().getFullYear() + 2].map((y) => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
+              </FilterGroup>
+            </FilterDropdown>
           </div>
         </div>
 

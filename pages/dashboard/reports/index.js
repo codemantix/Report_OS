@@ -11,6 +11,7 @@ import { getCurrentUserProfile } from '../../../lib/authHelpers';
 import { useRealtimeSubscription } from '../../../lib/realtimeHelpers';
 import useDebounce from '../../../hooks/useDebounce';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import FilterDropdown, { FilterGroup } from '../../../components/common/FilterDropdown';
 import styles from '../../../components/reports/ReportsPage.module.css';
 import reportsStyles from '../../../components/reports/Reports.module.css';
 
@@ -261,6 +262,7 @@ export default function ReportsPage() {
   }
 
   const hasActiveFilters = Object.values(filters).some((v) => v !== '') || search !== '';
+  const activeFilterCount = Object.values(filters).filter((v) => v !== '').length;
   const isSearchLoading = search !== debouncedSearch;
   const canManageAnalysis = userRole === 'admin' || userRole === 'department_lead';
 
@@ -297,7 +299,7 @@ export default function ReportsPage() {
 
         {/* Filters */}
         <div className={styles.filtersCard}>
-          <div className={styles.filtersRow}>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
             <SearchInput
               value={search}
               onChange={setSearch}
@@ -305,107 +307,85 @@ export default function ReportsPage() {
               loading={isSearchLoading}
               label="Search reports"
             />
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className={styles.filterSelect}
-              aria-label="Sort reports"
+            <FilterDropdown
+              hasActiveFilters={Object.values(filters).some((v) => v !== '')}
+              activeCount={activeFilterCount}
+              onClear={clearFilters}
             >
-              <option value="submitted_at:desc">Newest first</option>
-              <option value="submitted_at:asc">Oldest first</option>
-              <option value="project_name:asc">Project A–Z</option>
-              <option value="report_type:asc">Type A–Z</option>
-            </select>
-
-            {userRole !== 'team_member' && (
-              <select
-                value={filters.user_id}
-                onChange={(e) => updateFilter('user_id', e.target.value)}
-                className={styles.filterSelect}
-                aria-label="Filter by team member"
-              >
-                <option value="">All Team Members</option>
-                {teamMembers.map((member) => (
-                  <option key={member.id} value={member.id}>{member.display_name || member.full_name || member.email}</option>
-                ))}
-              </select>
-            )}
-
-            <select
-              value={filters.department_id}
-              onChange={(e) => updateFilter('department_id', e.target.value)}
-              className={styles.filterSelect}
-            >
-              <option value="">All Departments</option>
-              {departments.map((d) => (
-                <option key={d.id} value={d.id}>{d.name}</option>
-              ))}
-            </select>
-
-            <select
-              value={filters.report_type}
-              onChange={(e) => updateFilter('report_type', e.target.value)}
-              className={styles.filterSelect}
-            >
-              {reportTypes.map((t) => (
-                <option key={t.value} value={t.value}>{t.label}</option>
-              ))}
-            </select>
-
-            <select
-              value={filters.reviewed}
-              onChange={(e) => updateFilter('reviewed', e.target.value)}
-              className={styles.filterSelect}
-            >
-              <option value="">All Status</option>
-              <option value="false">Unreviewed</option>
-              <option value="true">Reviewed</option>
-            </select>
-
-            <select
-              value={filters.ai_status}
-              onChange={(e) => updateFilter('ai_status', e.target.value)}
-              className={styles.filterSelect}
-              aria-label="Filter by AI status"
-            >
-              <option value="">All AI Status</option>
-              <option value="pending">Pending</option>
-              <option value="processing">Processing</option>
-              <option value="completed">Completed</option>
-              <option value="failed">Failed</option>
-            </select>
-
-            <select
-              value={filters.risk_level}
-              onChange={(e) => updateFilter('risk_level', e.target.value)}
-              className={styles.filterSelect}
-            >
-              <option value="">All Risk Levels</option>
-              <option value="low">Low Risk</option>
-              <option value="medium">Medium Risk</option>
-              <option value="high">High Risk</option>
-            </select>
-
-            <input
-              type="date"
-              value={filters.dateFrom}
-              onChange={(e) => updateFilter('dateFrom', e.target.value)}
-              className={styles.filterSelect}
-              aria-label="Submitted from date"
-            />
-            <input
-              type="date"
-              value={filters.dateTo}
-              onChange={(e) => updateFilter('dateTo', e.target.value)}
-              className={styles.filterSelect}
-              aria-label="Submitted to date"
-            />
-
-            {hasActiveFilters && (
-              <button onClick={clearFilters} className={styles.filterBtn}>
-                Clear Filters
-              </button>
-            )}
+              <FilterGroup label="Sort">
+                <select value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Sort reports">
+                  <option value="submitted_at:desc">Newest first</option>
+                  <option value="submitted_at:asc">Oldest first</option>
+                  <option value="project_name:asc">Project A–Z</option>
+                  <option value="report_type:asc">Type A–Z</option>
+                </select>
+              </FilterGroup>
+              {userRole !== 'team_member' && (
+                <FilterGroup label="Team Member">
+                  <select value={filters.user_id} onChange={(e) => updateFilter('user_id', e.target.value)} aria-label="Filter by team member">
+                    <option value="">All Team Members</option>
+                    {teamMembers.map((member) => (
+                      <option key={member.id} value={member.id}>{member.display_name || member.full_name || member.email}</option>
+                    ))}
+                  </select>
+                </FilterGroup>
+              )}
+              <FilterGroup label="Department">
+                <select value={filters.department_id} onChange={(e) => updateFilter('department_id', e.target.value)}>
+                  <option value="">All Departments</option>
+                  {departments.map((d) => (
+                    <option key={d.id} value={d.id}>{d.name}</option>
+                  ))}
+                </select>
+              </FilterGroup>
+              <FilterGroup label="Report Type">
+                <select value={filters.report_type} onChange={(e) => updateFilter('report_type', e.target.value)}>
+                  {reportTypes.map((t) => (
+                    <option key={t.value} value={t.value}>{t.label}</option>
+                  ))}
+                </select>
+              </FilterGroup>
+              <FilterGroup label="Review Status">
+                <select value={filters.reviewed} onChange={(e) => updateFilter('reviewed', e.target.value)}>
+                  <option value="">All Status</option>
+                  <option value="false">Unreviewed</option>
+                  <option value="true">Reviewed</option>
+                </select>
+              </FilterGroup>
+              <FilterGroup label="AI Status">
+                <select value={filters.ai_status} onChange={(e) => updateFilter('ai_status', e.target.value)} aria-label="Filter by AI status">
+                  <option value="">All AI Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="processing">Processing</option>
+                  <option value="completed">Completed</option>
+                  <option value="failed">Failed</option>
+                </select>
+              </FilterGroup>
+              <FilterGroup label="Risk Level">
+                <select value={filters.risk_level} onChange={(e) => updateFilter('risk_level', e.target.value)}>
+                  <option value="">All Risk Levels</option>
+                  <option value="low">Low Risk</option>
+                  <option value="medium">Medium Risk</option>
+                  <option value="high">High Risk</option>
+                </select>
+              </FilterGroup>
+              <FilterGroup label="From Date">
+                <input
+                  type="date"
+                  value={filters.dateFrom}
+                  onChange={(e) => updateFilter('dateFrom', e.target.value)}
+                  aria-label="Submitted from date"
+                />
+              </FilterGroup>
+              <FilterGroup label="To Date">
+                <input
+                  type="date"
+                  value={filters.dateTo}
+                  onChange={(e) => updateFilter('dateTo', e.target.value)}
+                  aria-label="Submitted to date"
+                />
+              </FilterGroup>
+            </FilterDropdown>
           </div>
         </div>
 

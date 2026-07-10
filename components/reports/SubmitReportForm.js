@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import { Upload } from 'lucide-react';
@@ -6,10 +6,12 @@ import { getCurrentUserProfile } from '../../lib/authHelpers';
 import { fetchDepartments } from '../../services/departmentService';
 import { fetchGoals } from '../../services/goalService';
 import { fetchPlans } from '../../services/planService';
-import { fetchMyTasks } from '../../services/taskService';
+import { fetchTasks } from '../../services/taskService';
 import { fetchActiveCompanyGoals } from '../../services/companyGoalService';
 import { createReport } from '../../services/reportService';
 import { uploadFiles } from '../../services/uploadService';
+import { getDefaultDateRange, isInPeriod, isDateInPeriod } from '../../utils/reportDateRange';
+import ReportPeriodSelector from './ReportPeriodSelector';
 import FileUpload from './FileUpload';
 import styles from './ReportForm.module.css';
 
@@ -25,18 +27,27 @@ export default function SubmitReportForm() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [departments, setDepartments] = useState([]);
+  const [allGoals, setAllGoals] = useState([]);
+  const [allPlans, setAllPlans] = useState([]);
+  const [allTasks, setAllTasks] = useState([]);
   const [goals, setGoals] = useState([]);
   const [plans, setPlans] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [companyGoals, setCompanyGoals] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingRelated, setLoadingRelated] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [selectedDept, setSelectedDept] = useState('');
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [files, setFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(null);
+
+  // Period state — auto-set from report type, editable by user
+  const defaultRange = getDefaultDateRange('weekly');
+  const [periodStart, setPeriodStart] = useState(defaultRange.start);
+  const [periodEnd, setPeriodEnd] = useState(defaultRange.end);
 
   const [formData, setFormData] = useState({
     report_type: 'weekly',
@@ -92,32 +103,86 @@ export default function SubmitReportForm() {
     loadCompanyGoals();
   }, []);
 
+  // Fetch all department data when department changes
   useEffect(() => {
     async function loadRelatedData() {
       if (selectedDept) {
+        setLoadingRelated(true);
         const [goalsData, plansData, tasksData] = await Promise.all([
           fetchGoals({ department_id: selectedDept }),
           fetchPlans({ department_id: selectedDept }),
-          fetchMyTasks(user?.id).catch(() => ({ data: [] })),
+          fetchTasks({ department_id: selectedDept, archived: false }),
         ]);
-        setGoals(goalsData.data || []);
-        setPlans(plansData.data || []);
-        // Filter to only non-completed/non-cancelled department tasks
+        setAllGoals(goalsData.data || []);
+        setAllPlans(plansData.data || []);
         const rawTasks = tasksData?.data || [];
-        setTasks(rawTasks.filter((t) => {
-          const task = t.tasks;
-          return task && task.department_id === selectedDept && task.status !== 'completed' && task.status !== 'cancelled' && !task.archived;
-        }));
+        setAllTasks(rawTasks.filter((t) =>
+          t.status !== 'completed' && t.status !== 'cancelled'
+        ));
+        setLoadingRelated(false);
       } else {
+        setAllGoals([]);
+        setAllPlans([]);
+        setAllTasks([]);
+        setGoals([]);
+        setPlans([]);
         setTasks([]);
       }
     }
     loadRelatedData();
-  }, [selectedDept, user?.id]);
+  }, [selectedDept]);
+
+  // Filter goals, plans, and tasks by the selected period (client-side)
+  const filterByPeriod = useCallback(() => {
+    const filteredGoals = allGoals.filter((g) =>
+      isInPeriod(g.start_date, g.due_date, periodStart, periodEnd)
+    );
+    const filteredPlans = allPlans.filter((p) =>
+      isInPeriod(p.start_date, p.end_date, periodStart, periodEnd)
+    );
+    const filteredTasks = allTasks.filter((t) =>
+      isDateInPeriod(t.due_date, periodStart, periodEnd)
+    );
+
+    setGoals(filteredGoals);
+    setPlans(filteredPlans);
+    setTasks(filteredTasks);
+  }, [allGoals, allPlans, allTasks, periodStart, periodEnd]);
+
+  useEffect(() => {
+    filterByPeriod();
+  }, [filterByPeriod]);
+
+  // Recalculate default date range when report type changes
+  function handleReportTypeChange(newType) {
+    const range = getDefaultDateRange(newType);
+    setPeriodStart(range.start);
+    setPeriodEnd(range.end);
+    // Clear stale goal/plan/task selections since period changed
+    setFormData((prev) => ({ ...prev, goal_id: '', plan_id: '', task_id: '' }));
+    setSelectedTask(null);
+  }
+
+  // Handle period date changes
+  function handlePeriodStartChange(value) {
+    setPeriodStart(value);
+    setFormData((prev) => ({ ...prev, goal_id: '', plan_id: '', task_id: '' }));
+    setSelectedTask(null);
+  }
+
+  function handlePeriodEndChange(value) {
+    setPeriodEnd(value);
+    setFormData((prev) => ({ ...prev, goal_id: '', plan_id: '', task_id: '' }));
+    setSelectedTask(null);
+  }
 
   function handleChange(e) {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === 'report_type') {
+      handleReportTypeChange(value);
+    }
 
     if (name === 'department_id') {
       setSelectedDept(value);
@@ -127,9 +192,9 @@ export default function SubmitReportForm() {
 
     // Auto-inherit company_goal_id from selected task
     if (name === 'task_id' && value) {
-      const taskItem = tasks.find((t) => t.tasks?.id === value);
-      if (taskItem?.tasks?.company_goal_id) {
-        setFormData((prev) => ({ ...prev, company_goal_id: taskItem.tasks.company_goal_id }));
+      const taskItem = tasks.find((t) => t.id === value);
+      if (taskItem?.company_goal_id) {
+        setFormData((prev) => ({ ...prev, company_goal_id: taskItem.company_goal_id }));
       }
     }
 
@@ -309,6 +374,19 @@ export default function SubmitReportForm() {
           </div>
         </div>
 
+        {/* Reporting Period */}
+        <ReportPeriodSelector
+          periodStart={periodStart}
+          periodEnd={periodEnd}
+          onStartChange={handlePeriodStartChange}
+          onEndChange={handlePeriodEndChange}
+          goalsCount={goals.length}
+          plansCount={plans.length}
+          tasksCount={tasks.length}
+          loadingRelated={loadingRelated}
+          disabled={!selectedDept}
+        />
+
         {/* Goal, Plan & Task */}
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Goal, Plan &amp; Task Alignment</h2>
@@ -328,6 +406,7 @@ export default function SubmitReportForm() {
                 ))}
               </select>
               {!selectedDept && <p className={styles.hint}>Select a department first</p>}
+              {selectedDept && goals.length === 0 && !loadingRelated && <p className={styles.hint}>No goals found for this period</p>}
             </div>
             <div className={styles.field}>
               <label className={styles.label}>Related Plan</label>
@@ -343,6 +422,7 @@ export default function SubmitReportForm() {
                   <option key={plan.id} value={plan.id}>{plan.title}</option>
                 ))}
               </select>
+              {selectedDept && plans.length === 0 && !loadingRelated && <p className={styles.hint}>No plans found for this period</p>}
             </div>
           </div>
           <div className={styles.row}>
@@ -353,16 +433,16 @@ export default function SubmitReportForm() {
                 value={formData.task_id}
                 onChange={(e) => {
                   handleChange(e);
-                  const taskItem = tasks.find((t) => t.tasks?.id === e.target.value);
-                  setSelectedTask(taskItem?.tasks || null);
+                  const taskItem = tasks.find((t) => t.id === e.target.value);
+                  setSelectedTask(taskItem || null);
                 }}
                 className={styles.select}
                 disabled={!selectedDept}
               >
                 <option value="">Select task</option>
-                {tasks.map((taskItem) => (
-                  <option key={taskItem.tasks?.id || Math.random()} value={taskItem.tasks?.id}>
-                    {taskItem.tasks?.title || 'Unknown'}
+                {tasks.map((task) => (
+                  <option key={task.id} value={task.id}>
+                    {task.title}
                   </option>
                 ))}
               </select>

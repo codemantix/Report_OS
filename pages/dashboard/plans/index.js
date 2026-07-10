@@ -12,6 +12,7 @@ import { getCurrentUserProfile } from '../../../lib/authHelpers';
 import useDebounce from '../../../hooks/useDebounce';
 import { paginateItems } from '../../../utils/pagination';
 import styles from '../../../components/plans/Plans.module.css';
+import FilterDropdown, { FilterGroup } from '../../../components/common/FilterDropdown';
 
 export default function PlansPage() {
   const router = useRouter();
@@ -182,7 +183,7 @@ export default function PlansPage() {
         )}
 
         <div className={styles.section}>
-          <div className="flex flex-wrap gap-3">
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
             <SearchInput
               value={search}
               onChange={setSearch}
@@ -190,57 +191,56 @@ export default function PlansPage() {
               loading={isSearchLoading}
               label="Search plans"
             />
-            <select value={sort} onChange={(e) => setSort(e.target.value)} className={styles.select} style={{ maxWidth: '160px' }} aria-label="Sort plans">
-              <option value="created_at:desc">Newest first</option>
-              <option value="created_at:asc">Oldest first</option>
-              <option value="title:asc">Title A–Z</option>
-              <option value="plan_type:asc">Plan type</option>
-            </select>
-            {user?.role === 'admin' && (
-              <select value={filters.department_id} onChange={(e) => updateFilter('department_id', e.target.value)} className={styles.select} style={{ maxWidth: '180px' }} aria-label="Filter by department">
-                <option value="">All Departments</option>
-                {departments.map((dept) => (
-                  <option key={dept.id} value={dept.id}>{dept.name}</option>
-                ))}
-              </select>
-            )}
-            <select value={filters.plan_type} onChange={(e) => updateFilter('plan_type', e.target.value)} className={styles.select} style={{ maxWidth: '150px' }} aria-label="Filter by plan type">
-              <option value="">All Plan Types</option>
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-              <option value="quarterly">Quarterly</option>
-              <option value="project">Project</option>
-            </select>
-            <select
-              value={filters.month}
-              onChange={(e) => updateFilter('month', e.target.value)}
-              className={styles.select}
-              style={{ maxWidth: '140px' }}
-              aria-label="Filter by month"
+            <FilterDropdown
+              hasActiveFilters={Object.values(filters).some((v) => v !== '')}
+              activeCount={Object.values(filters).filter((v) => v !== '').length}
+              onClear={clearFilters}
             >
-              <option value="">All Months</option>
-              {MONTH_OPTIONS.map((m) => (
-                <option key={m.value} value={m.value}>{m.label}</option>
-              ))}
-            </select>
-            <select
-              value={filters.year}
-              onChange={(e) => updateFilter('year', e.target.value)}
-              className={styles.select}
-              style={{ maxWidth: '120px' }}
-              aria-label="Filter by year"
-            >
-              <option value="">All Years</option>
-              {[new Date().getFullYear() - 1, new Date().getFullYear(), new Date().getFullYear() + 1, new Date().getFullYear() + 2].map((y) => (
-                <option key={y} value={y}>{y}</option>
-              ))}
-            </select>
-            {hasActiveFilters && (
-              <button onClick={clearFilters} className={styles.cancelBtn} style={{ padding: '8px 16px' }}>
-                Clear
-              </button>
-            )}
+              <FilterGroup label="Sort">
+                <select value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Sort plans">
+                  <option value="created_at:desc">Newest first</option>
+                  <option value="created_at:asc">Oldest first</option>
+                  <option value="title:asc">Title A–Z</option>
+                  <option value="plan_type:asc">Plan type</option>
+                </select>
+              </FilterGroup>
+              {user?.role === 'admin' && (
+                <FilterGroup label="Department">
+                  <select value={filters.department_id} onChange={(e) => updateFilter('department_id', e.target.value)} aria-label="Filter by department">
+                    <option value="">All Departments</option>
+                    {departments.map((dept) => (
+                      <option key={dept.id} value={dept.id}>{dept.name}</option>
+                    ))}
+                  </select>
+                </FilterGroup>
+              )}
+              <FilterGroup label="Plan Type">
+                <select value={filters.plan_type} onChange={(e) => updateFilter('plan_type', e.target.value)} aria-label="Filter by plan type">
+                  <option value="">All Plan Types</option>
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="quarterly">Quarterly</option>
+                  <option value="project">Project</option>
+                </select>
+              </FilterGroup>
+              <FilterGroup label="Month">
+                <select value={filters.month} onChange={(e) => updateFilter('month', e.target.value)} aria-label="Filter by month">
+                  <option value="">All Months</option>
+                  {MONTH_OPTIONS.map((m) => (
+                    <option key={m.value} value={m.value}>{m.label}</option>
+                  ))}
+                </select>
+              </FilterGroup>
+              <FilterGroup label="Year">
+                <select value={filters.year} onChange={(e) => updateFilter('year', e.target.value)} aria-label="Filter by year">
+                  <option value="">All Years</option>
+                  {[new Date().getFullYear() - 1, new Date().getFullYear(), new Date().getFullYear() + 1, new Date().getFullYear() + 2].map((y) => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
+              </FilterGroup>
+            </FilterDropdown>
           </div>
         </div>
 
