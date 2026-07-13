@@ -201,7 +201,7 @@ export default function TeamPage() {
             Team directory access is limited to admins and department leads.
           </p>
           <button
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.back()}
             className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg shadow-sm transition-all"
           >
             Back to Dashboard

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
+
 import { ChevronLeft, ShieldAlert, User, FileText, CheckSquare, Settings } from 'lucide-react';
 import DashboardLayout from '../../../components/layout/DashboardLayout';
 import { getCurrentUserProfile } from '../../../lib/authHelpers';
@@ -108,12 +108,13 @@ export default function TeamMemberProfilePage() {
           <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm leading-relaxed mb-6">
             {error || 'The requested profile details could not be found or you do not have permission to view them.'}
           </p>
-          <Link
-            href="/dashboard/team"
+          <button
+            type="button"
+            onClick={() => router.back()}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-lg shadow-sm transition-all"
           >
             Back to Team Directory
-          </Link>
+          </button>
         </div>
       </DashboardLayout>
     );
@@ -138,13 +139,14 @@ export default function TeamMemberProfilePage() {
         
         {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between">
-          <Link
-            href="/dashboard/team"
+          <button
+            type="button"
+            onClick={() => router.back()}
             className="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             <ChevronLeft size={16} />
             Back to Team Directory
-          </Link>
+          </button>
         </div>
 
 

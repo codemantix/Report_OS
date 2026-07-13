@@ -1,0 +1,292 @@
+.chartsGrid {
+  @apply grid w-full min-w-0 max-w-full grid-cols-1 gap-6 lg:grid-cols-2;
+}
+
+.chartCard {
+  @apply relative min-w-0 overflow-hidden rounded-2xl border p-6 max-sm:p-4;
+  min-height: 390px;
+  background: radial-gradient(circle at 100% 0%, rgba(79, 70, 229, 0.08), transparent 32%), var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.chartCard::before {
+  content: '';
+  position: absolute;
+  inset: 0 15% auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.38), transparent);
+}
+
+.cardHeader {
+  @apply relative z-10 flex items-center gap-3;
+}
+
+.cardIcon {
+  @apply flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl;
+  color: #4F46E5;
+  background: rgba(79, 70, 229, 0.10);
+  box-shadow: inset 0 0 0 1px rgba(79, 70, 229, 0.10);
+}
+
+.barIcon {
+  color: #0891B2;
+  background: rgba(8, 145, 178, 0.10);
+  box-shadow: inset 0 0 0 1px rgba(8, 145, 178, 0.10);
+}
+
+.cardTitle {
+  @apply text-base font-semibold tracking-tight;
+  color: var(--color-text);
+}
+
+.cardDescription {
+  @apply mt-0.5 text-xs;
+  color: var(--color-muted);
+}
+
+.emptyState {
+  @apply flex min-h-[280px] items-center justify-center text-sm;
+  color: var(--color-muted);
+}
+
+.skeletonCard {
+  pointer-events: none;
+}
+
+.skeletonHeader {
+  @apply flex items-center gap-3;
+}
+
+.skeletonIcon,
+.skeletonTitle,
+.skeletonDescription,
+.skeletonChart {
+  @apply animate-pulse;
+  background: var(--color-surface-soft);
+}
+
+.skeletonIcon {
+  @apply h-10 w-10 flex-shrink-0 rounded-xl;
+}
+
+.skeletonHeaderText {
+  @apply flex flex-1 flex-col gap-2;
+}
+
+.skeletonTitle {
+  @apply h-4 w-32 rounded;
+}
+
+.skeletonDescription {
+  @apply h-3 w-48 max-w-full rounded;
+}
+
+.skeletonChart {
+  @apply mt-7 h-[250px] w-full rounded-2xl;
+}
+
+.pieContent {
+  @apply mt-7 grid items-center gap-8 sm:grid-cols-[minmax(180px,0.9fr)_minmax(190px,1.1fr)];
+}
+
+.pieChart {
+  @apply relative mx-auto h-52 w-52 max-sm:h-44 max-sm:w-44;
+  filter: drop-shadow(0 14px 24px rgba(30, 41, 59, 0.12));
+}
+
+.pieSvg {
+  @apply h-full w-full;
+  transform: rotate(-90deg);
+}
+
+.pieTrack {
+  fill: none;
+  stroke: var(--color-surface-soft);
+  stroke-width: 15;
+}
+
+.pieSegment {
+  transition: opacity 180ms ease, stroke-width 180ms ease;
+}
+
+.pieSegment:hover {
+  opacity: 0.84;
+  stroke-width: 17;
+}
+
+.pieCenter {
+  @apply absolute inset-0 flex flex-col items-center justify-center;
+}
+
+.pieCenter strong {
+  @apply text-3xl font-bold tracking-tight;
+  color: var(--color-text);
+}
+
+.pieCenter span {
+  @apply mt-0.5 text-xs font-medium;
+  color: var(--color-muted);
+}
+
+.legend {
+  @apply space-y-2.5;
+}
+
+.legendItem {
+  @apply grid grid-cols-[10px_minmax(0,1fr)_auto_38px] items-center gap-2.5 rounded-xl px-3 py-2.5;
+  background: color-mix(in srgb, var(--color-surface-soft) 72%, transparent);
+}
+
+.legendDot {
+  @apply h-2.5 w-2.5 rounded-full;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.legendLabel {
+  @apply truncate text-xs font-medium;
+  color: var(--color-muted);
+}
+
+.legendValue {
+  @apply text-sm font-bold;
+  color: var(--color-text);
+}
+
+.legendPercent {
+  @apply text-right text-xs tabular-nums;
+  color: var(--color-muted);
+}
+
+.barChartWrapper {
+  @apply relative mt-7 flex min-w-0 gap-2;
+}
+
+.barScale {
+  @apply flex h-[250px] flex-col justify-between pb-[50px] text-[10px] tabular-nums;
+  color: var(--color-muted);
+}
+
+.barChart {
+  @apply flex h-[250px] min-w-0 flex-1 items-end gap-2 overflow-x-auto pb-1;
+  background-image: repeating-linear-gradient(to bottom, var(--color-border) 0, var(--color-border) 1px, transparent 1px, transparent 25%);
+  background-size: 100% 200px;
+  background-repeat: no-repeat;
+}
+
+.barColumn {
+  @apply flex h-full min-w-[54px] flex-1 flex-col items-center justify-end;
+}
+
+.barValue {
+  @apply mb-1.5 text-[11px] font-bold tabular-nums;
+  color: var(--color-text);
+}
+
+.barTrack {
+  @apply relative flex h-[174px] w-9 items-end overflow-hidden rounded-t-lg;
+  background: rgba(148, 163, 184, 0.10);
+}
+
+.barFill {
+  @apply w-full rounded-t-lg;
+  background: linear-gradient(180deg, #22D3EE 0%, #2563EB 55%, #4F46E5 100%);
+  box-shadow: 0 -5px 18px rgba(37, 99, 235, 0.22);
+  transition: height 500ms cubic-bezier(0.2, 0.8, 0.2, 1), filter 180ms ease;
+}
+
+.barColumn:hover .barFill {
+  filter: brightness(1.08);
+}
+
+.barLabel {
+  @apply mt-2 w-full truncate text-center text-[10px] font-semibold;
+  color: var(--color-text);
+}
+
+.barMeta {
+  @apply mt-0.5 text-[9px] whitespace-nowrap;
+  color: var(--color-muted);
+}
+
+:global(.dark) .cardIcon {
+  color: #A5B4FC;
+  background: rgba(99, 102, 241, 0.16);
+}
+
+:global(.dark) .barIcon {
+  color: #67E8F9;
+  background: rgba(8, 145, 178, 0.16);
+}
+
+@media (max-width: 640px) {
+  .chartCard,
+  .chartCard:first-child {
+    min-height: 0;
+  }
+
+  .skeletonCard,
+  .skeletonCard:first-child {
+    min-height: 320px;
+  }
+
+  .skeletonChart {
+    height: 220px;
+    margin-top: 20px;
+  }
+
+  .emptyState {
+    min-height: 200px;
+  }
+
+  .pieContent {
+    @apply grid-cols-1 gap-3;
+    margin-top: 20px;
+  }
+
+  .pieChart {
+    @apply h-36 w-36;
+  }
+
+  .pieCenter strong {
+    @apply text-2xl;
+  }
+
+  .legend {
+    @apply grid grid-cols-2 gap-1.5 space-y-0;
+  }
+
+  .legendItem {
+    @apply grid-cols-[8px_minmax(0,1fr)_auto] gap-1.5 px-2 py-1.5;
+  }
+
+  .legendPercent {
+    @apply hidden;
+  }
+
+  .barChartWrapper {
+    margin-top: 20px;
+  }
+
+  .barScale,
+  .barChart {
+    height: 210px;
+  }
+
+  .barScale {
+    padding-bottom: 42px;
+  }
+
+  .barChart {
+    background-size: 100% 168px;
+  }
+
+  .barTrack {
+    height: 142px;
+    width: 30px;
+  }
+
+  .barColumn {
+    min-width: 48px;
+  }
+}

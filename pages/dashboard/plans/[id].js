@@ -128,7 +128,7 @@ export default function PlanDetailPage() {
         <div className={styles.page}>
           <button
             className={styles.backBtn}
-            onClick={() => router.push('/dashboard/plans')}
+            onClick={() => router.back()}
           >
             &larr; Back to Plans
           </button>
@@ -153,7 +153,7 @@ export default function PlanDetailPage() {
         <div className={styles.page}>
           <button
             className={styles.backBtn}
-            onClick={() => router.push('/dashboard/plans')}
+            onClick={() => router.back()}
           >
             &larr; Back to Plans
           </button>
@@ -206,7 +206,7 @@ export default function PlanDetailPage() {
       <div className={styles.page}>
         <button
           className={styles.backBtn}
-          onClick={() => router.push('/dashboard/plans')}
+          onClick={() => router.back()}
         >
           &larr; Back to Plans
         </button>

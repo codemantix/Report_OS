@@ -145,7 +145,7 @@ export default function GoalDetailPage() {
         <div className={styles.page}>
           <button
             className={styles.backBtn}
-            onClick={() => router.push('/dashboard/goals')}
+            onClick={() => router.back()}
           >
             &larr; Back to Goals
           </button>
@@ -170,7 +170,7 @@ export default function GoalDetailPage() {
         <div className={styles.page}>
           <button
             className={styles.backBtn}
-            onClick={() => router.push('/dashboard/goals')}
+            onClick={() => router.back()}
           >
             &larr; Back to Goals
           </button>
@@ -225,7 +225,7 @@ export default function GoalDetailPage() {
       <div className={styles.page}>
         <button
           className={styles.backBtn}
-          onClick={() => router.push('/dashboard/goals')}
+          onClick={() => router.back()}
         >
           &larr; Back to Goals
         </button>

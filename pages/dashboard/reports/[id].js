@@ -301,7 +301,7 @@ export default function ReportDetailPage() {
       <DashboardLayout>
         <div className="max-w-5xl mx-auto text-center py-20">
           <p className="text-red-500 mb-4">{error}</p>
-          <button onClick={() => router.push('/dashboard/reports')} className="btn-primary">
+          <button onClick={() => router.back()} className="btn-primary">
             Back to Reports
           </button>
         </div>
@@ -335,7 +335,7 @@ export default function ReportDetailPage() {
           />
         )}
         {/* Back Button */}
-        <button onClick={() => router.push('/dashboard/reports')} className={styles.backBtn}>
+        <button onClick={() => router.back()} className={styles.backBtn}>
           ← Back to Reports
         </button>
 

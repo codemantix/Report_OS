@@ -278,7 +278,7 @@ export default function TaskDetailPage() {
     return (
       <DashboardLayout>
         <div className={styles.page}>
-          <button className={styles.backBtn} onClick={() => router.push('/dashboard/tasks')}>← Back to Tasks</button>
+          <button className={styles.backBtn} onClick={() => router.back()}>← Back to Tasks</button>
           <div className={styles.section}>
             <div className={styles.errorState}>
               <p className={styles.errorMessage}>{error}</p>
@@ -325,7 +325,7 @@ export default function TaskDetailPage() {
             deleting={deleting}
           />
         )}
-        <button className={styles.backBtn} onClick={() => router.push('/dashboard/tasks')}>← Back to Tasks</button>
+        <button className={styles.backBtn} onClick={() => router.back()}>← Back to Tasks</button>
 
         <div className={styles.section}>
             <div>

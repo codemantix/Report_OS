@@ -1,9 +1,11 @@
 .tableWrapper {
-  @apply overflow-x-auto;
+  @apply w-full min-w-0 max-w-full overflow-x-auto;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .table {
-  @apply w-full;
+  @apply w-full min-w-[980px];
 }
 
 .th {

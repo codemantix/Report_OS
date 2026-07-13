@@ -4,6 +4,7 @@ import DashboardLayout from '../../components/layout/DashboardLayout';
 import StatCard from '../../components/dashboard/StatCard';
 import RecentReportsTable from '../../components/reports/ReportsTable';
 import TeamMemberDashboard from '../../components/dashboard/TeamMemberDashboard';
+import AdminDashboardCharts, { AdminDashboardChartsSkeleton } from '../../components/dashboard/AdminDashboardCharts';
 import { fetchDashboardStats, fetchRecentReports, fetchDepartmentProgress } from '../../services/analyticsService';
 import { fetchHighRiskReports } from '../../services/reportService';
 import { getCurrentUserProfile } from '../../lib/authHelpers';
@@ -109,7 +110,7 @@ export default function DashboardPage() {
       <DashboardLayout>
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[...Array(4)].map((_, i) => (
+            {[...Array(8)].map((_, i) => (
               <div key={i} className="card p-6">
                 <div className="skeleton h-4 w-24 mb-3" />
                 <div className="skeleton h-8 w-16 mb-2" />
@@ -117,6 +118,7 @@ export default function DashboardPage() {
               </div>
             ))}
           </div>
+          {userRole === 'admin' && <AdminDashboardChartsSkeleton />}
           <div className="card p-6">
             <div className="skeleton h-6 w-40 mb-4" />
             <div className="space-y-3">
@@ -215,8 +217,15 @@ export default function DashboardPage() {
           />
         </div>
 
+        {userRole === 'admin' && (
+          <AdminDashboardCharts
+            stats={stats}
+            departmentProgress={departmentProgress}
+          />
+        )}
+
         {/* Recent Reports */}
-        <div className="card-premium p-6">
+        <div className={`card-premium ${styles.recentReportsCard}`}>
           <div className="flex items-center justify-between mb-4">
             <h2>Recent Reports</h2>
             <button

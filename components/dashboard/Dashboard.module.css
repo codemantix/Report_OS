@@ -1,9 +1,13 @@
 .page {
-  @apply space-y-6;
+  @apply w-full min-w-0 max-w-full space-y-6;
 }
 
 .statsGrid {
-  @apply grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 dark:gap-4;
+  @apply grid min-w-0 grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4 dark:gap-4;
+}
+
+.recentReportsCard {
+  @apply min-w-0 max-w-full overflow-hidden p-6 max-sm:p-4;
 }
 
 .headerRow {

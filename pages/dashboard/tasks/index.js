@@ -5,6 +5,7 @@ import DashboardLayout from '../../../components/layout/DashboardLayout';
 import SearchInput from '../../../components/common/SearchInput';
 import PaginationControls from '../../../components/common/PaginationControls';
 import TasksTable from '../../../components/tasks/TasksTable';
+import TaskMonthCards from '../../../components/tasks/TaskMonthCards';
 import { fetchTasks, deleteTasks } from '../../../services/taskService';
 import { fetchDepartments } from '../../../services/departmentService';
 import { fetchGoals } from '../../../services/goalService';
@@ -30,7 +31,7 @@ export default function TasksPage() {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 400);
   const [filters, setFilters] = useState({ department_id: '', status: '', priority: '', company_goal_id: '', goal_id: '', plan_id: '', month: '', year: '' });
-  const [sort, setSort] = useState('created_at:desc');
+  const [sort, setSort] = useState('due_date:asc');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   
@@ -79,8 +80,9 @@ export default function TasksPage() {
     setError(null);
     try {
       const [sortBy, sortDirection] = sort.split(':');
+      const { month, year, ...taskFilters } = filters;
       const builtFilters = {
-        ...filters,
+        ...taskFilters,
         search: debouncedSearch || undefined,
         sortBy,
         sortDirection,
@@ -126,14 +128,29 @@ export default function TasksPage() {
     setFilters((prev) => ({ ...prev, [key]: value }));
   }
 
+  function handleSelectMonth(month, year) {
+    setFilters((prev) => ({ ...prev, month, year }));
+  }
+
+  const filteredTasks = tasks.filter((task) => {
+    if (!filters.month && !filters.year) return true;
+    if (!task.due_date) return false;
+
+    const dueDate = new Date(task.due_date);
+    if (Number.isNaN(dueDate.getTime())) return false;
+
+    const matchesMonth = !filters.month || dueDate.getUTCMonth() + 1 === Number(filters.month);
+    const matchesYear = !filters.year || dueDate.getUTCFullYear() === Number(filters.year);
+    return matchesMonth && matchesYear;
+  });
   const hasActiveFilters = Object.values(filters).some((v) => v !== '') || search.trim() !== '';
   const isSearchLoading = search !== debouncedSearch;
-  const paginatedTasks = paginateItems(tasks, page, pageSize);
+  const paginatedTasks = paginateItems(filteredTasks, page, pageSize);
 
   function clearFilters() {
     setFilters({ department_id: '', status: '', priority: '', company_goal_id: '', goal_id: '', plan_id: '', month: '', year: '' });
     setSearch('');
-    setSort('created_at:desc');
+    setSort('due_date:asc');
   }
 
   return (
@@ -197,9 +214,9 @@ export default function TasksPage() {
             >
               <FilterGroup label="Sort">
                 <select value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Sort tasks">
-                  <option value="created_at:desc">Newest first</option>
-                  <option value="created_at:asc">Oldest first</option>
                   <option value="due_date:asc">Due date ascending</option>
+                  <option value="created_at:asc">Oldest first</option>
+                  <option value="created_at:desc">Newest first</option>
                   <option value="due_date:desc">Due date descending</option>
                   <option value="priority:asc">Priority</option>
                   <option value="status:asc">Status</option>
@@ -290,6 +307,13 @@ export default function TasksPage() {
           </div>
         </div>
 
+        <TaskMonthCards
+          tasks={tasks}
+          selectedMonth={filters.month}
+          selectedYear={filters.year}
+          onSelectMonth={handleSelectMonth}
+        />
+
         {loading ? (
           <div className={styles.section}>
             <div className="space-y-3">{[...Array(4)].map((_, i) => <div key={i} className={styles.loadingRow} />)}</div>
@@ -301,7 +325,7 @@ export default function TasksPage() {
               <button className={styles.retryBtn} onClick={() => loadTasks(user)}>Try Again</button>
             </div>
           </div>
-        ) : tasks.length === 0 ? (
+        ) : filteredTasks.length === 0 ? (
           <div className={styles.section}>
             <div className={styles.emptyState}>
               <svg className={styles.emptyIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

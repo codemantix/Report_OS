@@ -132,7 +132,7 @@ export default function CompanyGoalDetailPage() {
     return (
       <DashboardLayout>
         <div className={styles.page}>
-          <button className={styles.backBtn} onClick={() => router.push('/dashboard/company-goals')}>
+          <button className={styles.backBtn} onClick={() => router.back()}>
             &larr; Back to Company Goals
           </button>
           <div className={styles.errorState}>
@@ -152,7 +152,7 @@ export default function CompanyGoalDetailPage() {
     return (
       <DashboardLayout>
         <div className={styles.page}>
-          <button className={styles.backBtn} onClick={() => router.push('/dashboard/company-goals')}>
+          <button className={styles.backBtn} onClick={() => router.back()}>
             &larr; Back to Company Goals
           </button>
           <div className={styles.emptyState}>
@@ -194,7 +194,7 @@ export default function CompanyGoalDetailPage() {
   return (
     <DashboardLayout>
       <div className={styles.page}>
-        <button className={styles.backBtn} onClick={() => router.push('/dashboard/company-goals')}>
+        <button className={styles.backBtn} onClick={() => router.back()}>
           &larr; Back to Company Goals
         </button>
 

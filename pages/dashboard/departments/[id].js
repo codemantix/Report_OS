@@ -304,7 +304,7 @@ export default function DepartmentDetailPage() {
           <p className="text-sm text-gray-500 mb-6">{error}</p>
           <button
             className="px-4 py-2 text-sm max-sm:text-xs font-medium text-white bg-brand-deepblue rounded-lg hover:bg-brand-deepblue/90 transition-colors"
-            onClick={() => router.push('/dashboard/departments')}
+            onClick={() => router.back()}
           >
             Back to Departments
           </button>
@@ -324,7 +324,7 @@ export default function DepartmentDetailPage() {
           <p className="text-sm text-gray-500 mb-6">This department may have been removed.</p>
           <button
             className="px-4 py-2 text-sm max-sm:text-xs font-medium text-white bg-brand-deepblue rounded-lg hover:bg-brand-deepblue/90 transition-colors"
-            onClick={() => router.push('/dashboard/departments')}
+            onClick={() => router.back()}
           >
             Back to Departments
           </button>
@@ -348,7 +348,7 @@ export default function DepartmentDetailPage() {
         {/* Header */}
             <button
               className="text-sm max-sm:text-xs text-brand-slate hover:text-surface-dark transition-colors mb-1 flex items-center gap-1"
-              onClick={() => router.push('/dashboard/departments')}
+              onClick={() => router.back()}
             >
               &larr; Back to Departments
             </button>

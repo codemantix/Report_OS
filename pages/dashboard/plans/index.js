@@ -24,7 +24,7 @@ export default function PlansPage() {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 400);
   const [filters, setFilters] = useState({ department_id: '', plan_type: '', month: '', year: '' });
-  const [sort, setSort] = useState('created_at:desc');
+  const [sort, setSort] = useState('created_at:asc');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -135,7 +135,7 @@ export default function PlansPage() {
   function clearFilters() {
     setFilters({ department_id: '', plan_type: '', month: '', year: '' });
     setSearch('');
-    setSort('created_at:desc');
+    setSort('created_at:asc');
   }
 
   return (
@@ -198,8 +198,8 @@ export default function PlansPage() {
             >
               <FilterGroup label="Sort">
                 <select value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Sort plans">
-                  <option value="created_at:desc">Newest first</option>
                   <option value="created_at:asc">Oldest first</option>
+                  <option value="created_at:desc">Newest first</option>
                   <option value="title:asc">Title A–Z</option>
                   <option value="plan_type:asc">Plan type</option>
                 </select>
