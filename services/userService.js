@@ -113,6 +113,34 @@ export async function getCurrentUserProfile(userId) {
 
 export async function updateCurrentUserProfile(userId, payload) {
   const safePayload = pickEditableProfileFields(payload);
+
+  if (typeof window !== 'undefined') {
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session?.access_token) {
+        return { data: null, error: new Error('Your session has expired. Please sign in again.') };
+      }
+
+      const response = await fetch('/api/users/profile', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify(safePayload),
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        return { data: null, error: new Error(result.error || 'Failed to update profile.') };
+      }
+
+      return { data: result.profile, error: null };
+    } catch {
+      return { data: null, error: new Error('Unable to update your profile. Please check your connection and try again.') };
+    }
+  }
+
   safePayload.updated_at = new Date().toISOString();
 
   const { data, error } = await getClient()
