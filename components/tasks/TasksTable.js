@@ -4,6 +4,7 @@ import { formatDate } from '../../utils/dateHelpers';
 import { getProfileDisplayName, getProfileInitials } from '../../utils/profileHelpers';
 import styles from './Tasks.module.css';
 import Image from 'next/image';
+import { FileText } from 'lucide-react';
 
 const PRIORITY_STYLES = {
   urgent: styles.priorityUrgent,
@@ -125,6 +126,7 @@ export default function TasksTable({ tasks, emptyMessage = 'No tasks found.', is
             <th className={styles.th}>Assignees</th>
             <th className={styles.th}>Priority</th>
             <th className={styles.th}>Status</th>
+            <th className={styles.th}>Reports</th>
             <th className={styles.th}>Due Date</th>
             <th className={styles.th}>Created</th>
           </tr>
@@ -180,6 +182,24 @@ export default function TasksTable({ tasks, emptyMessage = 'No tasks found.', is
                 </td>
                 <td className={styles.td}>
                   <span className={`${styles.badge} ${STATUS_STYLES[task.status] || styles.statusTodo}`}>{task.status?.replace(/_/g, ' ')}</span>
+                </td>
+                <td className={styles.td}>
+                  {task.linked_reports?.length > 0 ? (
+                    <button
+                      type="button"
+                      className={styles.taskReportButton}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        router.push(`/dashboard/reports/${task.linked_reports[0].id}`);
+                      }}
+                      title={`Open latest report: ${task.linked_reports[0].project_name || 'Untitled report'}`}
+                    >
+                      <FileText size={14} aria-hidden="true" />
+                      {task.linked_reports.length}
+                    </button>
+                  ) : (
+                    <span className={styles.taskReportEmpty}>0</span>
+                  )}
                 </td>
                 <td className={styles.td}>
                   <span className={overdue ? styles.overdue : styles.dueDate}>

@@ -71,6 +71,17 @@
   color: var(--color-text);
 }
 
+.projectName {
+  @apply block max-w-[180px] truncate;
+  color: var(--color-text);
+}
+
+@media (max-width: 640px) {
+  .projectName {
+    max-width: 140px;
+  }
+}
+
 .actionBtn {
   @apply p-1.5 rounded-lg transition-colors;
   color: var(--color-muted);

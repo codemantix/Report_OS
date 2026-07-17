@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import DashboardLayout from '../../../components/layout/DashboardLayout';
 import TaskForm from '../../../components/tasks/TaskForm';
 import TaskComments from '../../../components/tasks/TaskComments';
+import TaskLinkedReports from '../../../components/tasks/TaskLinkedReports';
 import { fetchTaskById, updateTask, updateTaskStatus, archiveTask, deleteTask } from '../../../services/taskService';
 import { fetchDepartments } from '../../../services/departmentService';
 import { fetchGoals } from '../../../services/goalService';
@@ -415,6 +416,12 @@ export default function TaskDetailPage() {
             <p style={{ color: 'var(--color-text)', whiteSpace: 'pre-wrap' }}>{task.expected_output}</p>
           </div>
         )}
+
+        {/* Linked Reports */}
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Linked Reports ({task.linked_reports?.length || 0})</h2>
+          <TaskLinkedReports reports={task.linked_reports} />
+        </div>
 
         {/* Attachments */}
         {parseAttachments(task.attachments).length > 0 && (

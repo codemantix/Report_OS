@@ -137,7 +137,7 @@ export default function ReportsTable({
             <th className={styles.th}>Team Member</th>
             <th className={styles.th}>Department</th>
             <th className={styles.th}>Type</th>
-            <th className={styles.th}>Project</th>
+            <th className={styles.th}>Report Title</th>
             <th className={styles.th}>Submitted</th>
             <th className={styles.th}>Goal Align.</th>
             <th className={styles.th}>Progress</th>
@@ -195,7 +195,14 @@ export default function ReportsTable({
                 <td className={styles.td}>
                   <span className={styles.typeBadge}>{report.report_type?.replace('_', ' ')}</span>
                 </td>
-                <td className={styles.td}>{report.project_name || 'N/A'}</td>
+                <td className={styles.td}>
+                  <span
+                    className={styles.projectName}
+                    title={report.project_name || 'N/A'}
+                  >
+                    {report.project_name || 'N/A'}
+                  </span>
+                </td>
                 <td className={styles.td} title={formatDateTime(report.submitted_at)}>
                   {timeAgo(report.submitted_at)}
                 </td>

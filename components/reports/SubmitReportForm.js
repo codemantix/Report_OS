@@ -11,6 +11,7 @@ import { fetchActiveCompanyGoals } from '../../services/companyGoalService';
 import { createReport } from '../../services/reportService';
 import { uploadFiles } from '../../services/uploadService';
 import { getDefaultDateRange, isInPeriod, isDateInPeriod } from '../../utils/reportDateRange';
+import { validateReportSubmission } from '../../utils/reportValidation';
 import ReportPeriodSelector from './ReportPeriodSelector';
 import FileUpload from '../common/FileUpload';
 import styles from './ReportForm.module.css';
@@ -166,12 +167,14 @@ export default function SubmitReportForm() {
   // Handle period date changes
   function handlePeriodStartChange(value) {
     setPeriodStart(value);
+    setErrors((prev) => ({ ...prev, period_start: undefined }));
     setFormData((prev) => ({ ...prev, goal_id: '', plan_id: '', task_id: '' }));
     setSelectedTask(null);
   }
 
   function handlePeriodEndChange(value) {
     setPeriodEnd(value);
+    setErrors((prev) => ({ ...prev, period_end: undefined }));
     setFormData((prev) => ({ ...prev, goal_id: '', plan_id: '', task_id: '' }));
     setSelectedTask(null);
   }
@@ -179,6 +182,7 @@ export default function SubmitReportForm() {
   function handleChange(e) {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
 
     if (name === 'report_type') {
       handleReportTypeChange(value);
@@ -208,21 +212,12 @@ export default function SubmitReportForm() {
   }
 
   function validateForm() {
-    const errs = {};
-    if (!formData.report_type) errs.report_type = 'Report type is required';
-    if (!formData.department_id) errs.department_id = 'Department is required';
-    if (!formData.worked_on.trim()) errs.worked_on = 'Please describe what you worked on';
-    if (!formData.completed_tasks.trim()) errs.completed_tasks = 'Please list completed tasks';
-    if (formData.hours_worked && (isNaN(formData.hours_worked) || Number(formData.hours_worked) < 0)) {
-      errs.hours_worked = 'Hours must be a valid positive number';
-    }
-    if (formData.completion_percentage) {
-      const pct = Number(formData.completion_percentage);
-      if (isNaN(pct) || pct < 0 || pct > 100) {
-        errs.completion_percentage = 'Percentage must be between 0 and 100';
-      }
-    }
-    return errs;
+    return validateReportSubmission({
+      ...formData,
+      period_start: periodStart,
+      period_end: periodEnd,
+      attachments: files,
+    });
   }
 
   async function handleSubmit(e) {
@@ -248,15 +243,13 @@ export default function SubmitReportForm() {
             setUploadProgress({ ...progress });
           });
         } catch (uploadErr) {
-          toast.error(uploadErr.message || 'Some files failed to upload');
-          console.error('Upload error:', uploadErr);
-          // Don't block report save — continue without failed attachments
+          setUploadProgress(null);
+          throw new Error(uploadErr.message || 'The required attachment could not be uploaded.');
         }
         setUploadProgress(null);
       }
 
       const reportPayload = {
-        user_id: user.id,
         department_id: formData.department_id || null,
         goal_id: formData.goal_id || null,
         plan_id: formData.plan_id || null,
@@ -276,11 +269,14 @@ export default function SubmitReportForm() {
         ai_status: 'pending',
       };
 
-      const { data, error } = await createReport(reportPayload);
+      const { data, error } = await createReport(reportPayload, { periodStart, periodEnd });
 
       if (error) {
-        toast.error('Failed to submit report');
-        console.error(error);
+        if (error.fields && Object.keys(error.fields).length > 0) {
+          setErrors(error.fields);
+          setSubmitted(true);
+        }
+        toast.error(error.message || 'Failed to submit report');
         setSubmitting(false);
         return;
       }
@@ -304,7 +300,7 @@ export default function SubmitReportForm() {
 
       router.push('/dashboard/reports');
     } catch (err) {
-      toast.error('Something went wrong');
+      toast.error(err.message || 'Something went wrong');
       console.error(err);
     } finally {
       setSubmitting(false);
@@ -353,6 +349,7 @@ export default function SubmitReportForm() {
                 value={formData.department_id}
                 onChange={handleChange}
                 className={`${styles.select} ${errors.department_id && submitted ? styles.inputError : ''}`}
+                required
               >
                 <option value="">Select department</option>
                 {departments.map((dept) => (
@@ -363,15 +360,17 @@ export default function SubmitReportForm() {
             </div>
           </div>
           <div className={styles.field}>
-            <label className={styles.label}>Project Name</label>
+            <label className={`${styles.label} ${styles.required}`}>Report Title</label>
             <input
               type="text"
               name="project_name"
               value={formData.project_name}
               onChange={handleChange}
-              className={styles.input}
-              placeholder="e.g., Website Redesign"
+              className={`${styles.input} ${errors.project_name && submitted ? styles.inputError : ''}`}
+              placeholder="e.g., Website Redesign Progress"
+              required
             />
+            {errors.project_name && submitted && <p className={styles.fieldError}>{errors.project_name}</p>}
           </div>
         </div>
 
@@ -386,6 +385,8 @@ export default function SubmitReportForm() {
           tasksCount={tasks.length}
           loadingRelated={loadingRelated}
           disabled={!selectedDept}
+          errors={errors}
+          submitted={submitted}
         />
 
         {/* Goal, Plan & Task */}
@@ -399,7 +400,7 @@ export default function SubmitReportForm() {
                 value={formData.goal_id}
                 onChange={handleChange}
                 className={styles.select}
-                disabled={!selectedDept}
+                disabled={!selectedDept || goals.length === 0}
               >
                 <option value="">Select goal</option>
                 {goals.map((goal) => (
@@ -408,6 +409,7 @@ export default function SubmitReportForm() {
               </select>
               {!selectedDept && <p className={styles.hint}>Select a department first</p>}
               {selectedDept && goals.length === 0 && !loadingRelated && <p className={styles.hint}>No goals found for this period</p>}
+
             </div>
             <div className={styles.field}>
               <label className={styles.label}>Related Plan</label>
@@ -416,7 +418,7 @@ export default function SubmitReportForm() {
                 value={formData.plan_id}
                 onChange={handleChange}
                 className={styles.select}
-                disabled={!selectedDept}
+                disabled={!selectedDept || plans.length === 0}
               >
                 <option value="">Select plan</option>
                 {plans.map((plan) => (
@@ -424,6 +426,7 @@ export default function SubmitReportForm() {
                 ))}
               </select>
               {selectedDept && plans.length === 0 && !loadingRelated && <p className={styles.hint}>No plans found for this period</p>}
+
             </div>
           </div>
           <div className={styles.row}>
@@ -438,7 +441,7 @@ export default function SubmitReportForm() {
                   setSelectedTask(taskItem || null);
                 }}
                 className={styles.select}
-                disabled={!selectedDept}
+                disabled={!selectedDept || tasks.length === 0}
               >
                 <option value="">Select task</option>
                 {tasks.map((task) => (
@@ -447,10 +450,12 @@ export default function SubmitReportForm() {
                   </option>
                 ))}
               </select>
+              {selectedDept && tasks.length === 0 && !loadingRelated && <p className={styles.hint}>No tasks found for this period</p>}
+
             </div>
             <div className={styles.field}>
               <label className={styles.label}>Task Info</label>
-              <div className="rounded-lg border p-3 text-sm min-h-[42px]" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+              <div className={styles.taskInfo}>
                 {selectedTask ? (
                   <div className="space-y-1">
                     <p className="font-medium" style={{ color: 'var(--color-text)' }}>{selectedTask.title}</p>
@@ -467,18 +472,19 @@ export default function SubmitReportForm() {
         </div>
 
         {/* Company Goal Link */}
-        {companyGoals.length > 0 && (
-          <div className={styles.section}>
+        <div className={styles.section}>
             <h2 className={styles.sectionTitle}>Company Direction</h2>
             <div className={styles.field}>
-              <label className={styles.label}>Related Company Goal</label>
+              <label className={`${styles.label} ${styles.required}`}>Related Company Goal</label>
               <select
                 name="company_goal_id"
                 value={formData.company_goal_id}
                 onChange={handleChange}
-                className={styles.select}
+                className={`${styles.select} ${errors.company_goal_id && submitted ? styles.inputError : ''}`}
+                disabled={companyGoals.length === 0}
+                required
               >
-                <option value="">None</option>
+                <option value="">{companyGoals.length === 0 ? 'No active company goals available' : 'Select company goal'}</option>
                 {companyGoals.map((cg) => (
                   <option key={cg.id} value={cg.id}>
                     {cg.title} ({cg.month}/{cg.year})
@@ -490,9 +496,10 @@ export default function SubmitReportForm() {
                   This report is linked to a company-wide monthly goal.
                 </p>
               )}
+              {companyGoals.length === 0 && <p className={styles.hint}>No active company goals are available.</p>}
+              {errors.company_goal_id && submitted && <p className={styles.fieldError}>{errors.company_goal_id}</p>}
             </div>
           </div>
-        )}
 
         {/* Work Details */}
         <div className={styles.section}>
@@ -518,18 +525,21 @@ export default function SubmitReportForm() {
                 onChange={handleChange}
                 className={`${styles.textarea} ${errors.completed_tasks && submitted ? styles.inputError : ''}`}
                 placeholder="List completed tasks..."
+                required
               />
               {errors.completed_tasks && submitted && <p className={styles.fieldError}>{errors.completed_tasks}</p>}
             </div>
             <div className={styles.field}>
-              <label className={styles.label}>What is still pending?</label>
+              <label className={`${styles.label} ${styles.required}`}>What is still pending?</label>
               <textarea
                 name="pending_tasks"
                 value={formData.pending_tasks}
                 onChange={handleChange}
-                className={styles.textarea}
-                placeholder="List pending items..."
+                className={`${styles.textarea} ${errors.pending_tasks && submitted ? styles.inputError : ''}`}
+                placeholder="List pending items or enter None"
+                required
               />
+              {errors.pending_tasks && submitted && <p className={styles.fieldError}>{errors.pending_tasks}</p>}
             </div>
           </div>
         </div>
@@ -539,24 +549,28 @@ export default function SubmitReportForm() {
           <h2 className={styles.sectionTitle}>Challenges & Support</h2>
           <div className={styles.row}>
             <div className={styles.field}>
-              <label className={styles.label}>Blockers or Challenges</label>
+              <label className={`${styles.label} ${styles.required}`}>Blockers or Challenges</label>
               <textarea
                 name="blockers"
                 value={formData.blockers}
                 onChange={handleChange}
-                className={styles.textarea}
-                placeholder="Any blockers or challenges?"
+                className={`${styles.textarea} ${errors.blockers && submitted ? styles.inputError : ''}`}
+                placeholder="Describe blockers or enter None"
+                required
               />
+              {errors.blockers && submitted && <p className={styles.fieldError}>{errors.blockers}</p>}
             </div>
             <div className={styles.field}>
-              <label className={styles.label}>Support Needed</label>
+              <label className={`${styles.label} ${styles.required}`}>Support Needed</label>
               <textarea
                 name="support_needed"
                 value={formData.support_needed}
                 onChange={handleChange}
-                className={styles.textarea}
-                placeholder="What support do you need?"
+                className={`${styles.textarea} ${errors.support_needed && submitted ? styles.inputError : ''}`}
+                placeholder="Describe support needed or enter None"
+                required
               />
+              {errors.support_needed && submitted && <p className={styles.fieldError}>{errors.support_needed}</p>}
             </div>
           </div>
         </div>
@@ -566,7 +580,7 @@ export default function SubmitReportForm() {
           <h2 className={styles.sectionTitle}>Metrics</h2>
           <div className={styles.row}>
             <div className={styles.field}>
-              <label className={styles.label}>Hours Worked</label>
+              <label className={`${styles.label} ${styles.required}`}>Hours Worked</label>
               <input
                 type="number"
                 name="hours_worked"
@@ -576,11 +590,12 @@ export default function SubmitReportForm() {
                 placeholder="e.g., 8"
                 min="0"
                 step="0.5"
+                required
               />
               {errors.hours_worked && submitted && <p className={styles.fieldError}>{errors.hours_worked}</p>}
             </div>
             <div className={styles.field}>
-              <label className={styles.label}>Completion %</label>
+              <label className={`${styles.label} ${styles.required}`}>Completion %</label>
               <input
                 type="number"
                 name="completion_percentage"
@@ -590,19 +605,22 @@ export default function SubmitReportForm() {
                 placeholder="e.g., 75"
                 min="0"
                 max="100"
+                required
               />
               {errors.completion_percentage && submitted && <p className={styles.fieldError}>{errors.completion_percentage}</p>}
             </div>
           </div>
           <div className={styles.field}>
-            <label className={styles.label}>Additional Notes</label>
+            <label className={`${styles.label} ${styles.required}`}>Additional Notes</label>
             <textarea
               name="additional_notes"
               value={formData.additional_notes}
               onChange={handleChange}
-              className={styles.textarea}
-              placeholder="Any additional notes..."
+              className={`${styles.textarea} ${errors.additional_notes && submitted ? styles.inputError : ''}`}
+              placeholder="Add notes or enter None"
+              required
             />
+            {errors.additional_notes && submitted && <p className={styles.fieldError}>{errors.additional_notes}</p>}
           </div>
         </div>
 

@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import DashboardLayout from '../../../components/layout/DashboardLayout';
 import { fetchReportById, markReportReviewed, updateReport } from '../../../services/reportService';
 import { getCurrentUserProfile } from '../../../lib/authHelpers';
+import { fetchTaskOptions } from '../../../services/taskService';
 import { formatDate, formatDateTime } from '../../../utils/dateHelpers';
 import { getScoreColor, getRiskBadgeColor, getRiskLabel } from '../../../utils/scoreHelpers';
 import { getProfileDisplayName } from '../../../utils/profileHelpers';
@@ -12,6 +13,7 @@ import styles from '../../../components/reports/ReportDetails.module.css';
 import { Edit, Trash2 } from 'lucide-react';
 import CompanyAlignmentCard from '../../../components/company/CompanyAlignmentCard';
 import AttachmentsList, { parseAttachments } from '../../../components/common/AttachmentsList';
+import AdminReportEditForm from '../../../components/reports/AdminReportEditForm';
 
 function getLatestAnalysis(analysis) {
   if (!Array.isArray(analysis)) return analysis || null;
@@ -107,12 +109,21 @@ export default function ReportDetailPage() {
   const [showDeleteReportModal, setShowDeleteReportModal] = useState(false);
   const [showDeleteCommentId, setShowDeleteCommentId] = useState(null);
   const [deletingComment, setDeletingComment] = useState(false);
+  const [editingReport, setEditingReport] = useState(false);
+  const [savingReport, setSavingReport] = useState(false);
+  const [taskOptions, setTaskOptions] = useState([]);
 
   useEffect(() => {
     if (!id) return;
     async function init() {
       const profile = await getCurrentUserProfile();
       setCurrentUser(profile);
+
+      if (profile?.role === 'admin') {
+        const { data: tasks } = await fetchTaskOptions();
+        setTaskOptions(tasks || []);
+      }
+
       loadReport();
     }
     init();
@@ -219,6 +230,28 @@ export default function ReportDetailPage() {
     }
   }
 
+  async function handleReportUpdate(updates) {
+    setSavingReport(true);
+    const { data, error: updateError } = await updateReport(id, updates);
+    setSavingReport(false);
+
+    if (updateError) {
+      toast.error(updateError.message || 'Failed to update report');
+      return { error: updateError };
+    }
+
+    autoAnalysisStartedRef.current.delete(id);
+    setReport((current) => ({
+      ...current,
+      ...data,
+      report_ai_analysis: [],
+      ai_status: 'pending',
+    }));
+    setEditingReport(false);
+    toast.success('Report updated. AI analysis is being refreshed.');
+    return { data };
+  }
+
   function handleDeleteReport() {
     setShowDeleteReportModal(true);
   }
@@ -311,6 +344,27 @@ export default function ReportDetailPage() {
 
   if (!report) return null;
 
+  const canEditReport = currentUser?.role === 'admin';
+
+  if (editingReport && canEditReport) {
+    return (
+      <DashboardLayout>
+        <div className={styles.page}>
+          <button onClick={() => setEditingReport(false)} className={styles.backBtn}>
+            ← Cancel editing
+          </button>
+          <AdminReportEditForm
+            report={report}
+            tasks={taskOptions}
+            saving={savingReport}
+            onSave={handleReportUpdate}
+            onCancel={() => setEditingReport(false)}
+          />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   const canReview = currentUser && (currentUser.role === 'admin' || currentUser.role === 'department_lead');
   const canViewAdminRecommendation = currentUser?.role === 'admin';
   const analysis = getLatestAnalysis(report.report_ai_analysis);
@@ -346,6 +400,12 @@ export default function ReportDetailPage() {
             <p className="text-gray-500 max-sm:text-xs">{report.report_type} report • {formatDateTime(report.submitted_at)}</p>
           </div>
           <div className="flex max-sm:flex-col gap-2">
+            {canEditReport && (
+              <button onClick={() => setEditingReport(true)} className={styles.editButton}>
+                <Edit size={16} aria-hidden="true" />
+                Edit Report
+              </button>
+            )}
             {!report.reviewed && canReview && (
               <button onClick={handleMarkReviewed} className={styles.reviewBtn}>
                 Mark as Reviewed

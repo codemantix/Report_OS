@@ -26,6 +26,8 @@ export default function ReportPeriodSelector({
   tasksCount = 0,
   loadingRelated = false,
   disabled = false,
+  errors = {},
+  submitted = false,
 }) {
   const periodLabel = formatPeriodLabel(periodStart, periodEnd);
 
@@ -44,24 +46,30 @@ export default function ReportPeriodSelector({
       {/* Date pickers */}
       <div className={styles.periodRow}>
         <div className={styles.field}>
-          <label className={styles.label}>Period Start</label>
+          <label className={`${styles.label} ${styles.required}`} htmlFor="report-period-start">Period Start</label>
           <input
+            id="report-period-start"
             type="date"
             value={periodStart}
             onChange={(e) => onStartChange(e.target.value)}
-            className={styles.input}
+            className={`${styles.input} ${errors.period_start && submitted ? styles.inputError : ''}`}
             disabled={disabled}
+            required
           />
+          {errors.period_start && submitted && <p className={styles.fieldError}>{errors.period_start}</p>}
         </div>
         <div className={styles.field}>
-          <label className={styles.label}>Period End</label>
+          <label className={`${styles.label} ${styles.required}`} htmlFor="report-period-end">Period End</label>
           <input
+            id="report-period-end"
             type="date"
             value={periodEnd}
             onChange={(e) => onEndChange(e.target.value)}
-            className={styles.input}
+            className={`${styles.input} ${errors.period_end && submitted ? styles.inputError : ''}`}
             disabled={disabled}
+            required
           />
+          {errors.period_end && submitted && <p className={styles.fieldError}>{errors.period_end}</p>}
         </div>
       </div>
 

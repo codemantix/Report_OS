@@ -80,7 +80,36 @@ export default async function handler(req, res) {
       }
     }
 
-    return res.status(200).json({ data: task });
+    let linkedReportsQuery = supabaseAdmin
+      .from('reports')
+      .select(`
+        id,
+        project_name,
+        report_type,
+        submitted_at,
+        completion_percentage,
+        ai_status,
+        users:user_id (id, full_name, display_name, avatar_url)
+      `)
+      .eq('task_id', id)
+      .order('submitted_at', { ascending: false });
+
+    if (!canManage) {
+      linkedReportsQuery = linkedReportsQuery.eq('user_id', user.id);
+    }
+
+    const { data: linkedReports, error: reportsError } = await linkedReportsQuery;
+
+    if (reportsError) {
+      console.error('Failed to load linked task reports:', reportsError);
+    }
+
+    return res.status(200).json({
+      data: {
+        ...task,
+        linked_reports: linkedReports || [],
+      },
+    });
   } catch (err) {
     console.error('Task detail API error:', err);
     return res.status(500).json({ error: 'Internal server error' });

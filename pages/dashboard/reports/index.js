@@ -303,7 +303,7 @@ export default function ReportsPage() {
             <SearchInput
               value={search}
               onChange={setSearch}
-              placeholder="Search reports by member, project, task, blocker..."
+              placeholder="Search reports by member, title, task, blocker..."
               loading={isSearchLoading}
               label="Search reports"
             />
@@ -316,7 +316,7 @@ export default function ReportsPage() {
                 <select value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Sort reports">
                   <option value="submitted_at:desc">Newest first</option>
                   <option value="submitted_at:asc">Oldest first</option>
-                  <option value="project_name:asc">Project A–Z</option>
+                  <option value="project_name:asc">Title A–Z</option>
                   <option value="report_type:asc">Type A–Z</option>
                 </select>
               </FilterGroup>

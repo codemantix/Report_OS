@@ -192,3 +192,46 @@
   transition: all 0.15s;
 }
 .commentActionBtnDelete:hover { background: rgba(239,68,68,0.08); color: #EF4444; }
+
+.editButton {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-all;
+  color: #2563EB;
+  border: 1px solid rgba(37,99,235,0.24);
+  background: rgba(37,99,235,0.08);
+}
+.editButton:hover { color: #fff; background: #2563EB; border-color: #2563EB; transform: translateY(-1px); }
+
+.editForm {
+  @apply space-y-5 rounded-2xl border p-6 max-sm:p-4;
+  border-color: var(--color-border);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+.editFormHeader { @apply flex items-start justify-between gap-4; }
+.editFormTitle { @apply text-xl font-bold; color: var(--color-text); }
+.editFormDescription { @apply mt-1 max-w-2xl text-sm max-sm:text-xs; color: var(--color-muted); }
+.editAdminBadge { @apply flex-shrink-0 rounded-full px-3 py-1 text-xs font-semibold; color: #7C3AED; background: rgba(124,58,237,0.10); }
+.editNotice { @apply flex items-start gap-2 rounded-xl border px-4 py-3 text-sm max-sm:text-xs; color: #1D4ED8; border-color: rgba(37,99,235,0.18); background: rgba(37,99,235,0.06); }
+.editNotice svg { @apply mt-0.5 flex-shrink-0; }
+.editGrid { @apply grid grid-cols-1 gap-4 md:grid-cols-2; }
+.editField { @apply space-y-1.5; }
+.editLabel { @apply block text-sm font-medium max-sm:text-xs; color: var(--color-text); }
+.editInput, .editTextarea { @apply w-full rounded-lg border px-3.5 py-2.5 text-sm outline-none transition-all max-sm:text-xs; color: var(--color-text); border-color: var(--color-border); background: var(--color-surface); }
+.editTextarea { @apply min-h-[110px] resize-y; }
+.editInput:focus, .editTextarea:focus { border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+.editInputError { border-color: #EF4444 !important; box-shadow: 0 0 0 3px rgba(239,68,68,0.08); }
+.editError { @apply text-xs text-red-500; }
+.editActions { @apply flex items-center justify-end gap-3 border-t pt-5; border-color: var(--color-border); }
+.editCancelButton, .editSaveButton { @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-50; }
+.editCancelButton { color: var(--color-text); border: 1px solid var(--color-border); background: transparent; }
+.editCancelButton:hover:not(:disabled) { background: var(--color-surface-soft); }
+.editSaveButton { color: #fff; background: linear-gradient(135deg, #2563EB, #4F46E5); box-shadow: 0 3px 12px rgba(37,99,235,0.24); }
+.editSaveButton:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,0.30); }
+:global(.dark) .editInput, :global(.dark) .editTextarea { background: rgba(2,6,23,0.62); }
+:global(.dark) .editNotice { color: #93C5FD; background: rgba(37,99,235,0.12); }
+@media (max-width: 640px) {
+  .editFormHeader { @apply flex-col; }
+  .editAdminBadge { @apply self-start; }
+  .editActions { @apply flex-col-reverse; }
+  .editCancelButton, .editSaveButton { @apply w-full; }
+}

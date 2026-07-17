@@ -180,6 +180,27 @@
 .backBtn:hover { color: var(--color-text); }
 .overdue { color: #DC2626 !important; }
 .dueDate { @apply text-xs; color: var(--color-muted); }
+.taskReportButton { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition-colors; color: #2563EB; background: rgba(37,99,235,0.10); }
+.taskReportButton:hover { background: rgba(37,99,235,0.18); }
+.taskReportButton:focus-visible { outline: 2px solid #2563EB; outline-offset: 2px; }
+.taskReportEmpty { @apply text-xs; color: var(--color-muted); }
+.linkedReportsList { @apply grid grid-cols-1 gap-3 lg:grid-cols-2; }
+.linkedReportCard { @apply flex w-full items-center gap-3 rounded-xl border p-4 text-left transition-all; border-color: var(--color-border); background: var(--color-surface-soft); }
+.linkedReportCard:hover { border-color: rgba(37,99,235,0.40); box-shadow: 0 8px 22px rgba(37,99,235,0.08); transform: translateY(-1px); }
+.linkedReportCard:focus-visible { outline: 2px solid #2563EB; outline-offset: 2px; }
+.linkedReportIcon { @apply flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl; color: #2563EB; background: rgba(37,99,235,0.10); }
+.linkedReportContent { @apply min-w-0 flex-1; }
+.linkedReportTitle { @apply block truncate text-sm font-semibold; color: var(--color-text); }
+.linkedReportMeta { @apply mt-1 block truncate text-xs capitalize; color: var(--color-muted); }
+.linkedReportStats { @apply flex flex-shrink-0 items-center gap-2; color: var(--color-muted); }
+.linkedReportProgress { @apply rounded-full px-2 py-1 text-xs font-semibold; color: #059669; background: rgba(16,185,129,0.10); }
+.linkedReportsEmpty { @apply py-3 text-sm; color: var(--color-muted); }
+:global(.dark) .taskReportButton, :global(.dark) .linkedReportIcon { color: #60A5FA; background: rgba(59,130,246,0.16); }
+@media (max-width: 640px) {
+  .linkedReportCard { @apply items-start p-3; }
+  .linkedReportStats { @apply flex-col items-end gap-1; }
+  .linkedReportProgress { @apply whitespace-nowrap text-[10px]; }
+}
 .assigneesList { @apply space-y-2; }
 .assigneeItem { @apply flex items-center gap-2 p-2 rounded-lg; background: var(--color-surface-soft); }
 .detailGrid { @apply grid grid-cols-2 max-sm:grid-cols-1 gap-4; }

@@ -218,25 +218,62 @@ export async function fetchUserReports(userId, limit = 20, filters = {}) {
   return { data, error };
 }
 
-export async function createReport(reportData) {
-  const { data, error } = await supabase
-    .from('reports')
-    .insert([reportData])
-    .select()
-    .single();
+export async function createReport(reportData, { periodStart, periodEnd } = {}) {
+  try {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session?.access_token) {
+      return { data: null, error: new Error('Your session has expired. Please sign in again.') };
+    }
 
-  return { data, error };
+    const response = await fetch('/api/reports/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ report: reportData, periodStart, periodEnd }),
+    });
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      const error = new Error(result.error || 'Failed to submit report.');
+      error.fields = result.fields || {};
+      return { data: null, error };
+    }
+
+    return { data: result.report, error: null };
+  } catch {
+    return { data: null, error: new Error('Unable to submit your report. Please check your connection and try again.') };
+  }
 }
 
 export async function updateReport(id, updates) {
-  const { data, error } = await supabase
-    .from('reports')
-    .update(updates)
-    .eq('id', id)
-    .select()
-    .single();
+  try {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session?.access_token) {
+      return { data: null, error: new Error('Your session has expired. Please sign in again.') };
+    }
 
-  return { data, error };
+    const response = await fetch(`/api/admin/reports/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify(updates),
+    });
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      const error = new Error(result.error || 'Failed to update report.');
+      error.fields = result.fields || {};
+      return { data: null, error };
+    }
+
+    return { data: result.report, error: null };
+  } catch {
+    return { data: null, error: new Error('Unable to update the report. Please check your connection and try again.') };
+  }
 }
 
 export async function markReportReviewed(id, reviewerId) {

@@ -194,6 +194,36 @@ export async function fetchTasks(filters = {}) {
   }
 
   const { data, error } = await query;
+  if (error || !data || data.length === 0) return { data, error };
+
+  const taskIds = data.map((task) => task.id);
+  const { data: linkedReports } = await supabase
+    .from('reports')
+    .select('id, task_id, project_name, report_type, submitted_at, ai_status')
+    .in('task_id', taskIds)
+    .order('submitted_at', { ascending: false });
+
+  const reportsByTask = (linkedReports || []).reduce((map, report) => {
+    if (!map.has(report.task_id)) map.set(report.task_id, []);
+    map.get(report.task_id).push(report);
+    return map;
+  }, new Map());
+
+  return {
+    data: data.map((task) => ({
+      ...task,
+      linked_reports: reportsByTask.get(task.id) || [],
+    })),
+    error: null,
+  };
+}
+
+export async function fetchTaskOptions() {
+  const { data, error } = await supabase
+    .from('tasks')
+    .select('id, title, status, archived, department_id, departments:department_id (id, name)')
+    .order('title', { ascending: true });
+
   return { data, error };
 }
 

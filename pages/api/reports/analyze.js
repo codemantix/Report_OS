@@ -2,6 +2,37 @@ import { getAdminClient } from '../../../lib/supabaseAdmin';
 import { getAIClient } from '../../../lib/aiClient';
 import { buildAnalysisPrompt } from '../../../utils/aiPrompts';
 
+const UNTITLED_REPORT_NAMES = new Set([
+  '',
+  'untitled',
+  'untitled report',
+  'n/a',
+  'na',
+  'none',
+  'report',
+]);
+
+function needsGeneratedTitle(projectName) {
+  return UNTITLED_REPORT_NAMES.has(String(projectName || '').trim().toLowerCase());
+}
+
+function normalizeGeneratedTitle(value) {
+  if (typeof value !== 'string') return null;
+
+  const title = value
+    .replace(/^title\s*:\s*/i, '')
+    .replace(/^["'“”]+|["'“”]+$/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!title || needsGeneratedTitle(title)) return null;
+  if (title.length <= 80) return title;
+
+  const shortened = title.slice(0, 80);
+  const lastSpace = shortened.lastIndexOf(' ');
+  return `${shortened.slice(0, lastSpace > 50 ? lastSpace : 77).trim()}…`;
+}
+
 export async function runAiAnalysis(reportId) {
   const supabaseAdmin = getAdminClient();
 
@@ -42,11 +73,13 @@ export async function runAiAnalysis(reportId) {
       .eq('report_id', reportId)
       .maybeSingle();
 
-    if (reportTasks?.task_id) {
+    const linkedTaskId = reportTasks?.task_id || report.task_id;
+
+    if (linkedTaskId) {
       const { data: taskData } = await supabaseAdmin
         .from('tasks')
         .select('id, title, description, expected_output, priority, status, due_date, company_goal_id')
-        .eq('id', reportTasks.task_id)
+        .eq('id', linkedTaskId)
         .single();
       task = taskData;
     }
@@ -180,10 +213,26 @@ export async function runAiAnalysis(reportId) {
     throw insertError;
   }
 
-  // Update the report's AI status
-  await supabaseAdmin.from('reports').update({ ai_status: 'completed' }).eq('id', reportId);
+  const generatedTitle = needsGeneratedTitle(report.project_name)
+    ? normalizeGeneratedTitle(analysis.suggested_title)
+    : null;
+  const reportUpdates = { ai_status: 'completed' };
 
-  return { success: true, analysis };
+  if (generatedTitle) {
+    reportUpdates.project_name = generatedTitle;
+  }
+
+  const { error: updateError } = await supabaseAdmin
+    .from('reports')
+    .update(reportUpdates)
+    .eq('id', reportId);
+
+  if (updateError) {
+    console.error('Failed to finalize analyzed report:', updateError);
+    throw updateError;
+  }
+
+  return { success: true, analysis, generatedTitle };
 }
 
 export default async function handler(req, res) {

@@ -43,7 +43,7 @@ function validateFile(file) {
   return null;
 }
 
-export default function FileUpload({ files, onFilesChange, disabled = false, label = 'Attachments' }) {
+export default function FileUpload({ files, onFilesChange, disabled = false, label = 'Attachments', required = false, error = '' }) {
   const inputRef = useRef(null);
   const [dragActive, setDragActive] = useState(false);
 
@@ -129,11 +129,13 @@ export default function FileUpload({ files, onFilesChange, disabled = false, lab
 
   return (
     <div className={styles.wrapper}>
-      <label className={styles.label}>{label}</label>
+      <label className={styles.label}>
+        {label}{required && <span className={styles.requiredMark}> *</span>}
+      </label>
 
       {/* Drop Zone */}
       <div
-        className={`${styles.dropZone} ${dragActive ? styles.dropZoneActive : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`${styles.dropZone} ${dragActive ? styles.dropZoneActive : ''} ${error ? styles.dropZoneError : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -153,6 +155,8 @@ export default function FileUpload({ files, onFilesChange, disabled = false, lab
           or click to browse &middot; PDF, images, docs &middot; max 10MB each
         </p>
       </div>
+
+      {error && <p className={styles.errorText}>{error}</p>}
 
       <input
         ref={inputRef}

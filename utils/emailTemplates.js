@@ -56,7 +56,7 @@ export function buildReportConfirmationEmail(report, user) {
                 <span class="field-value">${report.report_type}</span>
               </div>
               <div class="field">
-                <span class="field-label">Project</span>
+                <span class="field-label">Report Title</span>
                 <span class="field-value">${report.project_name || 'N/A'}</span>
               </div>
               <div class="field">
