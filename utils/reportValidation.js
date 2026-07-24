@@ -1,5 +1,5 @@
 const REQUIRED_TEXT_FIELDS = [
-  ['project_name', 'Report title is required']
+  ['project_name', 'Report title is required'],
   ['worked_on', 'Please describe what you worked on'],
   ['completed_tasks', 'Please list completed tasks'],
   ['pending_tasks', 'Please list pending tasks or enter “None”'],
