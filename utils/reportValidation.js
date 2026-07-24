@@ -14,7 +14,6 @@ const REQUIRED_RELATIONSHIP_FIELDS = [
 ];
 
 
-
 export function validateEditableReportFields(values = {}) {
   const errors = {};
 
