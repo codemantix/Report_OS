@@ -13,7 +13,6 @@ company_monthly_goals
 → reports
 → report_ai_analysis
 ```
-
 The existing tables remain authoritative for work assignment and reporting:
 
 - `tasks` is the task source of truth.
