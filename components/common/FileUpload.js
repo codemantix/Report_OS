@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { Upload, FileText, Image, File, X } from 'lucide-react';
+import { Upload, FileText, FileSpreadsheet, Image, File, X } from 'lucide-react';
 import styles from './FileUpload.module.css';
 import toast from 'react-hot-toast';
 
@@ -14,6 +14,9 @@ const ACCEPTED_TYPES = {
   'image/svg+xml': ['.svg'],
   'application/msword': ['.doc'],
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+  'application/vnd.ms-excel': ['.xls'],
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+  'text/csv': ['.csv'],
 };
 
 const ACCEPTED_STRING = Object.values(ACCEPTED_TYPES).flat().join(',');
@@ -28,6 +31,7 @@ function getFileIcon(type) {
   if (type.startsWith('image/')) return Image;
   if (type.includes('pdf')) return FileText;
   if (type.includes('word') || type.includes('document')) return FileText;
+  if (type.includes('excel') || type.includes('spreadsheet') || type.includes('csv')) return FileSpreadsheet;
   return File;
 }
 
@@ -152,7 +156,7 @@ export default function FileUpload({ files, onFilesChange, disabled = false, lab
           {dragActive ? 'Drop files here' : 'Drag & drop files here'}
         </p>
         <p className={styles.dropHint}>
-          or click to browse &middot; PDF, images, docs &middot; max 10MB each
+          or click to browse &middot; PDF, images, docs, Excel & CSV &middot; max 10MB each
         </p>
       </div>
 

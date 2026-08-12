@@ -29,12 +29,16 @@ export default async function handler(req, res) {
     // 1. Fetch user role and department
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('users')
-      .select('role, department_id')
+      .select('role, department_id, status')
       .eq('id', user.id)
       .single();
 
     if (profileError || !profile) {
       return res.status(404).json({ error: 'User profile not found' });
+    }
+
+    if (profile.status !== 'active') {
+      return res.status(403).json({ error: 'Forbidden: User account is not active' });
     }
 
     // 2. Fetch task details with admin client
@@ -104,9 +108,14 @@ export default async function handler(req, res) {
       console.error('Failed to load linked task reports:', reportsError);
     }
 
+    const visibleTaskComments = canManage
+      ? task.task_comments || []
+      : (task.task_comments || []).filter((comment) => comment.visibility === 'employee_visible');
+
     return res.status(200).json({
       data: {
         ...task,
+        task_comments: visibleTaskComments,
         linked_reports: linkedReports || [],
       },
     });

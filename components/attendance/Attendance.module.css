@@ -1,0 +1,440 @@
+.page {
+  @apply space-y-6;
+}
+
+.header {
+  @apply flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between;
+}
+
+.title {
+  @apply text-2xl font-bold;
+  color: var(--color-text);
+}
+
+.subtitle {
+  @apply mt-1 text-sm;
+  color: var(--color-muted);
+}
+
+.primaryButton,
+.secondaryButton,
+.clearButton,
+.mobileEditButton {
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+.primaryButton {
+  @apply text-white;
+  background: #1E3A8A;
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: #1E40AF;
+}
+
+.secondaryButton,
+.clearButton {
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.secondaryButton:hover:not(:disabled),
+.clearButton:hover {
+  background: var(--color-surface-soft);
+}
+
+.readOnlyNotice {
+  @apply flex items-start gap-3 rounded-xl p-4 text-sm;
+  color: #1E40AF;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.readOnlyNotice svg {
+  @apply mt-0.5 h-5 w-5 shrink-0;
+}
+
+.formCard,
+.filters,
+.contentCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.formCard {
+  @apply overflow-hidden rounded-xl;
+}
+
+.formHeader {
+  @apply flex items-start justify-between gap-4 border-b px-5 py-4 sm:px-6;
+  border-color: var(--color-border);
+}
+
+.formTitle {
+  @apply text-lg font-semibold;
+  color: var(--color-text);
+}
+
+.formDescription {
+  @apply mt-1 max-w-3xl text-sm;
+  color: var(--color-muted);
+}
+
+.closeButton {
+  @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-2xl leading-none transition-colors;
+  color: var(--color-muted);
+}
+
+.closeButton:hover {
+  color: var(--color-text);
+  background: var(--color-surface-soft);
+}
+
+.form {
+  @apply p-5 sm:p-6;
+}
+
+.formGrid {
+  @apply grid grid-cols-1 gap-5 md:grid-cols-2;
+}
+
+.fullWidth {
+  @apply md:col-span-2;
+}
+
+.field,
+.filterField {
+  @apply flex flex-col gap-1.5;
+}
+
+.field label,
+.filterField label {
+  @apply text-sm font-medium;
+  color: var(--color-text);
+}
+
+.field input,
+.field select,
+.field textarea,
+.filterField input,
+.filterField select {
+  @apply w-full rounded-lg border px-3.5 py-2.5 text-base transition sm:text-sm;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+.field textarea {
+  @apply resize-y;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus,
+.filterField input:focus,
+.filterField select:focus {
+  @apply outline-none;
+  border-color: #1E3A8A;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+}
+
+.field input:disabled,
+.field select:disabled,
+.field textarea:disabled {
+  @apply cursor-not-allowed opacity-70;
+  background: var(--color-surface-soft);
+}
+
+.field [aria-invalid='true'] {
+  border-color: #DC2626;
+}
+
+.fieldError {
+  @apply text-xs font-medium;
+  color: #DC2626;
+}
+
+.optional,
+.fieldMeta {
+  @apply text-xs font-normal;
+  color: var(--color-muted);
+}
+
+.fieldMeta {
+  @apply flex items-center justify-between gap-3;
+}
+
+.formActions {
+  @apply mt-6 flex flex-col-reverse gap-3 border-t pt-5 sm:flex-row sm:justify-end;
+  border-color: var(--color-border);
+}
+
+.filters {
+  @apply flex flex-col gap-4 rounded-xl p-4 sm:p-5;
+}
+
+.filterGrid {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4;
+}
+
+.clearButton {
+  @apply self-stretch sm:self-end;
+}
+
+.contentCard {
+  @apply overflow-hidden rounded-xl;
+}
+
+.contentHeader {
+  @apply flex flex-col gap-1 border-b px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6;
+  border-color: var(--color-border);
+}
+
+.contentTitle {
+  @apply text-lg font-semibold;
+  color: var(--color-text);
+}
+
+.recordCount {
+  @apply text-sm;
+  color: var(--color-muted);
+}
+
+.tableWrapper {
+  @apply hidden overflow-x-auto md:block;
+}
+
+.table {
+  @apply w-full min-w-[1120px] border-collapse text-left text-sm;
+}
+
+.table th {
+  @apply whitespace-nowrap border-b px-4 py-3 text-xs font-semibold uppercase tracking-wide;
+  color: var(--color-muted);
+  background: var(--color-surface-soft);
+  border-color: var(--color-border);
+}
+
+.table td {
+  @apply border-b px-4 py-4 align-middle;
+  color: var(--color-text);
+  border-color: var(--color-border-light);
+}
+
+.table tbody tr:last-child td {
+  @apply border-b-0;
+}
+
+.table tbody tr:hover {
+  background: var(--color-surface-soft);
+}
+
+.dateCell {
+  @apply whitespace-nowrap font-medium;
+}
+
+.personCell {
+  @apply flex min-w-44 items-center gap-3;
+}
+
+.avatar {
+  @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white;
+  background: #1E3A8A;
+}
+
+.personCell > span:last-child,
+.sessionCell,
+.recordedCell,
+.periodCell {
+  @apply flex flex-col gap-0.5;
+}
+
+.personCell strong,
+.sessionCell strong {
+  @apply font-semibold;
+  color: var(--color-text);
+}
+
+.personCell small,
+.sessionCell small,
+.recordedCell small,
+.periodCell small,
+.muted {
+  @apply text-xs;
+  color: var(--color-muted);
+}
+
+.sessionCell {
+  @apply max-w-60;
+}
+
+.sessionCell small {
+  @apply truncate;
+}
+
+.statusBadge {
+  @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold;
+}
+
+.status_present {
+  color: #047857;
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.status_late {
+  color: #B45309;
+  background: rgba(245, 158, 11, 0.14);
+}
+
+.status_absent {
+  color: #B91C1C;
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.status_excused {
+  color: #6D28D9;
+  background: rgba(139, 92, 246, 0.12);
+}
+
+.statusDefault {
+  color: var(--color-muted);
+  background: var(--color-surface-soft);
+}
+
+.editButton {
+  @apply flex h-9 w-9 items-center justify-center rounded-lg transition-colors;
+  color: var(--color-muted);
+}
+
+.editButton:hover {
+  color: #1E3A8A;
+  background: rgba(30, 58, 138, 0.08);
+}
+
+.editButton svg {
+  @apply h-4 w-4;
+}
+
+.mobileList {
+  @apply divide-y md:hidden;
+  border-color: var(--color-border);
+}
+
+.mobileCard {
+  @apply p-4;
+}
+
+.mobileCardHeader {
+  @apply flex items-start justify-between gap-3;
+}
+
+.mobileCardHeader h3 {
+  @apply mt-1 text-base font-semibold;
+  color: var(--color-text);
+}
+
+.mobileDate {
+  @apply text-xs font-medium;
+  color: var(--color-muted);
+}
+
+.mobileDetails {
+  @apply mt-4 grid grid-cols-2 gap-x-4 gap-y-3;
+}
+
+.mobileDetails div {
+  @apply min-w-0;
+}
+
+.mobileDetails dt {
+  @apply text-xs;
+  color: var(--color-muted);
+}
+
+.mobileDetails dd {
+  @apply mt-0.5 break-words text-sm font-medium;
+  color: var(--color-text);
+}
+
+.mobileNotes {
+  @apply mt-4 rounded-lg p-3 text-sm;
+  color: var(--color-muted);
+  background: var(--color-surface-soft);
+}
+
+.mobileEditButton {
+  @apply mt-4 w-full;
+  color: #1E3A8A;
+  background: rgba(30, 58, 138, 0.08);
+}
+
+.mobileEditButton svg {
+  @apply h-4 w-4;
+}
+
+.loadingState {
+  @apply space-y-3 p-5;
+}
+
+.skeleton {
+  @apply h-14 animate-pulse rounded-lg;
+  background: var(--color-surface-soft);
+}
+
+.errorState {
+  @apply flex flex-col items-center px-5 py-14 text-center;
+}
+
+.errorState svg {
+  @apply h-10 w-10;
+  color: #DC2626;
+}
+
+.errorState h3 {
+  @apply mt-3 text-base font-semibold;
+  color: var(--color-text);
+}
+
+.errorState p {
+  @apply mt-1 max-w-lg text-sm;
+  color: var(--color-muted);
+}
+
+.errorState button {
+  @apply mt-4;
+}
+
+.pagination {
+  @apply border-t px-4 py-3;
+  border-color: var(--color-border);
+}
+
+:global(.dark) .readOnlyNotice {
+  color: #93C5FD;
+  background: rgba(59, 130, 246, 0.12);
+}
+
+:global(.dark) .status_present {
+  color: #6EE7B7;
+}
+
+:global(.dark) .status_late {
+  color: #FCD34D;
+}
+
+:global(.dark) .status_absent {
+  color: #FCA5A5;
+}
+
+:global(.dark) .status_excused {
+  color: #C4B5FD;
+}
+
+@media (max-width: 639px) {
+  .primaryButton,
+  .secondaryButton {
+    @apply w-full;
+  }
+}

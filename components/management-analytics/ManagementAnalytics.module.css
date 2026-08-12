@@ -1,0 +1,375 @@
+.section {
+  @apply space-y-5 rounded-3xl border p-6 max-sm:rounded-2xl max-sm:p-4;
+  border-color: var(--color-border);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--color-surface) 96%, #4f46e5 4%), var(--color-surface));
+  box-shadow: var(--shadow-card);
+}
+
+.sectionHeader {
+  @apply flex items-start justify-between gap-5 max-md:flex-col;
+}
+
+.sectionHeader h1 {
+  @apply mt-2 text-2xl font-bold tracking-tight max-sm:text-xl;
+  color: var(--color-text);
+}
+
+.sectionHeader p {
+  @apply mt-1 max-w-3xl text-sm leading-6;
+  color: var(--color-muted);
+}
+
+.eyebrow {
+  @apply inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-indigo-600;
+}
+
+.recordCount {
+  @apply flex flex-shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-xs;
+  color: var(--color-muted);
+  border-color: var(--color-border);
+  background: var(--color-surface-soft);
+}
+
+.recordCount strong {
+  color: var(--color-text);
+}
+
+.filters {
+  @apply rounded-2xl border p-4;
+  border-color: var(--color-border);
+  background: color-mix(in srgb, var(--color-surface-soft) 75%, transparent);
+}
+
+.filterHeading {
+  @apply mb-3 flex items-center gap-2 text-sm font-semibold;
+  color: var(--color-text);
+}
+
+.filterGrid {
+  @apply grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4;
+}
+
+.filterGrid label {
+  @apply min-w-0;
+}
+
+.filterGrid label > span {
+  @apply mb-1.5 block text-xs font-medium;
+  color: var(--color-muted);
+}
+
+.filterGrid select {
+  @apply h-10 w-full min-w-0 rounded-xl border px-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 disabled:cursor-not-allowed disabled:opacity-60;
+  color: var(--color-text);
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
+.clearButton {
+  @apply mt-3 inline-flex min-h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/30;
+  color: var(--color-muted);
+}
+
+.analyticsContent {
+  @apply space-y-5;
+}
+
+.metricGrid {
+  @apply grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3;
+}
+
+.metricCard {
+  @apply flex min-w-0 items-start gap-3 rounded-2xl border p-4;
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
+.metricIcon {
+  @apply flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600;
+}
+
+.metricCard small {
+  @apply block text-xs font-semibold;
+  color: var(--color-muted);
+}
+
+.metricCard strong {
+  @apply mt-1 block text-2xl font-bold tabular-nums;
+  color: var(--color-text);
+}
+
+.metricCard p {
+  @apply mt-1 text-xs;
+  color: var(--color-muted);
+}
+
+.warningCard .metricIcon {
+  @apply bg-amber-50 text-amber-600;
+}
+
+.chartGrid {
+  @apply grid grid-cols-1 gap-5 xl:grid-cols-2;
+}
+
+.panel {
+  @apply min-w-0 rounded-2xl border p-5 max-sm:p-4;
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
+.trendPanel {
+  @apply xl:col-span-2;
+}
+
+.panelHeader,
+.workflowCard header {
+  @apply flex items-center gap-3;
+}
+
+.panelHeader > span,
+.workflowCard header > span {
+  @apply flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-700;
+}
+
+.panelHeader h3,
+.workflowCard h3 {
+  @apply text-sm font-semibold;
+  color: var(--color-text);
+}
+
+.panelHeader p,
+.workflowCard header p {
+  @apply mt-0.5 text-xs;
+  color: var(--color-muted);
+}
+
+.chartEmpty {
+  @apply flex min-h-44 items-center justify-center text-center text-sm;
+  color: var(--color-muted);
+}
+
+.departmentList,
+.bandList {
+  @apply mt-5 space-y-4;
+}
+
+.departmentRow {
+  @apply rounded-xl border p-3;
+  border-color: var(--color-border);
+  background: var(--color-surface-soft);
+}
+
+.departmentTitle,
+.progressLine {
+  @apply flex items-center justify-between gap-3;
+}
+
+.departmentTitle strong {
+  @apply truncate text-sm;
+  color: var(--color-text);
+}
+
+.departmentTitle span,
+.componentMini {
+  @apply text-[11px];
+  color: var(--color-muted);
+}
+
+.progressLine {
+  @apply mt-2;
+}
+
+.progressLine progress,
+.bandRow progress {
+  @apply h-2 w-full overflow-hidden rounded-full;
+  appearance: none;
+}
+
+.progressLine progress::-webkit-progress-bar,
+.bandRow progress::-webkit-progress-bar {
+  @apply rounded-full;
+  background: var(--color-border);
+}
+
+.progressLine progress::-webkit-progress-value,
+.bandRow progress::-webkit-progress-value {
+  @apply rounded-full;
+  background: linear-gradient(90deg, #4f46e5, #06b6d4);
+}
+
+.progressLine progress::-moz-progress-bar,
+.bandRow progress::-moz-progress-bar {
+  @apply rounded-full;
+  background: linear-gradient(90deg, #4f46e5, #06b6d4);
+}
+
+.progressLine strong {
+  @apply min-w-12 text-right text-sm tabular-nums;
+  color: var(--color-text);
+}
+
+.componentMini {
+  @apply mt-2 flex flex-wrap gap-x-4 gap-y-1;
+}
+
+.bandRow > div {
+  @apply mb-2 flex items-center gap-2;
+}
+
+.bandRow strong {
+  @apply min-w-0 flex-1 truncate text-sm;
+  color: var(--color-text);
+}
+
+.bandRow small {
+  @apply text-xs tabular-nums;
+  color: var(--color-muted);
+}
+
+.bandDot {
+  @apply h-2.5 w-2.5 flex-shrink-0 rounded-full;
+}
+
+.bandExcellent { @apply bg-emerald-500; }
+.bandVeryGood { @apply bg-cyan-500; }
+.bandGood { @apply bg-blue-500; }
+.bandNeedsImprovement { @apply bg-amber-500; }
+.bandReviewRequired { @apply bg-red-500; }
+.bandDefault { @apply bg-slate-400; }
+
+.trendChart {
+  @apply mt-5 w-full overflow-x-auto rounded-xl border p-2;
+  border-color: var(--color-border);
+  background: var(--color-surface-soft);
+}
+
+.trendChart svg {
+  @apply min-w-[620px] w-full;
+  height: 180px;
+}
+
+.trendChart line {
+  stroke: var(--color-border);
+  stroke-width: 1;
+}
+
+.trendChart polyline {
+  fill: none;
+  stroke: #4f46e5;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.trendChart circle {
+  fill: #ffffff;
+  stroke: #4f46e5;
+  stroke-width: 3;
+}
+
+.trendLabels {
+  @apply mt-3 flex gap-2 overflow-x-auto pb-1;
+}
+
+.trendLabels > div {
+  @apply min-w-32 flex-1 rounded-xl border p-2.5;
+  border-color: var(--color-border);
+}
+
+.trendLabels strong,
+.trendLabels span,
+.trendLabels small {
+  @apply block;
+}
+
+.trendLabels strong {
+  @apply text-sm tabular-nums;
+  color: var(--color-text);
+}
+
+.trendLabels span {
+  @apply mt-0.5 truncate text-xs font-medium;
+  color: var(--color-muted);
+}
+
+.trendLabels small {
+  @apply mt-1 text-[10px];
+  color: var(--color-muted);
+}
+
+.workflowGrid {
+  @apply grid grid-cols-1 gap-5 xl:grid-cols-2;
+}
+
+.workflowCard {
+  @apply rounded-2xl border p-5 max-sm:p-4;
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
+.statusGrid {
+  @apply mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3;
+}
+
+.statusGrid > div {
+  @apply rounded-xl border p-3;
+  border-color: var(--color-border);
+  background: var(--color-surface-soft);
+}
+
+.statusGrid span {
+  @apply block text-[11px];
+  color: var(--color-muted);
+}
+
+.statusGrid strong {
+  @apply mt-1 block text-xl font-bold tabular-nums;
+  color: var(--color-text);
+}
+
+.traceNote {
+  @apply flex items-start gap-2 rounded-xl border px-3 py-2.5 text-xs leading-5;
+  color: var(--color-muted);
+  border-color: var(--color-border);
+  background: var(--color-surface-soft);
+}
+
+.traceNote svg {
+  @apply mt-0.5 flex-shrink-0;
+}
+
+.loading {
+  @apply grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3;
+}
+
+.skeleton {
+  @apply h-28 animate-pulse rounded-2xl;
+  background: var(--color-surface-soft);
+}
+
+.errorState {
+  @apply flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700 max-sm:items-start max-sm:flex-wrap;
+}
+
+.errorState h3 {
+  @apply text-sm font-semibold;
+}
+
+.errorState p {
+  @apply mt-0.5 text-xs;
+}
+
+.errorState button {
+  @apply ml-auto inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 text-xs font-semibold transition hover:bg-red-100 max-sm:ml-0;
+}
+
+:global(.dark) .metricIcon,
+:global(.dark) .panelHeader > span,
+:global(.dark) .workflowCard header > span {
+  background: rgba(79, 70, 229, 0.16);
+  color: #a5b4fc;
+}
+
+:global(.dark) .trendChart circle {
+  fill: var(--color-surface);
+}

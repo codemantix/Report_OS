@@ -10,6 +10,7 @@ const pageTitles = {
   '/dashboard/submit-report': 'Submit Report',
   '/dashboard/reports': 'Reports',
   '/dashboard/reports/[id]': 'Report Details',
+  '/dashboard/attendance': 'Attendance',
   '/dashboard/departments': 'Departments',
   '/dashboard/departments/[id]': 'Department Details',
   '/dashboard/goals': 'Goals',
@@ -21,6 +22,7 @@ const pageTitles = {
   '/dashboard/team': 'Team',
   '/dashboard/settings': 'Settings',
   '/dashboard/search': 'Search',
+  '/dashboard/audit': 'Audit History',
 };
 
 export default function DashboardLayout({ children }) {

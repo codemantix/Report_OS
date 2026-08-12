@@ -1,4 +1,4 @@
-import { FileText, Image as ImageIcon, File as FileIcon, Download, Eye, AlertTriangle } from 'lucide-react';
+import { FileText, FileSpreadsheet, Image as ImageIcon, File as FileIcon, Download, Eye, AlertTriangle } from 'lucide-react';
 import styles from './AttachmentsList.module.css';
 
 const IMAGE_FORMATS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
@@ -22,6 +22,7 @@ export function getFileIcon(att) {
   const format = (att.format || '').toLowerCase();
   if (type.includes('pdf') || format === 'pdf') return FileText;
   if (type.includes('word') || type.includes('document') || ['doc', 'docx'].includes(format)) return FileText;
+  if (type.includes('excel') || type.includes('spreadsheet') || type.includes('csv') || ['xls', 'xlsx', 'csv'].includes(format)) return FileSpreadsheet;
   return FileIcon;
 }
 
