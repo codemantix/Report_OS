@@ -164,7 +164,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <ManagementAnalyticsSection role={userRole} />
+       
 
         {/* Report and goal operational metrics */}
         <div className={styles.statsGrid}>
@@ -302,6 +302,7 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
+        <ManagementAnalyticsSection role={userRole} />
       </div>
     </DashboardLayout>
   );

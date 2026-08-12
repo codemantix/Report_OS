@@ -48,7 +48,7 @@ export default function StipendRecommendationList({ evaluations, permissions, sa
     else setActive(null);
   }
 
-  if (evaluations.length === 0) return <section className={styles.panel}><div className={styles.empty}><Calculator /><strong>No approved evaluations found</strong><p>Stipend recommendations become available only after human evaluation approval.</p></div></section>;
+  if (evaluations.length === 0) return <section className={styles.panel}><div className={styles.empty}><Calculator /><strong>No approved evaluations found</strong><p>Stipend recommendations become available only after manager evaluation approval.</p></div></section>;
 
   return (
     <section className={styles.recommendationList}>

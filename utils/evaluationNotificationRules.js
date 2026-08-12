@@ -11,6 +11,7 @@ export const EVALUATION_NOTIFICATION_TYPES = Object.freeze({
   approved: 'approved',
   stipendApproved: 'stipend_approved',
   paymentRecorded: 'payment_recorded',
+  reportCommentAdded: 'report_comment_added',
 });
 
 export const NOTIFICATION_LABELS = Object.freeze({
@@ -22,6 +23,7 @@ export const NOTIFICATION_LABELS = Object.freeze({
   approved: 'Evaluation approved',
   stipend_approved: 'Stipend approved',
   payment_recorded: 'Payment recorded',
+  report_comment_added: 'New comment on your report',
 });
 
 export function canNotifyUser(user) {
@@ -53,7 +55,7 @@ export function isDuplicateNotification(sentLogs, criteria) {
 }
 
 // Destination path for each notification type.
-export function notificationDestination(type, { evaluationId } = {}) {
+export function notificationDestination(type, { evaluationId, reportId } = {}) {
   switch (type) {
     case EVALUATION_NOTIFICATION_TYPES.periodOpened:
       return '/dashboard/evaluation-periods';
@@ -68,6 +70,8 @@ export function notificationDestination(type, { evaluationId } = {}) {
     case EVALUATION_NOTIFICATION_TYPES.stipendApproved:
     case EVALUATION_NOTIFICATION_TYPES.paymentRecorded:
       return '/dashboard/my-performance';
+    case EVALUATION_NOTIFICATION_TYPES.reportCommentAdded:
+      return reportId ? `/dashboard/reports/${reportId}` : '/dashboard/reports';
     default:
       return '/dashboard';
   }

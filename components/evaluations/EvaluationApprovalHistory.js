@@ -21,7 +21,7 @@ export default function EvaluationApprovalHistory({ evaluation }) {
     <section className={styles.detailSection}>
       <div className={styles.sectionHeader}>
         <div>
-          <h3>Human Approval & Stipend Recommendations</h3>
+          <h3>Approval & Stipend Recommendations</h3>
           <p>Historical rounds remain visible; only the current final approval authorizes a result.</p>
         </div>
         <span className={`${styles.statusBadge} ${styles[`status_${approvalStatus}`]}`}>
@@ -43,7 +43,7 @@ export default function EvaluationApprovalHistory({ evaluation }) {
       ))}
 
       {approvals.length === 0 ? (
-        <p className={styles.noData}>No human approval stages have been recorded.</p>
+        <p className={styles.noData}>No review or approval stages have been recorded.</p>
       ) : (
         <div className={styles.timeline}>
           {approvals.map((approval) => (

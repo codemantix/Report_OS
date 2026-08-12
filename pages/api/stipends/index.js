@@ -1,4 +1,4 @@
-import { getAuthenticatedUser } from '../../../lib/apiAuth';
+import { getAuthenticatedUser, respondAuthFailure } from '../../../lib/apiAuth';
 import { getAdminClient } from '../../../lib/supabaseAdmin';
 import {
   getStipendManagement,
@@ -22,7 +22,7 @@ function sendError(res, error) {
 
 export default async function handler(req, res) {
   const currentUser = await getAuthenticatedUser(req, res);
-  if (!currentUser) return res.status(401).json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Authentication is required.' } });
+  if (!currentUser) return respondAuthFailure(res);
   try {
     if (req.method === 'GET') {
       const data = await getStipendManagement(getAdminClient(), req.query || {}, currentUser);

@@ -1,4 +1,9 @@
 import { getAdminClient } from '../../../lib/supabaseAdmin';
+import {
+  buildReportCommentNotification,
+  dispatchEvaluationNotifications,
+  fetchNotificationRecipient,
+} from '../../../lib/server/notifications/evaluationNotifier';
 
 export default async function handler(req, res) {
   const supabaseAdmin = getAdminClient();
@@ -31,6 +36,25 @@ export default async function handler(req, res) {
       `).single();
 
       if (error) throw error;
+
+      // Notify the report owner that a reviewer left a comment. Non-blocking;
+      // delivery failures never break the comment write.
+      try {
+        const { data: report } = await supabaseAdmin
+          .from('reports')
+          .select('id, user_id, project_name, report_type, department_id, departments:department_id (name)')
+          .eq('id', reportId)
+          .single();
+        if (report?.user_id) {
+          const recipient = await fetchNotificationRecipient(supabaseAdmin, report.user_id);
+          if (recipient) {
+            const notification = buildReportCommentNotification(recipient, report, data);
+            await dispatchEvaluationNotifications(supabaseAdmin, [notification]);
+          }
+        }
+      } catch (notifyError) {
+        console.error('Report comment notification failed:', notifyError);
+      }
 
       return res.status(200).json({
         success: true,

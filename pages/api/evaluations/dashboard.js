@@ -1,4 +1,4 @@
-import { getAuthenticatedUser } from '../../../lib/apiAuth';
+import { getAuthenticatedUser, respondAuthFailure } from '../../../lib/apiAuth';
 import { getAdminClient } from '../../../lib/supabaseAdmin';
 import { getEvaluationDashboard } from '../../../lib/server/evaluation-dashboard/evaluationDashboardService';
 
@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: { code: 'METHOD_NOT_ALLOWED', message: 'Method not allowed.' } });
   }
   const currentUser = await getAuthenticatedUser(req, res);
-  if (!currentUser) return res.status(401).json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Authentication is required.' } });
+  if (!currentUser) return respondAuthFailure(res);
 
   try {
     const data = await getEvaluationDashboard(getAdminClient(), {

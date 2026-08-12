@@ -13,6 +13,11 @@ import useDebounce from '../../../hooks/useDebounce';
 import { paginateItems } from '../../../utils/pagination';
 import styles from '../../../components/plans/Plans.module.css';
 import FilterDropdown, { FilterGroup } from '../../../components/common/FilterDropdown';
+import MonthCards from '../../../components/common/MonthCards';
+
+// Default the "plans by month" view to the current month on load.
+const currentMonth = new Date().getMonth() + 1;
+const currentYear = new Date().getFullYear();
 
 export default function PlansPage() {
   const router = useRouter();
@@ -23,7 +28,7 @@ export default function PlansPage() {
   const [departments, setDepartments] = useState([]);
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 400);
-  const [filters, setFilters] = useState({ department_id: '', plan_type: '', month: '', year: '' });
+  const [filters, setFilters] = useState({ department_id: '', plan_type: '', month: String(currentMonth), year: String(currentYear) });
   const [sort, setSort] = useState('created_at:asc');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -62,8 +67,9 @@ export default function PlansPage() {
     if (!user) return;
 
     const [sortBy, sortDirection] = sort.split(':');
+    const { month, year, ...planFilters } = filters;
     const builtFilters = {
-      ...filters,
+      ...planFilters,
       search: debouncedSearch || undefined,
       sortBy,
       sortDirection,
@@ -106,8 +112,9 @@ export default function PlansPage() {
       setShowBulkDeleteConfirm(false);
       
       const [sortBy, sortDirection] = sort.split(':');
+      const { month, year, ...planFilters } = filters;
       const builtFilters = {
-        ...filters,
+        ...planFilters,
         search: debouncedSearch || undefined,
         sortBy,
         sortDirection,
@@ -126,10 +133,26 @@ export default function PlansPage() {
   const canCreate = user && (user.role === 'admin' || user.role === 'department_lead');
   const hasActiveFilters = Object.values(filters).some((v) => v !== '') || search.trim() !== '';
   const isSearchLoading = search !== debouncedSearch;
-  const paginatedPlans = paginateItems(plans, page, pageSize);
+
+  const filteredPlans = plans.filter((plan) => {
+    if (!filters.month && !filters.year) return true;
+    if (!plan.end_date) return false;
+
+    const endDate = new Date(plan.end_date);
+    if (Number.isNaN(endDate.getTime())) return false;
+
+    const matchesMonth = !filters.month || endDate.getUTCMonth() + 1 === Number(filters.month);
+    const matchesYear = !filters.year || endDate.getUTCFullYear() === Number(filters.year);
+    return matchesMonth && matchesYear;
+  });
+  const paginatedPlans = paginateItems(filteredPlans, page, pageSize);
 
   function updateFilter(key, value) {
     setFilters((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function handleSelectMonth(month, year) {
+    setFilters((prev) => ({ ...prev, month, year }));
   }
 
   function clearFilters() {
@@ -244,6 +267,23 @@ export default function PlansPage() {
           </div>
         </div>
 
+        <MonthCards
+          items={plans}
+          dateField="end_date"
+          selectedMonth={filters.month}
+          selectedYear={filters.year}
+          onSelectMonth={handleSelectMonth}
+          sectionId="plan-months-title"
+          sectionTitle="Plans by end month"
+          sectionDescription="Select a month to show its plans in the table."
+          allLabel="All plans"
+          allDescription="Complete plan overview"
+          itemLabel="plan"
+          itemsLabel="plans"
+          monthLabel="End month"
+          periodPhrase="ending in"
+        />
+
         {loading ? (
           <div className={styles.section}>
             <div className="space-y-3">
@@ -265,7 +305,7 @@ export default function PlansPage() {
               </button>
             </div>
           </div>
-        ) : plans.length === 0 ? (
+        ) : filteredPlans.length === 0 ? (
           <div className={styles.section}>
             <div className={styles.emptyState}>
               <svg className={styles.emptyIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

@@ -10,15 +10,10 @@ const ADMIN = { id: 'admin', role: 'admin', status: 'active', department_id: nul
 const LEAD = { id: 'lead', role: 'department_lead', status: 'active', department_id: '11111111-1111-4111-8111-111111111111' };
 const VALID_ID = '22222222-2222-4222-8222-222222222222';
 
-test('management analytics rejects team members and inactive management users', () => {
-  assert.throws(() => scopeManagementAnalyticsFilters({}, { role: 'team_member', status: 'active' }), /authorized management/i);
+test('management analytics rejects team members, department leads, and inactive users', () => {
+  assert.throws(() => scopeManagementAnalyticsFilters({}, { role: 'team_member', status: 'active' }), /administrators/i);
+  assert.throws(() => scopeManagementAnalyticsFilters({}, { role: 'department_lead', status: 'active', department_id: VALID_ID }), /administrators/i);
   assert.throws(() => scopeManagementAnalyticsFilters({}, { role: 'admin', status: 'inactive' }), /active account/i);
-});
-
-test('department leads are always scoped to their own department', () => {
-  const scoped = scopeManagementAnalyticsFilters({ departmentId: VALID_ID, employeeId: VALID_ID }, LEAD);
-  assert.equal(scoped.departmentId, LEAD.department_id);
-  assert.equal(scoped.employeeId, VALID_ID);
 });
 
 test('admins may apply valid period department employee and band filters', () => {

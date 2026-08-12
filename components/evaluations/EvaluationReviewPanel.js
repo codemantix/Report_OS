@@ -1,7 +1,32 @@
 import { useEffect, useState } from 'react';
-import { CheckCircle2, MessageSquareText, RotateCcw } from 'lucide-react';
+import {
+  AlertTriangle,
+  BadgeCheck,
+  CheckCircle2,
+  ClipboardCheck,
+  MessageSquareText,
+  RotateCcw,
+  Scale,
+  ShieldCheck,
+  UserCheck,
+} from 'lucide-react';
 import { currentReviewRound, REVIEW_TEXT_LIMIT } from '../../utils/evaluationReviewRules';
+import { displayScore, EVALUATION_STATUS_LABELS } from '../../utils/evaluationDashboardConstants';
 import styles from './Evaluations.module.css';
+
+function FieldLabel({ icon: Icon, children, hint }) {
+  return (
+    <span className={styles.reviewFieldLabel}>
+      <span className={styles.reviewFieldLabelText}><Icon aria-hidden="true" />{children}</span>
+      {hint && <small className={styles.reviewFieldHint}>{hint}</small>}
+    </span>
+  );
+}
+
+function FieldError({ children }) {
+  if (!children) return null;
+  return <span className={styles.reviewFieldError} role="alert">{children}</span>;
+}
 
 export default function EvaluationReviewPanel({ evaluation, saving, fieldErrors = {}, onSubmit }) {
   const round = currentReviewRound(evaluation);
@@ -78,33 +103,171 @@ export default function EvaluationReviewPanel({ evaluation, saving, fieldErrors 
     }
   }
 
+  const canDecide = Boolean(permissions.canApprove || permissions.canReturn);
+  const notCalculated = evaluation.calculation_status !== 'complete';
+  const feedbackCount = values.feedback.trim().length;
+  const reasonCount = values.adjustmentReason.trim().length;
+  const approvalLabel = EVALUATION_STATUS_LABELS[evaluation.current_approval_status] || 'Not started';
+
+  const stageLabel = permissions.currentStage
+    ? permissions.currentStage.replace(/\b\w/g, (ch) => ch.toUpperCase())
+    : 'Workflow';
+  const isFinalStage = canDecide && !permissions.nextStage;
+  const approveText = permissions.currentStage
+    ? isFinalStage
+      ? `Approve ${stageLabel} Stage (Final)`
+      : `Approve ${stageLabel} Stage`
+    : 'Approve Current Stage';
+  const hasNext = Boolean(canDecide && permissions.nextStage);
+
   return (
-    <section className={`${styles.detailSection} ${styles.reviewPanel}`}>
-      <div className={styles.sectionHeader}>
-        <div>
-          <h3>Human Review Decision</h3>
+    <section className={`${styles.detailSection} ${styles.reviewPanel}`} id="human-review">
+      <header className={styles.reviewHeader}>
+        <div className={styles.reviewHeaderIcon}><UserCheck aria-hidden="true" /></div>
+        <div className={styles.reviewHeaderText}>
+          <h3>Manager Review & Approval{' — '}{stageLabel} Stage</h3>
           <p>
             {permissions.currentStage
-              ? `${permissions.currentStage} stage · review the canonical source records before deciding.`
+              ? `Review the canonical source records and decide the ${stageLabel.toLowerCase()} stage.${hasNext ? ` After this stage, the evaluation advances to admin final authorization.` : ' This stage completes the evaluation approval chain.'}`
               : 'No active round · the first decision will open the sequential review workflow.'}
           </p>
         </div>
-      </div>
-      <div className={styles.reviewForm}>
-        {(permissions.canApprove || permissions.canReturn) && (
-          <div className={styles.reviewGrid}>
-            <label><span>Proposed final score</span><input type="number" min="0" max="100" step="0.001" value={values.finalScore} onChange={(event) => update('finalScore', event.target.value)} />{errors.finalScore && <small>{errors.finalScore}</small>}</label>
-            <label><span>Stipend decision</span><select value={values.stipendMode} onChange={(event) => update('stipendMode', event.target.value)}><option value="percentage">Percentage recommendation</option><option value="manual">Manual stipend decision</option></select>{errors.stipendMode && <small>{errors.stipendMode}</small>}</label>
-            {values.stipendMode !== 'manual' && <label><span>Proposed stipend percentage</span><input type="number" min="0" max="100" step="0.01" value={values.finalStipendPercentage} onChange={(event) => update('finalStipendPercentage', event.target.value)} />{errors.finalStipendPercentage && <small>{errors.finalStipendPercentage}</small>}</label>}
-            <label className={styles.reviewFull}><span>Adjustment reason</span><textarea maxLength={REVIEW_TEXT_LIMIT} rows="3" value={values.adjustmentReason} onChange={(event) => update('adjustmentReason', event.target.value)} placeholder="Required whenever this stage changes the current reviewed proposal" />{errors.adjustmentReason && <small>{errors.adjustmentReason}</small>}</label>
+        <span className={`${styles.reviewStageBadge} ${styles[`status_${evaluation.current_approval_status}`] || ''}`}>
+          {approvalLabel}
+        </span>
+      </header>
+
+      <div className={styles.reviewBody}>
+        {notCalculated && (
+          <div className={styles.reviewPendingNotice} role="note">
+            <AlertTriangle aria-hidden="true" />
+            <p>
+              This evaluation has not been calculated yet. Approval and return actions unlock after the
+              evaluation engine has scored the employee's tasks, reports, and attendance.
+            </p>
           </div>
         )}
-        <label className={styles.reviewFull}><span>Reviewer feedback</span><textarea maxLength={REVIEW_TEXT_LIMIT} rows="4" value={values.feedback} onChange={(event) => update('feedback', event.target.value)} placeholder="Append feedback without changing workflow state, or enter the reason for a return" />{errors.feedback && <small>{errors.feedback}</small>}</label>
-        <div className={styles.reviewActions}>
-          {permissions.canFeedback && <button type="button" className={styles.secondaryButton} disabled={saving} onClick={() => submit('feedback')}><MessageSquareText aria-hidden="true" /> Save Feedback</button>}
-          {permissions.canReturn && <button type="button" className={styles.returnButton} disabled={saving} onClick={() => submit('return')}><RotateCcw aria-hidden="true" /> Return for Review</button>}
-          {permissions.canApprove && <button type="button" className={styles.approveButton} disabled={saving} onClick={() => submit('approve')}><CheckCircle2 aria-hidden="true" /> Approve Current Stage</button>}
-        </div>
+
+        {canDecide && (
+          <div className={styles.reviewSummaryStrip}>
+            <div>
+              <span>Calculated score</span>
+              <strong>{displayScore(evaluation.overall_score)} / 100</strong>
+            </div>
+            <div>
+              <span>Performance band</span>
+              <strong>{evaluation.performance_band || '—'}</strong>
+            </div>
+            <div>
+              <span>Stipend recommendation</span>
+              <strong>
+                {evaluation.stipend_recommendation_mode === 'manual'
+                  ? 'Manual decision'
+                  : evaluation.calculated_stipend_percentage === null
+                    ? '—'
+                    : `${Number(evaluation.calculated_stipend_percentage)}%`}
+              </strong>
+            </div>
+            <div className={styles.reviewSummaryNote}>
+              <Scale aria-hidden="true" />
+              <p>Adjustments below become the approved result — the calculated result is never overwritten.</p>
+            </div>
+          </div>
+        )}
+
+        {canDecide && (
+          <section className={styles.reviewSection}>
+            <div className={styles.reviewSectionTitle}>
+              <ClipboardCheck aria-hidden="true" />
+              <div>
+                <h4>Decision Details</h4>
+                <p>Set the final approved score and stipend for this stage.</p>
+              </div>
+            </div>
+            <div className={styles.reviewGrid}>
+              <label className={styles.reviewField}>
+                <FieldLabel icon={BadgeCheck} hint="0 – 100">Final approved score</FieldLabel>
+                <input type="number" min="0" max="100" step="0.001" value={values.finalScore} onChange={(event) => update('finalScore', event.target.value)} />
+                <FieldError>{errors.finalScore}</FieldError>
+              </label>
+              <label className={styles.reviewField}>
+                <FieldLabel icon={ShieldCheck} hint="Percentage or manual">Stipend decision</FieldLabel>
+                <select value={values.stipendMode} onChange={(event) => update('stipendMode', event.target.value)}>
+                  <option value="percentage">Percentage recommendation</option>
+                  <option value="manual">Manual stipend decision</option>
+                </select>
+                <FieldError>{errors.stipendMode}</FieldError>
+              </label>
+              {values.stipendMode !== 'manual' && (
+                <label className={styles.reviewField}>
+                  <FieldLabel icon={BadgeCheck} hint="0 – 100">Final stipend percentage</FieldLabel>
+                  <input type="number" min="0" max="100" step="0.01" value={values.finalStipendPercentage} onChange={(event) => update('finalStipendPercentage', event.target.value)} />
+                  <FieldError>{errors.finalStipendPercentage}</FieldError>
+                </label>
+              )}
+              <label className={`${styles.reviewField} ${styles.reviewFull}`}>
+                <FieldLabel icon={Scale} hint="Required whenever this stage changes the current reviewed proposal">Adjustment reason</FieldLabel>
+                <textarea
+                  maxLength={REVIEW_TEXT_LIMIT}
+                  rows="3"
+                  value={values.adjustmentReason}
+                  onChange={(event) => update('adjustmentReason', event.target.value)}
+                  placeholder="Explain any change to the score or stipend proposed at this stage…"
+                />
+                <span className={styles.reviewCharCount}>{reasonCount.toLocaleString()} / {REVIEW_TEXT_LIMIT.toLocaleString()}</span>
+                <FieldError>{errors.adjustmentReason}</FieldError>
+              </label>
+            </div>
+          </section>
+        )}
+
+        <section className={styles.reviewSection}>
+          <div className={styles.reviewSectionTitle}>
+            <MessageSquareText aria-hidden="true" />
+            <div>
+              <h4>Reviewer Feedback</h4>
+              <p>{canDecide ? 'Add notes for the employee or justify a return.' : 'Leave feedback without changing workflow state.'}</p>
+            </div>
+          </div>
+          <label className={`${styles.reviewField} ${styles.reviewFull}`}>
+            <FieldLabel icon={MessageSquareText} hint={!canDecide && permissions.canFeedback ? 'Feedback is saved without advancing the workflow.' : undefined}>Feedback message</FieldLabel>
+            <textarea
+              maxLength={REVIEW_TEXT_LIMIT}
+              rows="4"
+              value={values.feedback}
+              onChange={(event) => update('feedback', event.target.value)}
+              placeholder={canDecide
+                ? 'Share what you reviewed, what stood out, and any expectations for the next cycle…'
+                : 'Append feedback without changing workflow state, or enter the reason for a return…'}
+            />
+            <span className={styles.reviewCharCount}>{feedbackCount.toLocaleString()} / {REVIEW_TEXT_LIMIT.toLocaleString()}</span>
+            <FieldError>{errors.feedback}</FieldError>
+          </label>
+        </section>
+
+        <footer className={styles.reviewActions}>
+          <span className={styles.reviewActionsNote}>
+            <ShieldCheck aria-hidden="true" />
+            Automated scoring is advisory only. Your decision below records the official manager authorization.
+          </span>
+          <div className={styles.reviewActionButtons}>
+            {permissions.canFeedback && (
+              <button type="button" className={styles.reviewGhostButton} disabled={saving} onClick={() => submit('feedback')}>
+                <MessageSquareText aria-hidden="true" /> Save Feedback
+              </button>
+            )}
+            {permissions.canReturn && (
+              <button type="button" className={styles.returnButton} disabled={saving} onClick={() => submit('return')}>
+                <RotateCcw aria-hidden="true" /> Return for Review
+              </button>
+            )}
+            {permissions.canApprove && (
+              <button type="button" className={isFinalStage ? styles.approveFinalButton : styles.approveButton} disabled={saving} onClick={() => submit('approve')}>
+                <CheckCircle2 aria-hidden="true" /> {approveText}
+              </button>
+            )}
+          </div>
+        </footer>
       </div>
     </section>
   );

@@ -119,6 +119,11 @@ test('notification destinations link to the relevant Report OS page', () => {
   );
   assert.equal(notificationDestination(EVALUATION_NOTIFICATION_TYPES.stipendApproved), '/dashboard/my-performance');
   assert.equal(notificationDestination(EVALUATION_NOTIFICATION_TYPES.paymentRecorded), '/dashboard/my-performance');
+  assert.equal(
+    notificationDestination(EVALUATION_NOTIFICATION_TYPES.reportCommentAdded, { reportId: 'report-1' }),
+    '/dashboard/reports/report-1'
+  );
+  assert.equal(notificationDestination(EVALUATION_NOTIFICATION_TYPES.reportCommentAdded), '/dashboard/reports');
 });
 
 test('period recipients come from the applicable evaluations only', () => {
@@ -178,6 +183,16 @@ test('email templates build subject, message, and destination link', () => {
   });
   assert.ok(missing.subject.includes('Report missing'));
   assert.ok(missing.html.includes('/dashboard/submit-report'));
+
+  const comment = buildEvaluationNotificationEmail({
+    type: 'report_comment_added',
+    recipientName: 'Carol',
+    ctaUrl: '/dashboard/reports/report-1',
+    details: { reportTitle: 'Weekly launch report', comment: 'Please add the missing evidence.' },
+  });
+  assert.ok(comment.subject.includes('New comment'));
+  assert.ok(comment.html.includes('/dashboard/reports/report-1'));
+  assert.ok(comment.html.includes('Please add the missing evidence.'));
 });
 
 test('dispatcher skips missing arguments and non-notifiable recipients without sending', async () => {

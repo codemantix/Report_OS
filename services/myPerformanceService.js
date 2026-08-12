@@ -1,8 +1,9 @@
 import { supabase } from '../lib/supabaseClient';
+import { friendlyErrorMessage } from '../utils/friendlyErrors';
 
 export async function fetchMyPerformance(evaluationId = null) {
   const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-  if (sessionError || !session?.access_token) return { data: null, error: new Error('Authentication is required.') };
+  if (sessionError || !session?.access_token) return { data: null, error: new Error('Your session has expired. Please sign in again.') };
   const params = new URLSearchParams();
   if (evaluationId) params.set('evaluationId', evaluationId);
   try {
@@ -11,9 +12,9 @@ export async function fetchMyPerformance(evaluationId = null) {
       cache: 'no-store',
     });
     const payload = await response.json();
-    if (!response.ok) return { data: null, error: new Error(payload.error?.message || 'Performance request failed.') };
+    if (!response.ok) return { data: null, error: new Error(friendlyErrorMessage(payload.error, 'Performance request failed.')) };
     return { data: payload.data, error: null };
   } catch (error) {
-    return { data: null, error };
+    return { data: null, error: new Error(friendlyErrorMessage(error, 'Performance request failed.')) };
   }
 }

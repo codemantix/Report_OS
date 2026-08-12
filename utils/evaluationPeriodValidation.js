@@ -33,8 +33,17 @@ export function validateEvaluationPeriod(values, { requireEmployees = true } = {
   if (title.length < 3 || title.length > 120) {
     errors.title = 'Title must be between 3 and 120 characters.';
   }
-  if (!values.department_id) errors.department_id = 'Select a department.';
-  else if (!isUuid(values.department_id)) errors.department_id = 'Select a valid department.';
+  if (!values.department_id && (!values.department_ids || !Array.isArray(values.department_ids) || values.department_ids.length === 0)) {
+    if (values.department_ids !== undefined) {
+      errors.department_ids = 'Select at least one department.';
+    } else {
+      errors.department_id = 'Select a department.';
+    }
+  } else if (values.department_ids !== undefined && Array.isArray(values.department_ids)) {
+    if (!values.department_ids.every((id) => isUuid(id))) errors.department_ids = 'Every department must be valid.';
+  } else if (!isUuid(values.department_id)) {
+    errors.department_id = 'Select a valid department.';
+  }
   if (!start) errors.start_date = 'Enter a valid start date.';
   if (!end) errors.end_date = 'Enter a valid end date.';
   if (start && end) {

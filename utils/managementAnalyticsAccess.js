@@ -17,11 +17,8 @@ function optionalUuid(value, label) {
 
 export function scopeManagementAnalyticsFilters(filters, currentUser) {
   if (!currentUser || currentUser.status !== 'active') forbidden('An active account is required.');
-  if (!['admin', 'department_lead'].includes(currentUser.role)) {
-    forbidden('Management analytics are available only to authorized management users.');
-  }
-  if (currentUser.role === 'department_lead' && !currentUser.department_id) {
-    forbidden('A department assignment is required.');
+  if (currentUser.role !== 'admin') {
+    forbidden('Management analytics are available only to administrators.');
   }
 
   const scoped = {
@@ -37,6 +34,5 @@ export function scopeManagementAnalyticsFilters(filters, currentUser) {
     error.statusCode = 400;
     throw error;
   }
-  if (currentUser.role === 'department_lead') scoped.departmentId = currentUser.department_id;
   return scoped;
 }

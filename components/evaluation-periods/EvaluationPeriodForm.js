@@ -19,7 +19,7 @@ function initialValues(period, profile) {
   if (period) {
     return {
       title: period.name,
-      department_id: period.department_id,
+      department_ids: [period.department_id],
       start_date: period.start_date,
       end_date: period.end_date,
       evaluation_deadline: localDateTime(period.evaluation_deadline),
@@ -28,7 +28,7 @@ function initialValues(period, profile) {
   }
   return {
     title: '',
-    department_id: profile.role === 'department_lead' ? profile.department_id || '' : '',
+    department_ids: profile.role === 'department_lead' ? (profile.department_id ? [profile.department_id] : []) : [],
     start_date: '',
     end_date: '',
     evaluation_deadline: '',
@@ -59,18 +59,23 @@ export default function EvaluationPeriodForm({
     setSearch('');
   }, [period, profile]);
 
+  const activeDepartmentIds = useMemo(
+    () => new Set(values.department_ids),
+    [values.department_ids]
+  );
+
   const availableEmployees = useMemo(() => {
     const term = search.trim().toLowerCase();
     return employees.filter((employee) => (
-      employee.department_id === values.department_id
+      activeDepartmentIds.has(employee.department_id)
       && (!term || `${employeeName(employee)} ${employee.email || ''}`.toLowerCase().includes(term))
     ));
-  }, [employees, search, values.department_id]);
+  }, [employees, search, activeDepartmentIds]);
 
   function update(name, value) {
     setValues((current) => {
       const next = { ...current, [name]: value };
-      if (name === 'department_id') next.employee_ids = [];
+      if (name === 'department_ids') next.employee_ids = [];
       if (name === 'start_date') {
         next.end_date = value ? addUtcDays(value, 13) : '';
         if (value) {
@@ -83,6 +88,13 @@ export default function EvaluationPeriodForm({
     setErrors((current) => ({ ...current, [name]: undefined }));
   }
 
+  function toggleDepartment(departmentId) {
+    const selected = values.department_ids.includes(departmentId);
+    update('department_ids', selected
+      ? values.department_ids.filter((id) => id !== departmentId)
+      : [...values.department_ids, departmentId]);
+  }
+
   function toggleEmployee(employeeId) {
     const selected = values.employee_ids.includes(employeeId);
     update('employee_ids', selected
@@ -92,18 +104,27 @@ export default function EvaluationPeriodForm({
 
   function submit(event) {
     event.preventDefault();
-    const nextErrors = validateEvaluationPeriod(values);
+    const nextErrors = validateEvaluationPeriod({
+      ...values,
+      department_ids: values.department_ids,
+    });
     setErrors(nextErrors);
     if (hasEvaluationPeriodErrors(nextErrors)) return;
     onSubmit(values);
   }
+
+  const departmentCount = values.department_ids.length;
 
   return (
     <section className={styles.formCard} aria-labelledby="period-form-title">
       <div className={styles.formHeader}>
         <div>
           <h2 id="period-form-title">{period ? 'Edit Draft Period' : 'Create Evaluation Period'}</h2>
-          <p>Set one unambiguous 14-day window and choose the employees evaluated within it.</p>
+          <p>
+            {period
+              ? 'Edit the period metadata. The department assignment is immutable after creation.'
+              : `Set one 14-day window. Select one or more departments — a separate period is created for each.`}
+          </p>
         </div>
         <button type="button" className={styles.iconButton} onClick={onCancel} disabled={saving} aria-label="Close form">
           <X aria-hidden="true" />
@@ -121,21 +142,33 @@ export default function EvaluationPeriodForm({
             />
             {errors.title && <small className={styles.fieldError}>{errors.title}</small>}
           </label>
-          <label className={styles.field}>
-            <span>Department</span>
-            <select
-              value={values.department_id}
-              onChange={(event) => update('department_id', event.target.value)}
-              disabled={Boolean(period) || profile.role === 'department_lead'}
-              aria-invalid={Boolean(errors.department_id)}
-            >
-              <option value="">Select department</option>
+
+          <fieldset className={`${styles.field} ${styles.fullWidth} ${styles.departmentFieldset}`}>
+            <legend>
+              Departments
+              {departmentCount > 0 && <span className={styles.badge}>{departmentCount} selected</span>}
+            </legend>
+            {errors.department_ids && <small className={styles.fieldError}>{errors.department_ids}</small>}
+            <div className={styles.departmentGrid}>
               {departments.map((department) => (
-                <option key={department.id} value={department.id}>{department.name}</option>
+                <label key={department.id} className={styles.chipOption}>
+                  <input
+                    type="checkbox"
+                    checked={values.department_ids.includes(department.id)}
+                    onChange={() => toggleDepartment(department.id)}
+                    disabled={Boolean(period) || profile.role === 'department_lead'}
+                  />
+                  <span className={styles.chipLabel}>{department.name}</span>
+                </label>
               ))}
-            </select>
-            {errors.department_id && <small className={styles.fieldError}>{errors.department_id}</small>}
-          </label>
+            </div>
+            {!period && departmentCount > 1 && (
+              <small className={styles.helpText}>
+                {departmentCount} separate periods will be created — one per department, all with the same name and dates.
+              </small>
+            )}
+          </fieldset>
+
           <label className={styles.field}>
             <span>Evaluation deadline</span>
             <input
@@ -186,10 +219,10 @@ export default function EvaluationPeriodForm({
               </button>
             )}
           </div>
-          {!values.department_id ? (
-            <p className={styles.employeeEmpty}>Select a department to choose employees.</p>
+          {activeDepartmentIds.size === 0 ? (
+            <p className={styles.employeeEmpty}>Select at least one department to choose employees.</p>
           ) : availableEmployees.length === 0 ? (
-            <p className={styles.employeeEmpty}>No active employees match this department and search.</p>
+            <p className={styles.employeeEmpty}>No active employees match the selected departments and search.</p>
           ) : (
             <div className={styles.employeeGrid}>
               {availableEmployees.map((employee) => (
@@ -213,7 +246,9 @@ export default function EvaluationPeriodForm({
         <div className={styles.formActions}>
           <button type="button" className={styles.secondaryButton} onClick={onCancel} disabled={saving}>Cancel</button>
           <button type="submit" className={styles.primaryButton} disabled={saving}>
-            {saving ? 'Saving…' : period ? 'Save Changes' : 'Create Draft Period'}
+            {saving ? 'Saving…' : period
+              ? 'Save Changes'
+              : `Create Period${departmentCount > 1 ? `s (${departmentCount})` : ''}`}
           </button>
         </div>
       </form>

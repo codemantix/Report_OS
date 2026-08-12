@@ -1,4 +1,4 @@
-import { getAuthenticatedUser } from '../../../lib/apiAuth';
+import { getAuthenticatedUser, respondAuthFailure } from '../../../lib/apiAuth';
 import { getAdminClient } from '../../../lib/supabaseAdmin';
 import { getAuditHistory } from '../../../lib/server/audit/auditService';
 
@@ -10,7 +10,7 @@ export default async function handler(req, res) {
 
   const currentUser = await getAuthenticatedUser(req, res);
   if (!currentUser) {
-    return res.status(401).json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Authentication is required.' } });
+    return respondAuthFailure(res);
   }
 
   try {

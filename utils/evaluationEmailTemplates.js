@@ -198,6 +198,22 @@ export function buildEvaluationNotificationEmail({
           details,
         }),
       };
+    case 'report_comment_added':
+      return {
+        subject: `New comment on your report: ${escapeHtml(details?.reportTitle || 'Your report')}`,
+        html: shell({
+          recipientName,
+          headline: 'New Comment on Your Report',
+          message: `A reviewer left a comment on your report${details?.reportTitle ? ` "${escapeHtml(details.reportTitle)}"` : ''}. Review it and respond if needed.`,
+          ctaLabel: 'View Comment',
+          ctaUrl: `${appUrl.replace(/\/$/, '')}${defaultCta}`,
+          appName,
+          appUrl,
+          details: details?.comment
+            ? `<strong>Comment:</strong> ${escapeHtml(details.comment)}`
+            : '',
+        }),
+      };
     default:
       return {
         subject: 'Report OS Notification',

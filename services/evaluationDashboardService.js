@@ -1,8 +1,9 @@
 import { supabase } from '../lib/supabaseClient';
+import { friendlyErrorMessage } from '../utils/friendlyErrors';
 
 async function authenticatedRequest(url, options = {}) {
   const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-  if (sessionError || !session?.access_token) return { data: null, error: new Error('Authentication is required.') };
+  if (sessionError || !session?.access_token) return { data: null, error: new Error('Your session has expired. Please sign in again.') };
   try {
     const response = await fetch(url, {
       ...options,
@@ -14,14 +15,14 @@ async function authenticatedRequest(url, options = {}) {
     });
     const payload = await response.json();
     if (!response.ok) {
-      const requestError = new Error(payload.error?.message || 'Evaluation request failed.');
+      const requestError = new Error(friendlyErrorMessage(payload.error, 'Evaluation request failed.'));
       requestError.code = payload.error?.code || null;
       requestError.fields = payload.error?.fields || null;
       return { data: null, error: requestError };
     }
     return { data: payload.data, error: null };
   } catch (error) {
-    return { data: null, error };
+    return { data: null, error: new Error(friendlyErrorMessage(error, 'Evaluation request failed.')) };
   }
 }
 

@@ -14,6 +14,11 @@ import useDebounce from '../../../hooks/useDebounce';
 import { paginateItems } from '../../../utils/pagination';
 import styles from '../../../components/goals/Goals.module.css';
 import FilterDropdown, { FilterGroup } from '../../../components/common/FilterDropdown';
+import MonthCards from '../../../components/common/MonthCards';
+
+// Default the "goals by month" view to the current month on load.
+const currentMonth = new Date().getMonth() + 1;
+const currentYear = new Date().getFullYear();
 
 export default function GoalsPage() {
   const router = useRouter();
@@ -25,7 +30,7 @@ export default function GoalsPage() {
   const [companyGoals, setCompanyGoals] = useState([]);
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 400);
-  const [filters, setFilters] = useState({ department_id: '', status: '', priority: '', company_goal_id: '', month: '', year: '' });
+  const [filters, setFilters] = useState({ department_id: '', status: '', priority: '', company_goal_id: '', month: String(currentMonth), year: String(currentYear) });
   const [sort, setSort] = useState('created_at:desc');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -68,8 +73,9 @@ export default function GoalsPage() {
     if (!user) return;
 
     const [sortBy, sortDirection] = sort.split(':');
+    const { month, year, ...goalFilters } = filters;
     const builtFilters = {
-      ...filters,
+      ...goalFilters,
       search: debouncedSearch || undefined,
       sortBy,
       sortDirection,
@@ -112,8 +118,9 @@ export default function GoalsPage() {
       setShowBulkDeleteConfirm(false);
       
       const [sortBy, sortDirection] = sort.split(':');
+      const { month, year, ...goalFilters } = filters;
       const builtFilters = {
-        ...filters,
+        ...goalFilters,
         search: debouncedSearch || undefined,
         sortBy,
         sortDirection,
@@ -132,10 +139,26 @@ export default function GoalsPage() {
   const canCreate = user && (user.role === 'admin' || user.role === 'department_lead');
   const hasActiveFilters = Object.values(filters).some((v) => v !== '') || search.trim() !== '';
   const isSearchLoading = search !== debouncedSearch;
-  const paginatedGoals = paginateItems(goals, page, pageSize);
+
+  const filteredGoals = goals.filter((goal) => {
+    if (!filters.month && !filters.year) return true;
+    if (!goal.due_date) return false;
+
+    const dueDate = new Date(goal.due_date);
+    if (Number.isNaN(dueDate.getTime())) return false;
+
+    const matchesMonth = !filters.month || dueDate.getUTCMonth() + 1 === Number(filters.month);
+    const matchesYear = !filters.year || dueDate.getUTCFullYear() === Number(filters.year);
+    return matchesMonth && matchesYear;
+  });
+  const paginatedGoals = paginateItems(filteredGoals, page, pageSize);
 
   function updateFilter(key, value) {
     setFilters((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function handleSelectMonth(month, year) {
+    setFilters((prev) => ({ ...prev, month, year }));
   }
 
   function clearFilters() {
@@ -272,6 +295,23 @@ export default function GoalsPage() {
           </div>
         </div>
 
+        <MonthCards
+          items={goals}
+          dateField="due_date"
+          selectedMonth={filters.month}
+          selectedYear={filters.year}
+          onSelectMonth={handleSelectMonth}
+          sectionId="goal-months-title"
+          sectionTitle="Goals by due month"
+          sectionDescription="Select a month to show its goals in the table."
+          allLabel="All goals"
+          allDescription="Complete goal overview"
+          itemLabel="goal"
+          itemsLabel="goals"
+          monthLabel="Due month"
+          periodPhrase="due in"
+        />
+
         {loading ? (
           <div className={styles.section}>
             <div className="space-y-3">
@@ -293,7 +333,7 @@ export default function GoalsPage() {
               </button>
             </div>
           </div>
-        ) : goals.length === 0 ? (
+        ) : filteredGoals.length === 0 ? (
           <div className={styles.section}>
             <div className={styles.emptyState}>
               <svg className={styles.emptyIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

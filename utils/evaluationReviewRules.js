@@ -47,6 +47,16 @@ export function reviewPermissions(currentUser, evaluation) {
     || currentUser?.role === 'admin';
   const canDecide = Boolean(activeManager && complete && open && assigned && stageRoleAllowed);
 
+  const currentRound = currentReviewRound(evaluation);
+  const nextStage = stage
+    ? (evaluation?.approvals || []).find((approval) => (
+      approval.review_round_id === stage.review_round_id
+      && approval.status === 'waiting'
+      && approval.required
+      && approval.sequence_number > stage.sequence_number
+    )) || null
+    : null;
+
   return {
     canReview: Boolean(activeManager),
     canFeedback: Boolean(activeManager),
@@ -54,6 +64,7 @@ export function reviewPermissions(currentUser, evaluation) {
     canApprove: canDecide,
     isOwnEvaluation: currentUser?.id === evaluation?.employee_id,
     currentStage: stage?.approval_stage || null,
+    nextStage: (nextStage?.approval_stage) || null,
     assignedToCurrentUser: Boolean(stage?.assigned_approver_id === currentUser?.id),
   };
 }

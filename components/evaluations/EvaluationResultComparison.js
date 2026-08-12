@@ -39,8 +39,8 @@ export default function EvaluationResultComparison({ evaluation }) {
             : 'No final approved stipend result'}</p>
         <p>{hasCurrentApprovedResult && evaluation.approval_feedback
           ? evaluation.approval_feedback
-          : 'Human authorization has not recorded a final decision note.'}</p>
-        <small>Only human approval records constitute an approved result.</small>
+          : 'No approval decision notes recorded yet.'}</p>
+        <small>Only authorized manager approvals create an official result.</small>
       </article>
     </section>
   );

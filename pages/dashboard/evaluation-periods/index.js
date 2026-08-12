@@ -99,16 +99,48 @@ export default function EvaluationPeriodsPage() {
 
   async function savePeriod(values) {
     setSaving(true);
-    const result = editingPeriod
-      ? await updateManagedEvaluationPeriod(editingPeriod.id, values)
-      : await createManagedEvaluationPeriod(values);
-    if (result.error) {
-      toast.error(result.error.message || 'Evaluation period could not be saved.');
+    if (editingPeriod) {
+      const result = await updateManagedEvaluationPeriod(editingPeriod.id, values);
+      if (result.error) {
+        toast.error(result.error.message || 'Evaluation period could not be saved.');
+      } else {
+        toast.success('Draft period updated.');
+        setShowForm(false);
+        setEditingPeriod(null);
+        await loadPeriods();
+      }
     } else {
-      toast.success(editingPeriod ? 'Draft period updated.' : 'Draft period created.');
-      setShowForm(false);
-      setEditingPeriod(null);
-      await loadPeriods();
+      const departments = values.department_ids || [];
+      let created = 0;
+      for (const departmentId of departments) {
+        const departmentEmployees = employees.filter((employee) => employee.department_id === departmentId);
+        const scopedEmployeeIds = values.employee_ids.filter((employeeId) =>
+          departmentEmployees.some((employee) => employee.id === employeeId)
+        );
+        const result = await createManagedEvaluationPeriod({
+          ...values,
+          department_id: departmentId,
+          employee_ids: scopedEmployeeIds,
+        });
+        if (result.error) {
+          toast.error(result.error.message || 'Evaluation period could not be created.');
+        } else {
+          created += 1;
+        }
+      }
+      if (created === departments.length) {
+        toast.success(
+          departments.length === 1
+            ? 'Draft period created.'
+            : `${departments.length} draft periods created across ${departments.length} departments.`
+        );
+        setShowForm(false);
+        setEditingPeriod(null);
+        await loadPeriods();
+      } else if (created > 0) {
+        toast.success(`${created} of ${departments.length} periods created; ${departments.length - created} failed.`);
+        await loadPeriods();
+      }
     }
     setSaving(false);
   }

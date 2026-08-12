@@ -5,11 +5,16 @@ function score(value) {
   return value === null || value === undefined ? '—' : `${Number(value).toFixed(1)}%`;
 }
 
+function formatSample(count) {
+  const n = Number(count) || 0;
+  return `${n} evaluation${n === 1 ? '' : 's'}`;
+}
+
 const SCORE_METRICS = [
-  { key: 'averageOverallScore', sampleKey: 'overallSampleSize', label: 'Average overall', icon: Target, detail: 'Human-approved score, with legacy calculated fallback' },
-  { key: 'averageTaskScore', sampleKey: 'taskSampleSize', label: 'Task Performance', icon: ClipboardCheck, detail: 'Original calculated task components' },
-  { key: 'averageReportingScore', sampleKey: 'reportingSampleSize', label: 'Reporting Performance', icon: FileText, detail: 'Original calculated reporting components' },
-  { key: 'averageAttendanceScore', sampleKey: 'attendanceSampleSize', label: 'Attendance Performance', icon: UserCheck, detail: 'Original calculated attendance components' },
+  { key: 'averageOverallScore', sampleKey: 'overallSampleSize', label: 'Average overall', icon: Target, iconClass: styles.metricIconIndigo, detail: 'Approved final score (or calculated rate)' },
+  { key: 'averageTaskScore', sampleKey: 'taskSampleSize', label: 'Task Performance', icon: ClipboardCheck, iconClass: styles.metricIconEmerald, detail: 'Calculated from completed tasks' },
+  { key: 'averageReportingScore', sampleKey: 'reportingSampleSize', label: 'Reporting Performance', icon: FileText, iconClass: styles.metricIconCyan, detail: 'Calculated from team reports' },
+  { key: 'averageAttendanceScore', sampleKey: 'attendanceSampleSize', label: 'Attendance Performance', icon: UserCheck, iconClass: styles.metricIconBlue, detail: 'Calculated from attendance records' },
 ];
 
 export default function ManagementMetricGrid({ summary }) {
@@ -17,10 +22,24 @@ export default function ManagementMetricGrid({ summary }) {
     ...SCORE_METRICS.map((metric) => ({
       ...metric,
       value: score(summary[metric.key]),
-      detail: `${metric.detail} · n=${summary[metric.sampleKey] ?? 0}`,
+      detail: `${metric.detail} · ${formatSample(summary[metric.sampleKey])}`,
     })),
-    { label: 'Pending evaluations', icon: CalendarClock, value: summary.pendingEvaluations ?? 0, detail: 'Draft, scoring, or incomplete' },
-    { label: 'Pending approvals', icon: AlertCircle, value: summary.pendingApprovals ?? 0, detail: 'Awaiting human authorization', warning: Number(summary.pendingApprovals) > 0 },
+    { label: 'Pending evaluations', icon: CalendarClock, iconClass: styles.metricIconAmber, value: summary.pendingEvaluations ?? 0, detail: 'Draft, scoring, or incomplete' },
+    { label: 'Pending approvals', icon: AlertCircle, iconClass: styles.metricIconViolet, value: summary.pendingApprovals ?? 0, detail: 'Awaiting manager approval', warning: Number(summary.pendingApprovals) > 0 },
   ];
-  return <section className={styles.metricGrid} aria-label="Evaluation performance summary">{metrics.map(({ label, icon: Icon, value, detail, warning }) => <article className={`${styles.metricCard} ${warning ? styles.warningCard : ''}`} key={label}><span className={styles.metricIcon}><Icon size={19} aria-hidden="true" /></span><div><small>{label}</small><strong>{value}</strong><p>{detail}</p></div></article>)}</section>;
+
+  return (
+    <section className={styles.metricGrid} aria-label="Evaluation performance summary">
+      {metrics.map(({ label, icon: Icon, iconClass, value, detail, warning }) => (
+        <article className={`${styles.metricCard} ${warning ? styles.warningCard : ''}`} key={label}>
+          <div className={styles.metricTop}>
+            <small>{label}</small>
+            <span className={`${styles.metricIcon} ${iconClass}`}><Icon size={19} aria-hidden="true" /></span>
+          </div>
+          <strong>{value}</strong>
+          <p>{detail}</p>
+        </article>
+      ))}
+    </section>
+  );
 }

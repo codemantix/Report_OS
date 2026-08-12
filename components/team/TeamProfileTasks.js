@@ -102,23 +102,23 @@ export default function TeamProfileTasks({ targetUserId }) {
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800/40 text-gray-700 dark:text-gray-300">
             {tasks.map((task) => (
               <tr key={task.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-850/20 transition-colors">
-                <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                <td className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                   <span className="truncate max-w-[200px] sm:max-w-xs">{task.title}</span>
                 </td>
-                <td className="px-6 py-4 text-xs text-gray-400">
+                <td className="px-6 py-4 text-xs text-gray-400 whitespace-nowrap">
                   {task.due_date ? format(new Date(task.due_date), 'MMM d, yyyy') : 'No due date'}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${priorityColors[task.priority] || priorityColors.medium}`}>
                     {task.priority}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-xs">
+                <td className="px-6 py-4 text-xs whitespace-nowrap">
                   <span className={`inline-flex px-2 py-0.5 rounded-full font-medium ${statusColors[task.status] || statusColors.pending}`}>
                     {task.status?.replace('_', ' ')}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-right">
+                <td className="px-6 py-4 text-right whitespace-nowrap">
                   <Link
                     href={`/dashboard/tasks/${task.id}`}
                     className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"

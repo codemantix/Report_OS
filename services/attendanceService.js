@@ -4,6 +4,18 @@ import {
   normalizeAttendancePayload,
   validateAttendanceRecord,
 } from '../utils/attendanceValidation';
+import { friendlyErrorMessage } from '../utils/friendlyErrors';
+
+function translateError(error, fallback = 'Attendance request failed.') {
+  if (!error) return error;
+  const friendly = new Error(friendlyErrorMessage(error, fallback));
+  if (error.code) friendly.code = error.code;
+  return friendly;
+}
+
+function translateResult(result, fallback) {
+  return { ...result, error: result.error ? translateError(result.error, fallback) : null };
+}
 
 const ATTENDANCE_SELECT = `
   id,
@@ -55,7 +67,7 @@ export async function fetchAttendanceRecords(filters = {}) {
   if (filters.date_to) query = query.lte('attendance_date', filters.date_to);
 
   const { data, error, count } = await query;
-  return { data: data || [], error, count: count || 0, page, pageSize };
+  return translateResult({ data: data || [], error, count: count || 0, page, pageSize }, 'Attendance records could not be loaded.');
 }
 
 export async function fetchAttendanceEmployees(departmentId) {
@@ -68,7 +80,7 @@ export async function fetchAttendanceEmployees(departmentId) {
   if (departmentId) query = query.eq('department_id', departmentId);
 
   const { data, error } = await query;
-  return { data: data || [], error };
+  return translateResult({ data: data || [], error }, 'Attendance employees could not be loaded.');
 }
 
 export async function fetchAttendanceEvaluationPeriods(departmentId) {
@@ -81,7 +93,7 @@ export async function fetchAttendanceEvaluationPeriods(departmentId) {
   if (departmentId) query = query.eq('department_id', departmentId);
 
   const { data, error } = await query;
-  return { data: data || [], error };
+  return translateResult({ data: data || [], error }, 'Evaluation periods could not be loaded.');
 }
 
 export async function createAttendanceRecord(record, currentUserId) {
@@ -103,7 +115,7 @@ export async function createAttendanceRecord(record, currentUserId) {
     .select(ATTENDANCE_SELECT)
     .single();
 
-  return { data, error };
+  return translateResult({ data, error }, 'Attendance record could not be created.');
 }
 
 export async function updateAttendanceRecord(id, record) {
@@ -126,5 +138,5 @@ export async function updateAttendanceRecord(id, record) {
     .select(ATTENDANCE_SELECT)
     .single();
 
-  return { data, error };
+  return translateResult({ data, error }, 'Attendance record could not be updated.');
 }

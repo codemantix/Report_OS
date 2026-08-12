@@ -5,7 +5,7 @@ import DashboardLayout from '../../../components/layout/DashboardLayout';
 import SearchInput from '../../../components/common/SearchInput';
 import PaginationControls from '../../../components/common/PaginationControls';
 import TasksTable from '../../../components/tasks/TasksTable';
-import TaskMonthCards from '../../../components/tasks/TaskMonthCards';
+import MonthCards from '../../../components/common/MonthCards';
 import { fetchTasks, deleteTasks } from '../../../services/taskService';
 import { fetchDepartments } from '../../../services/departmentService';
 import { fetchGoals } from '../../../services/goalService';
@@ -17,6 +17,10 @@ import useDebounce from '../../../hooks/useDebounce';
 import { paginateItems } from '../../../utils/pagination';
 import styles from '../../../components/tasks/Tasks.module.css';
 import FilterDropdown, { FilterGroup } from '../../../components/common/FilterDropdown';
+
+// Default the "tasks by month" view to the current month on load.
+const currentMonth = new Date().getMonth() + 1;
+const currentYear = new Date().getFullYear();
 
 export default function TasksPage() {
   const router = useRouter();
@@ -30,7 +34,7 @@ export default function TasksPage() {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 400);
-  const [filters, setFilters] = useState({ department_id: '', status: '', priority: '', company_goal_id: '', goal_id: '', plan_id: '', month: '', year: '' });
+  const [filters, setFilters] = useState({ department_id: '', status: '', priority: '', company_goal_id: '', goal_id: '', plan_id: '', month: String(currentMonth), year: String(currentYear) });
   const [sort, setSort] = useState('due_date:asc');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -307,11 +311,21 @@ export default function TasksPage() {
           </div>
         </div>
 
-        <TaskMonthCards
-          tasks={tasks}
+        <MonthCards
+          items={tasks}
+          dateField="due_date"
           selectedMonth={filters.month}
           selectedYear={filters.year}
           onSelectMonth={handleSelectMonth}
+          sectionId="task-months-title"
+          sectionTitle="Tasks by due month"
+          sectionDescription="Select a month to show its tasks in the table."
+          allLabel="All tasks"
+          allDescription="Complete task overview"
+          itemLabel="task"
+          itemsLabel="tasks"
+          monthLabel="Due month"
+          periodPhrase="due in"
         />
 
         {loading ? (

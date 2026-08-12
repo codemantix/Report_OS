@@ -1,4 +1,414 @@
-.page{@apply space-y-6}.header{@apply flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between}.header h1{@apply text-2xl font-bold;color:var(--color-text)}.header p,.muted,.sectionHeader p,.person small,.itemHeader p{@apply mt-1 text-sm;color:var(--color-muted)}.summaryGrid{@apply grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5}.summaryCard{@apply flex items-center gap-3 rounded-xl border p-4;background:var(--color-surface);border-color:var(--color-border);box-shadow:var(--shadow-card)}.summaryIcon{@apply flex h-10 w-10 items-center justify-center rounded-xl;background:rgba(30,58,138,.09);color:#1E3A8A}.summaryIcon svg{@apply h-5 w-5}.summaryCard p{@apply text-xs;color:var(--color-muted)}.summaryCard strong{@apply text-xl font-bold;color:var(--color-text)}.filters,.contentCard,.detailSection,.scoreCard{@apply rounded-xl border;background:var(--color-surface);border-color:var(--color-border);box-shadow:var(--shadow-card)}.filters{@apply flex flex-col gap-4 p-4 xl:flex-row xl:items-end}.filterGrid{@apply grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5}.filterGrid label{@apply flex flex-col gap-1.5}.filterGrid label>span{@apply text-xs font-semibold;color:var(--color-muted)}.filterGrid select{@apply w-full rounded-lg border px-3 py-2.5 text-sm;background:var(--color-surface);color:var(--color-text);border-color:var(--color-border)}.secondaryButton{@apply inline-flex min-h-10 items-center justify-center rounded-lg border px-4 py-2 text-sm font-semibold;color:var(--color-text);border-color:var(--color-border)}.contentCard{@apply overflow-hidden}.contentHeader,.sectionHeader{@apply flex items-start justify-between gap-4 border-b px-5 py-4;border-color:var(--color-border)}.contentHeader h2,.sectionHeader h3{@apply text-lg font-semibold;color:var(--color-text)}.tableWrapper{@apply hidden overflow-x-auto lg:block}.table{@apply w-full min-w-[1250px] border-collapse text-left text-sm}.table th{@apply border-b px-4 py-3 text-xs font-semibold uppercase tracking-wide;color:var(--color-muted);background:var(--color-surface-soft);border-color:var(--color-border)}.table td{@apply border-b px-4 py-4;color:var(--color-text);border-color:var(--color-border-light)}.table tbody tr{@apply cursor-pointer transition}.table tbody tr:hover,.table tbody tr:focus{@apply outline-none;background:var(--color-surface-soft)}.person{@apply flex min-w-44 items-center gap-3}.person>span:last-child{@apply min-w-0}.person strong,.person small{@apply block truncate}.avatar{@apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-semibold text-white;background:#1E3A8A}.score{@apply font-bold;color:#1E3A8A}.mutedScore{@apply font-semibold;color:var(--color-muted)}.bandBadge,.statusBadge{@apply inline-flex whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold;background:var(--color-surface-soft);color:var(--color-text)}.band_excellent,.status_approved,.status_finalized{@apply text-emerald-700;background:rgba(16,185,129,.12)}.band_review_required,.status_rejected,.status_cancelled{@apply text-red-700;background:rgba(239,68,68,.12)}.status_pending_approval,.status_scoring{@apply text-amber-700;background:rgba(245,158,11,.14)}.mobileList{@apply divide-y lg:hidden;border-color:var(--color-border)}.mobileCard{@apply block w-full p-4 text-left}.mobileTop{@apply flex items-start justify-between}.mobileScores{@apply mt-4 grid grid-cols-2 gap-3}.mobileScores span{@apply flex flex-col text-xs;color:var(--color-muted)}.mobileScores strong{@apply text-base;color:var(--color-text)}.mobileBadges{@apply mt-4 flex flex-wrap gap-2}.pagination{@apply border-t p-4;border-color:var(--color-border)}.loading{@apply space-y-3 p-5}.skeleton{@apply h-16 animate-pulse rounded-lg;background:var(--color-surface-soft)}.state{@apply flex min-h-64 flex-col items-center justify-center gap-3 p-8 text-center;color:var(--color-muted)}.scoreGrid{@apply grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4}.scoreCard{@apply p-5}.scoreCard p{@apply text-sm;color:var(--color-muted)}.scoreCard strong{@apply mt-2 block text-3xl font-bold;color:#1E3A8A}.scoreCard small{@apply text-xs;color:var(--color-muted)}.detailHeader{@apply flex flex-col gap-4 rounded-xl border p-5 sm:flex-row sm:items-center sm:justify-between;background:var(--color-surface);border-color:var(--color-border)}.backLink{@apply inline-flex items-center gap-2 text-sm font-semibold;color:#1E3A8A}.detailSection{@apply overflow-hidden}.sectionHeader>strong{@apply text-xl;color:#1E3A8A}.breakdownList{@apply divide-y;border-color:var(--color-border)}.breakdownItem{@apply p-5}.itemHeader{@apply flex items-start justify-between gap-4}.itemHeader h4{@apply font-semibold;color:var(--color-text)}.dimensionRow{@apply my-4 flex flex-wrap gap-2}.dimensionRow span{@apply rounded-lg px-2.5 py-1.5 text-xs;background:var(--color-surface-soft);color:var(--color-muted)}.breakdownItem ul{@apply list-disc space-y-1 pl-5 text-sm;color:var(--color-muted)}.attendanceGrid{@apply grid grid-cols-2 gap-4 p-5 sm:grid-cols-5}.attendanceGrid div{@apply rounded-xl p-4;background:var(--color-surface-soft)}.attendanceGrid span{@apply block text-xs capitalize;color:var(--color-muted)}.attendanceGrid strong{@apply mt-1 block text-2xl;color:var(--color-text)}.noData{@apply p-6 text-sm;color:var(--color-muted)}.timeline{@apply space-y-0 p-5}.timeline article{@apply relative flex gap-4 border-l pb-5 pl-5;border-color:var(--color-border)}.timelineDot{@apply absolute -left-1.5 top-1 h-3 w-3 rounded-full;background:#1E3A8A}.timeline h4{@apply capitalize font-semibold;color:var(--color-text)}.timeline p,.timeline blockquote{@apply mt-1 text-sm;color:var(--color-muted)}@media(max-width:640px){.sectionHeader{@apply flex-col}.attendanceGrid{@apply grid-cols-2}}
+.page {
+  @apply space-y-6;
+}
+
+.header {
+  @apply flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between;
+}
+
+.header h1 {
+  @apply text-2xl font-bold tracking-tight;
+  color: var(--color-text);
+}
+
+.header p,
+.muted,
+.sectionHeader p,
+.person small,
+.itemHeader p {
+  @apply mt-1 text-sm;
+  color: var(--color-muted);
+}
+
+.summaryGrid {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5;
+}
+
+.summaryCard {
+  @apply flex items-center gap-3.5 rounded-xl border p-4 transition-all duration-200;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.summaryCard:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.summaryIcon {
+  @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors;
+  background: rgba(30, 58, 138, 0.09);
+  color: #1E3A8A;
+}
+
+.summaryIcon svg {
+  @apply h-5 w-5;
+}
+
+.summaryCard p {
+  @apply text-xs font-medium;
+  color: var(--color-muted);
+}
+
+.summaryCard strong {
+  @apply text-xl font-bold tracking-tight;
+  color: var(--color-text);
+}
+
+.filters,
+.contentCard,
+.detailSection,
+.scoreCard {
+  @apply rounded-xl border transition-shadow duration-200;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.filters {
+  @apply flex flex-col gap-4 p-5 xl:flex-row xl:items-end;
+}
+
+.filterGrid {
+  @apply grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5;
+}
+
+.filterGrid label {
+  @apply flex flex-col gap-1.5;
+}
+
+.filterGrid label>span {
+  @apply text-xs font-semibold tracking-wide uppercase;
+  color: var(--color-muted);
+}
+
+.filterGrid select {
+  @apply w-full rounded-lg border px-3 py-2 text-sm outline-none transition-all duration-150;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.filterGrid select:focus {
+  border-color: #1E3A8A;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+}
+
+.secondaryButton {
+  @apply inline-flex min-h-10 items-center justify-center rounded-lg border px-4 py-2 text-sm font-semibold transition-colors cursor-pointer;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+.secondaryButton:hover {
+  background: var(--color-surface-soft);
+  border-color: var(--color-border-hover, var(--color-border));
+}
+
+.contentCard {
+  @apply overflow-hidden;
+}
+
+.contentHeader,
+.sectionHeader {
+  @apply flex items-start justify-between gap-4 border-b px-5 py-4;
+  border-color: var(--color-border);
+}
+
+.contentHeader h2,
+.sectionHeader h3 {
+  @apply text-lg font-semibold tracking-tight;
+  color: var(--color-text);
+}
+
+.tableWrapper {
+  @apply hidden overflow-x-auto lg:block;
+}
+
+.table {
+  @apply w-full min-w-[1250px] border-collapse text-left text-sm;
+}
+
+.table th {
+  @apply whitespace-nowrap border-b px-4 py-3 text-xs font-semibold uppercase tracking-wider;
+  color: var(--color-muted);
+  background: var(--color-surface-soft);
+  border-color: var(--color-border);
+}
+
+.table td {
+  @apply whitespace-nowrap border-b px-4 py-3.5;
+  color: var(--color-text);
+  border-color: var(--color-border-light);
+}
+
+.table tbody tr {
+  @apply cursor-pointer transition-colors duration-150;
+}
+
+.table tbody tr:hover,
+.table tbody tr:focus {
+  @apply outline-none;
+  background: var(--color-surface-soft);
+}
+
+.person {
+  @apply flex min-w-44 items-center gap-3;
+}
+
+.person>span:last-child {
+  @apply min-w-0;
+}
+
+.person strong,
+.person small {
+  @apply block truncate;
+}
+
+.avatar {
+  @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-semibold text-white shadow-sm;
+  background: #1E3A8A;
+}
+
+.score {
+  @apply font-bold;
+  color: #1E3A8A;
+}
+
+.mutedScore {
+  @apply font-semibold;
+  color: var(--color-muted);
+}
+
+.bandBadge,
+.statusBadge {
+  @apply inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold transition-colors;
+  background: var(--color-surface-soft);
+  color: var(--color-text);
+}
+
+.band_excellent,
+.status_approved,
+.status_finalized {
+  @apply text-emerald-700;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+}
+
+.band_review_required,
+.status_rejected,
+.status_cancelled {
+  @apply text-red-700;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+}
+
+.status_pending_approval,
+.status_scoring {
+  @apply text-amber-700;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.mobileList {
+  @apply divide-y lg:hidden;
+  border-color: var(--color-border);
+}
+
+.mobileCard {
+  @apply block w-full p-4 text-left transition-colors;
+}
+
+.mobileCard:hover {
+  background: var(--color-surface-soft);
+}
+
+.mobileTop {
+  @apply flex items-start justify-between;
+}
+
+.mobileScores {
+  @apply mt-4 grid grid-cols-2 gap-3;
+}
+
+.mobileScores span {
+  @apply flex flex-col text-xs;
+  color: var(--color-muted);
+}
+
+.mobileScores strong {
+  @apply text-base font-semibold;
+  color: var(--color-text);
+}
+
+.mobileBadges {
+  @apply mt-4 flex flex-wrap gap-2;
+}
+
+.pagination {
+  @apply border-t p-4;
+  border-color: var(--color-border);
+}
+
+.loading {
+  @apply space-y-3 p-5;
+}
+
+.skeleton {
+  @apply h-16 animate-pulse rounded-lg;
+  background: var(--color-surface-soft);
+}
+
+.state {
+  @apply flex min-h-64 flex-col items-center justify-center gap-3 p-8 text-center;
+  color: var(--color-muted);
+}
+
+.scoreGrid {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4;
+}
+
+.scoreCard {
+  @apply p-5 transition-transform duration-150;
+}
+
+.scoreCard:hover {
+  transform: translateY(-1px);
+}
+
+.scoreCard p {
+  @apply text-sm font-medium;
+  color: var(--color-muted);
+}
+
+.scoreCard strong {
+  @apply mt-2 block text-3xl font-bold tracking-tight;
+  color: #1E3A8A;
+}
+
+.scoreCard small {
+  @apply mt-1 block text-xs;
+  color: var(--color-muted);
+}
+
+.detailHeader {
+  @apply flex flex-col gap-4 rounded-xl border p-5 sm:flex-row sm:items-center sm:justify-between;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.backLink {
+  @apply inline-flex items-center gap-2 text-sm font-semibold transition-colors;
+  color: #1E3A8A;
+}
+
+.backLink:hover {
+  color: #1d4ed8;
+}
+
+.detailSection {
+  @apply overflow-hidden;
+}
+
+.sectionHeader>strong {
+  @apply text-xl font-bold;
+  color: #1E3A8A;
+}
+
+.breakdownList {
+  @apply divide-y;
+  border-color: var(--color-border);
+}
+
+.breakdownItem {
+  @apply p-5;
+}
+
+.itemHeader {
+  @apply flex items-start justify-between gap-4;
+}
+
+.itemHeader h4 {
+  @apply font-semibold;
+  color: var(--color-text);
+}
+
+.dimensionRow {
+  @apply my-4 flex flex-wrap gap-2;
+}
+
+.dimensionRow span {
+  @apply rounded-lg px-2.5 py-1.5 text-xs font-medium;
+  background: var(--color-surface-soft);
+  color: var(--color-muted);
+}
+
+.breakdownItem ul {
+  @apply list-disc space-y-1 pl-5 text-sm;
+  color: var(--color-muted);
+}
+
+.attendanceGrid {
+  @apply grid grid-cols-2 gap-4 p-5 sm:grid-cols-5;
+}
+
+.attendanceGrid div {
+  @apply rounded-xl p-4 transition-colors;
+  background: var(--color-surface-soft);
+}
+
+.attendanceGrid span {
+  @apply block text-xs capitalize font-medium;
+  color: var(--color-muted);
+}
+
+.attendanceGrid strong {
+  @apply mt-1 block text-2xl font-bold;
+  color: var(--color-text);
+}
+
+.noData {
+  @apply p-6 text-sm;
+  color: var(--color-muted);
+}
+
+.timeline {
+  @apply space-y-0 p-5;
+}
+
+.timeline article {
+  @apply relative flex gap-4 border-l pb-5 pl-5;
+  border-color: var(--color-border);
+}
+
+.timelineDot {
+  @apply absolute -left-1.5 top-1 h-3 w-3 rounded-full shadow-sm;
+  background: #1E3A8A;
+}
+
+.timeline h4 {
+  @apply capitalize font-semibold;
+  color: var(--color-text);
+}
+
+.timeline p,
+.timeline blockquote {
+  @apply mt-1 text-sm;
+  color: var(--color-muted);
+}
+
+@media (max-width: 640px) {
+  .sectionHeader {
+    @apply flex-col;
+  }
+
+  .attendanceGrid {
+    @apply grid-cols-2;
+  }
+}
 
 .headerBadges {
   @apply flex flex-wrap items-center gap-2;
@@ -40,17 +450,17 @@
   @apply mt-2 text-3xl font-bold;
 }
 
-.resultPanel > strong {
+.resultPanel>strong {
   @apply mt-2 block text-base;
   color: #1E3A8A;
 }
 
-.resultPanel > p:not(.resultEyebrow) {
+.resultPanel>p:not(.resultEyebrow) {
   @apply mt-3 text-sm;
   color: var(--color-text);
 }
 
-.resultPanel > small {
+.resultPanel>small {
   @apply mt-4 block text-xs;
   color: var(--color-muted);
 }
@@ -127,7 +537,7 @@
   background: var(--color-surface-soft);
 }
 
-.explanation > strong {
+.explanation>strong {
   @apply text-sm;
   color: var(--color-text);
 }
@@ -163,7 +573,7 @@
 
 .attendanceTable th,
 .attendanceTable td {
-  @apply border-b px-4 py-3;
+  @apply border-b px-4 py-3 whitespace-nowrap;
   border-color: var(--color-border-light);
 }
 
@@ -238,7 +648,133 @@
 }
 
 .reviewPanel {
+  overflow: hidden;
   border-color: rgba(30, 58, 138, 0.28);
+}
+
+.reviewHeader {
+  @apply flex flex-col gap-4 border-b px-5 py-5 sm:flex-row sm:items-center;
+  border-color: var(--color-border);
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.06), rgba(30, 58, 138, 0.02));
+}
+
+.reviewHeaderIcon {
+  @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-xl;
+  color: #1E3A8A;
+  background: rgba(30, 58, 138, 0.1);
+}
+
+.reviewHeaderIcon svg {
+  @apply h-5 w-5;
+}
+
+.reviewHeaderText {
+  @apply min-w-0 flex-1;
+}
+
+.reviewHeaderText h3 {
+  @apply text-lg font-semibold;
+  color: var(--color-text);
+}
+
+.reviewHeaderText p {
+  @apply mt-0.5 text-sm;
+  color: var(--color-muted);
+}
+
+.reviewStageBadge {
+  @apply inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold;
+  color: #92400E;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.reviewStageBadge.status_approved,
+.reviewStageBadge.status_finalized {
+  color: #047857;
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.reviewBody {
+  @apply space-y-6 p-5 sm:p-6;
+}
+
+.reviewPendingNotice {
+  @apply flex items-start gap-3 rounded-xl border p-4 text-sm;
+  color: #92400E;
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.reviewPendingNotice svg {
+  @apply mt-0.5 h-5 w-5 shrink-0;
+}
+
+.reviewPendingNotice p {
+  @apply leading-relaxed;
+}
+
+.reviewSummaryStrip {
+  @apply grid grid-cols-1 gap-4 rounded-xl border p-5 sm:grid-cols-3;
+  border-color: var(--color-border);
+  background: var(--color-surface-soft);
+}
+
+.reviewSummaryStrip>div:not(.reviewSummaryNote) {
+  @apply rounded-xl p-4;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+}
+
+.reviewSummaryStrip span {
+  @apply block text-xs;
+  color: var(--color-muted);
+}
+
+.reviewSummaryStrip strong {
+  @apply mt-1.5 block text-xl font-bold;
+  color: var(--color-text);
+}
+
+.reviewSummaryNote {
+  @apply flex items-start gap-2.5 rounded-xl p-4 sm:col-span-3;
+  background: rgba(30, 58, 138, 0.05);
+  border: 1px solid rgba(30, 58, 138, 0.12);
+}
+
+.reviewSummaryNote svg {
+  @apply mt-0.5 h-5 w-5 shrink-0;
+  color: #1E3A8A;
+}
+
+.reviewSummaryNote p {
+  @apply text-sm leading-relaxed;
+  color: var(--color-muted);
+}
+
+.reviewSection {
+  @apply space-y-4;
+}
+
+.reviewSectionTitle {
+  @apply flex items-start gap-3 border-b pb-3;
+  border-color: var(--color-border);
+}
+
+.reviewSectionTitle svg {
+  @apply mt-0.5 h-5 w-5 shrink-0;
+  color: #1E3A8A;
+}
+
+.reviewSectionTitle h4 {
+  @apply text-base font-semibold;
+  color: var(--color-text);
+}
+
+.reviewSectionTitle p {
+  @apply mt-0.5 text-sm;
+  color: var(--color-muted);
 }
 
 .reviewForm {
@@ -246,37 +782,63 @@
 }
 
 .reviewGrid {
-  @apply grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3;
+  @apply grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3;
 }
 
-.reviewGrid label {
-  @apply flex flex-col gap-1.5;
+.reviewField {
+  @apply relative flex flex-col gap-1.5;
 }
 
-.reviewGrid label > span {
-  @apply text-sm font-semibold;
+.reviewFieldLabel {
+  @apply flex flex-col gap-1;
+}
+
+.reviewFieldLabelText {
+  @apply inline-flex items-center gap-1.5 text-sm font-semibold;
   color: var(--color-text);
 }
 
-.reviewGrid input,
-.reviewGrid select,
-.reviewGrid textarea {
-  @apply w-full rounded-lg border px-3.5 py-2.5 text-sm outline-none;
+.reviewFieldLabelText svg {
+  @apply h-4 w-4;
+  color: #1E3A8A;
+}
+
+.reviewFieldHint {
+  @apply text-xs;
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
+.reviewField input,
+.reviewField select,
+.reviewField textarea {
+  @apply w-full rounded-lg border px-3.5 py-2.5 text-sm outline-none transition;
   color: var(--color-text);
   background: var(--color-surface);
   border-color: var(--color-border);
 }
 
-.reviewGrid input:focus,
-.reviewGrid select:focus,
-.reviewGrid textarea:focus {
+.reviewField input:focus,
+.reviewField select:focus,
+.reviewField textarea:focus {
   border-color: #1E3A8A;
   box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
 }
 
-.reviewGrid label > small {
+.reviewField textarea {
+  @apply resize-y;
+  min-height: 88px;
+}
+
+.reviewFieldError {
   @apply text-xs font-medium;
   color: #DC2626;
+}
+
+.reviewCharCount {
+  @apply pointer-events-none absolute bottom-2.5 right-3 rounded-md px-1.5 py-0.5 text-[11px];
+  color: var(--color-muted);
+  background: color-mix(in srgb, var(--color-surface) 85%, transparent);
 }
 
 .reviewFull {
@@ -284,16 +846,42 @@
 }
 
 .reviewActions {
-  @apply mt-6 flex flex-col gap-3 border-t pt-5 sm:flex-row sm:justify-end;
+  @apply flex flex-col gap-4 border-t pt-5 sm:flex-row sm:items-center sm:justify-between;
   border-color: var(--color-border);
 }
 
-.reviewActions button {
+.reviewActionsNote {
+  @apply inline-flex items-center gap-2 text-xs;
+  color: var(--color-muted);
+}
+
+.reviewActionsNote svg {
+  @apply h-4 w-4 shrink-0;
+  color: #1E3A8A;
+}
+
+.reviewActionButtons {
+  @apply flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end;
+}
+
+.reviewActionButtons button,
+.reviewGhostButton {
   @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60;
 }
 
-.reviewActions button svg {
+.reviewActionButtons button svg,
+.reviewGhostButton svg {
   @apply h-4 w-4;
+}
+
+.reviewGhostButton {
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.reviewGhostButton:hover:not(:disabled) {
+  background: var(--color-surface-soft);
 }
 
 .returnButton {
@@ -302,7 +890,129 @@
   border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
+.returnButton:hover:not(:disabled) {
+  background: rgba(245, 158, 11, 0.16);
+}
+
 .approveButton {
   @apply text-white;
   background: #047857;
+}
+
+.approveButton:hover:not(:disabled) {
+  background: #065F46;
+}
+
+.approveFinalButton {
+  @apply text-white relative overflow-hidden;
+  background: linear-gradient(135deg, #047857, #065F46);
+  box-shadow: 0 2px 8px rgba(4, 120, 87, 0.3);
+}
+
+.approveFinalButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #065F46, #047857);
+  box-shadow: 0 4px 12px rgba(4, 120, 87, 0.4);
+}
+
+.calculateButton {
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60;
+  background: #1E3A8A;
+}
+
+.calculateButton svg {
+  @apply h-4 w-4;
+}
+
+.actionPanel {
+  border-color: rgba(30, 58, 138, 0.28);
+}
+
+.workflowTrack {
+  @apply flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between;
+}
+
+.workflowStep {
+  @apply flex items-center gap-2.5;
+}
+
+.workflowDot {
+  @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2;
+  border-color: var(--color-border);
+  color: var(--color-muted);
+}
+
+.workflowDot svg {
+  @apply h-4 w-4;
+}
+
+.workflowStep small {
+  @apply text-xs font-medium;
+  color: var(--color-muted);
+}
+
+.workflowDone .workflowDot {
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #047857;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.workflowDone small {
+  color: var(--color-text);
+}
+
+.workflowActive .workflowDot {
+  border-color: #1E3A8A;
+  color: #1E3A8A;
+  background: rgba(30, 58, 138, 0.08);
+}
+
+.workflowActive small {
+  font-weight: 600;
+  color: #1E3A8A;
+}
+
+.actionNotice {
+  @apply flex items-start gap-3 border-t p-5 text-sm;
+  border-color: var(--color-border);
+  color: var(--color-muted);
+  background: var(--color-surface-soft);
+}
+
+.actionNotice svg {
+  @apply mt-0.5 h-5 w-5 shrink-0;
+  color: #1E3A8A;
+}
+
+.actionNotice p {
+  @apply leading-relaxed;
+}
+
+.spin {
+  @apply animate-spin;
+}
+
+.rowActions {
+  @apply flex items-center justify-end gap-2;
+}
+
+.rowChevron {
+  color: var(--color-muted);
+}
+
+.rowCalculateButton {
+  @apply inline-flex min-h-8 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60;
+  background: #1E3A8A;
+}
+
+.rowCalculateButton svg {
+  @apply h-3.5 w-3.5;
+}
+
+.mobileCalculate {
+  @apply mt-4 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white;
+  background: #1E3A8A;
+}
+
+.mobileCalculate svg {
+  @apply h-4 w-4;
 }

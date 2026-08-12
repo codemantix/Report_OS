@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import DashboardLayout from '../../../components/layout/DashboardLayout';
+import EvaluationActionPanel from '../../../components/evaluations/EvaluationActionPanel';
 import EvaluationScoreOverview from '../../../components/evaluations/EvaluationScoreOverview';
 import EvaluationResultComparison from '../../../components/evaluations/EvaluationResultComparison';
 import EvaluationTaskRecords from '../../../components/evaluations/EvaluationTaskRecords';
@@ -13,6 +14,7 @@ import EvaluationManagerFeedback from '../../../components/evaluations/Evaluatio
 import EvaluationApprovalHistory from '../../../components/evaluations/EvaluationApprovalHistory';
 import EvaluationReviewPanel from '../../../components/evaluations/EvaluationReviewPanel';
 import { fetchEvaluationDetail, submitEvaluationReview } from '../../../services/evaluationDashboardService';
+import { calculateBiweeklyEmployeeEvaluation } from '../../../services/biweeklyEvaluationService';
 import { EVALUATION_STATUS_LABELS } from '../../../utils/evaluationDashboardConstants';
 import styles from '../../../components/evaluations/Evaluations.module.css';
 
@@ -21,6 +23,7 @@ export default function EvaluationDetailPage() {
   const { id } = router.query;
   const [evaluation, setEvaluation] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [calculating, setCalculating] = useState(false);
   const [error, setError] = useState('');
   const [reviewSaving, setReviewSaving] = useState(false);
   const [reviewFieldErrors, setReviewFieldErrors] = useState({});
@@ -36,6 +39,20 @@ export default function EvaluationDetailPage() {
     if (result.error) setError(result.error.message);
     else setEvaluation(result.data);
     setLoading(false);
+  }
+
+  async function calculate() {
+    setCalculating(true);
+    const result = await calculateBiweeklyEmployeeEvaluation(id);
+    if (result.error) {
+      toast.error(result.error.message || 'Evaluation could not be calculated.');
+    } else {
+      toast.success(result.data?.evaluation?.calculationStatus === 'complete'
+        ? 'Evaluation calculated. Review the breakdown, then approve or adjust.'
+        : 'Input scores calculated, but the evaluation is incomplete because some required inputs are missing.');
+      await load();
+    }
+    setCalculating(false);
   }
 
   async function submitReview(payload) {
@@ -94,6 +111,7 @@ export default function EvaluationDetailPage() {
 
         <EvaluationResultComparison evaluation={evaluation} />
         <EvaluationScoreOverview evaluation={evaluation} />
+        <EvaluationActionPanel evaluation={evaluation} calculating={calculating} onCalculate={calculate} />
         <EvaluationTaskRecords evaluation={evaluation} />
         <EvaluationReportRecords evaluation={evaluation} />
         <EvaluationAttendanceRecords evaluation={evaluation} />
