@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import DashboardLayout from '../../../components/layout/DashboardLayout';
+import { supabase } from '../../../lib/supabaseClient';
 import { fetchReportById, markReportReviewed, updateReport } from '../../../services/reportService';
 import { getCurrentUserProfile } from '../../../lib/authHelpers';
 import { fetchTaskOptions } from '../../../services/taskService';
@@ -187,9 +188,13 @@ export default function ReportDetailPage() {
   async function handleEditComment(commentId, text) {
     if (!text.trim()) return;
     try {
+      const { data: { session } } = await supabase.auth.getSession();
       const response = await fetch('/api/admin/reports', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: session?.access_token ? `Bearer ${session.access_token}` : '',
+        },
         body: JSON.stringify({
           commentId,
           comment: text.trim(),
@@ -214,8 +219,10 @@ export default function ReportDetailPage() {
   async function handleConfirmDeleteComment(commentId) {
     setDeletingComment(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
       const response = await fetch(`/api/admin/reports?commentId=${commentId}`, {
         method: 'DELETE',
+        headers: { Authorization: session?.access_token ? `Bearer ${session.access_token}` : '' },
       });
 
       if (!response.ok) throw new Error('Failed to delete comment');
@@ -293,9 +300,13 @@ export default function ReportDetailPage() {
 
     setSubmittingComment(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
       const response = await fetch('/api/admin/reports', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: session?.access_token ? `Bearer ${session.access_token}` : '',
+        },
         body: JSON.stringify({
           reportId: id,
           comment: comment.trim(),
@@ -703,7 +714,9 @@ export default function ReportDetailPage() {
             {report.admin_comments?.map((c) => (
               <div key={c.id} className={styles.commentItem}>
                 <div className="flex items-center justify-between">
-                  <span className={styles.commentAuthor}>{getProfileDisplayName(c.admin, 'Admin')}</span>
+                  <span className={styles.commentAuthor}>
+                    {c.author_name_snapshot || getProfileDisplayName(c.admin, 'Admin')}
+                  </span>
                   <div className="flex items-center gap-3">
                     <span className={styles.commentDate}>{formatDateTime(c.created_at)}</span>
                     {canReview && (

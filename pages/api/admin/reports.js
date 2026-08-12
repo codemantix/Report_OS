@@ -1,3 +1,4 @@
+import { getAuthenticatedUser, respondAuthFailure } from '../../../lib/apiAuth';
 import { getAdminClient } from '../../../lib/supabaseAdmin';
 import {
   buildReportCommentNotification,
@@ -10,24 +11,25 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     try {
+      const currentUser = await getAuthenticatedUser(req, res);
+      if (!currentUser) return respondAuthFailure(res);
+
       const { reportId, comment } = req.body;
 
       if (!reportId || !comment) {
         return res.status(400).json({ error: 'Report ID and comment are required' });
       }
 
-      // For now, use the first admin user found (in production, get from session)
-      const { data: adminUser } = await supabaseAdmin
-        .from('users')
-        .select('id')
-        .eq('role', 'admin')
-        .limit(1)
-        .single();
+      const authorName = currentUser.display_name
+        || currentUser.full_name
+        || currentUser.email
+        || 'Reviewer';
 
       const { data, error } = await supabaseAdmin.from('admin_comments').insert([
         {
           report_id: reportId,
-          admin_id: adminUser?.id || null,
+          admin_id: currentUser.id,
+          author_name_snapshot: authorName,
           comment: comment,
         },
       ]).select(`
