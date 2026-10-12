@@ -6,18 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "test:task-performance": "node --test tests/taskPerformanceScoring.test.mjs",
-    "test:reporting-performance": "node --test tests/reportingPerformanceScoring.test.mjs",
-    "test:attendance-performance": "node --test tests/attendancePerformanceScoring.test.mjs",
-    "test:biweekly-evaluation": "node --test tests/biweeklyEvaluationEngine.test.mjs",
-    "test:evaluation-periods": "node --test tests/evaluationPeriodValidation.test.mjs tests/evaluationAccess.test.mjs",
-    "test:evaluation-dashboard": "node --test tests/evaluationDashboard.test.mjs tests/evaluationReviewRules.test.mjs",
-    "test:stipends": "node --test tests/stipendRecommendationRules.test.mjs tests/stipendPaymentRules.test.mjs",
-    "test:my-performance": "node --test tests/myPerformanceRules.test.mjs",
-    "test:management-analytics": "node --test tests/managementAnalyticsAccess.test.mjs",
-    "test:audit": "node --test tests/auditEventClassification.test.mjs",
-    "test:notifications": "node --test tests/evaluationNotificationRules.test.mjs"
+    "lint": "next lint"
   },
   "dependencies": {
     "next": "^14.2.0",

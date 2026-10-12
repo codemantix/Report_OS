@@ -42,8 +42,8 @@ test('missing or expired sessions produce a sign-in message', () => {
 });
 
 test('readable server messages pass through unchanged', () => {
-  assert.equal(friendlyErrorMessage(new Error('Employee evaluation was not found.')), 'Employee evaluation was not found.');
-  assert.equal(friendlyErrorMessage('Evaluation period is locked.'), 'Evaluation period is locked.');
+  assert.equal(friendlyErrorMessage(new Error('Requested report was not found.')), 'Requested report was not found.');
+  assert.equal(friendlyErrorMessage('Reporting period is locked.'), 'Reporting period is locked.');
 });
 
 test('HTML responses served where JSON was expected produce a clear message, not a JSON parse error', () => {

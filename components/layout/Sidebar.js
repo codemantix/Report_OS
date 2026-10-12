@@ -18,12 +18,6 @@ import {
   UserCheck,
   CheckSquare,
   Landmark,
-  CalendarCheck,
-  CalendarRange,
-  Gauge,
-  Banknote,
-  ReceiptText,
-  ScrollText,
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
 import Image from 'next/image';
@@ -35,7 +29,6 @@ function getNavigationByRole(role) {
       section: 'Main',
       items: [
         { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        { href: '/dashboard/my-performance', label: 'My Performance', icon: Gauge },
         { href: '/dashboard/submit-report', label: 'Submit Report', icon: Send },
       ],
     },
@@ -51,12 +44,6 @@ function getNavigationByRole(role) {
       managementSection.items = [
         { href: '/dashboard/company-goals', label: 'Company Goals', icon: Landmark },
         { href: '/dashboard/reports', label: 'Reports', icon: FileText },
-        { href: '/dashboard/attendance', label: 'Attendance', icon: CalendarCheck },
-        { href: '/dashboard/evaluation-periods', label: 'Evaluation Periods', icon: CalendarRange },
-        { href: '/dashboard/evaluations', label: 'Evaluations', icon: Gauge },
-        { href: '/dashboard/stipends', label: 'Stipends', icon: Banknote },
-        { href: '/dashboard/stipend-payments', label: 'Stipend Payments', icon: ReceiptText },
-        { href: '/dashboard/audit', label: 'Audit History', icon: ScrollText },
         { href: '/dashboard/tasks', label: 'Tasks', icon: CheckSquare },
         { href: '/dashboard/departments', label: 'Departments', icon: Building2 },
         { href: '/dashboard/goals', label: 'Goals', icon: Target },
@@ -69,12 +56,6 @@ function getNavigationByRole(role) {
       managementSection.items = [
         { href: '/dashboard/company-goals', label: 'Company Goals', icon: Landmark },
         { href: '/dashboard/reports', label: 'Department Reports', icon: FileText },
-        { href: '/dashboard/attendance', label: 'Department Attendance', icon: CalendarCheck },
-        { href: '/dashboard/evaluation-periods', label: 'Evaluation Periods', icon: CalendarRange },
-        { href: '/dashboard/evaluations', label: 'Evaluations', icon: Gauge },
-        { href: '/dashboard/stipends', label: 'Stipends', icon: Banknote },
-        { href: '/dashboard/stipend-payments', label: 'Stipend Payments', icon: ReceiptText },
-        { href: '/dashboard/audit', label: 'Audit History', icon: ScrollText },
         { href: '/dashboard/tasks', label: 'Tasks', icon: CheckSquare },
         { href: '/dashboard/goals', label: 'Goals', icon: Target },
         { href: '/dashboard/plans', label: 'Plans', icon: ClipboardList },
@@ -87,8 +68,6 @@ function getNavigationByRole(role) {
       managementSection.items = [
         { href: '/dashboard/company-goals', label: 'Company Direction', icon: Landmark },
         { href: '/dashboard/reports', label: 'My Reports', icon: FileText },
-        { href: '/dashboard/attendance', label: 'My Attendance', icon: CalendarCheck },
-        { href: '/dashboard/stipend-payments', label: 'My Stipend Payments', icon: ReceiptText },
         { href: '/dashboard/my-tasks', label: 'My Tasks', icon: CheckSquare },
         { href: '/dashboard/goals', label: 'My Goals', icon: Target },
         { href: '/dashboard/plans', label: 'Department Plans', icon: ClipboardList },

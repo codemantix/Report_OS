@@ -5,7 +5,6 @@ import StatCard from '../../components/dashboard/StatCard';
 import RecentReportsTable from '../../components/reports/ReportsTable';
 import TeamMemberDashboard from '../../components/dashboard/TeamMemberDashboard';
 import AdminDashboardCharts, { AdminDashboardChartsSkeleton } from '../../components/dashboard/AdminDashboardCharts';
-import ManagementAnalyticsSection from '../../components/management-analytics/ManagementAnalyticsSection';
 import { fetchDashboardStats, fetchRecentReports, fetchDepartmentProgress } from '../../services/analyticsService';
 import { fetchHighRiskReports } from '../../services/reportService';
 import { getCurrentUserProfile } from '../../lib/authHelpers';
@@ -164,9 +163,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-       
-
-        {/* Report and goal operational metrics */}
+        {/* Stats Grid */}
         <div className={styles.statsGrid}>
           <StatCard
             title="Total Reports"
@@ -302,7 +299,6 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
-        <ManagementAnalyticsSection role={userRole} />
       </div>
     </DashboardLayout>
   );
