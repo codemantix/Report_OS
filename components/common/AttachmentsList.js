@@ -1,7 +1,15 @@
-import { FileText, Image as ImageIcon, File as FileIcon, Download, Eye, AlertTriangle } from 'lucide-react';
+import {
+  FileText,
+  FileSpreadsheet,
+  Presentation,
+  Image as ImageIcon,
+  File as FileIcon,
+  Download,
+  Eye,
+  AlertTriangle,
+} from 'lucide-react';
+import { getAttachmentCategory } from '../../utils/attachmentFileTypes';
 import styles from './AttachmentsList.module.css';
-
-const IMAGE_FORMATS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
 
 export function formatFileSize(bytes) {
   if (bytes === null || bytes === undefined || Number.isNaN(bytes)) return '';
@@ -11,17 +19,15 @@ export function formatFileSize(bytes) {
 }
 
 export function isImageAttachment(att) {
-  const type = (att.type || '').toLowerCase();
-  const format = (att.format || '').toLowerCase();
-  return type.startsWith('image/') || IMAGE_FORMATS.includes(format);
+  return getAttachmentCategory(att) === 'image';
 }
 
 export function getFileIcon(att) {
-  if (isImageAttachment(att)) return ImageIcon;
-  const type = (att.type || '').toLowerCase();
-  const format = (att.format || '').toLowerCase();
-  if (type.includes('pdf') || format === 'pdf') return FileText;
-  if (type.includes('word') || type.includes('document') || ['doc', 'docx'].includes(format)) return FileText;
+  const category = getAttachmentCategory(att);
+  if (category === 'image') return ImageIcon;
+  if (category === 'spreadsheet') return FileSpreadsheet;
+  if (category === 'presentation') return Presentation;
+  if (category === 'document') return FileText;
   return FileIcon;
 }
 

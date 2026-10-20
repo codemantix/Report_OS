@@ -1,22 +1,14 @@
 import { useState, useRef, useCallback } from 'react';
-import { Upload, FileText, Image, File, X } from 'lucide-react';
+import { Upload, FileText, FileSpreadsheet, Presentation, Image, File, X } from 'lucide-react';
 import styles from './FileUpload.module.css';
 import toast from 'react-hot-toast';
+import {
+  ATTACHMENT_ACCEPT_VALUE,
+  getAttachmentCategory,
+  isSupportedAttachmentName,
+} from '../../utils/attachmentFileTypes';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-
-const ACCEPTED_TYPES = {
-  'application/pdf': ['.pdf'],
-  'image/jpeg': ['.jpg', '.jpeg'],
-  'image/png': ['.png'],
-  'image/gif': ['.gif'],
-  'image/webp': ['.webp'],
-  'image/svg+xml': ['.svg'],
-  'application/msword': ['.doc'],
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-};
-
-const ACCEPTED_STRING = Object.values(ACCEPTED_TYPES).flat().join(',');
 
 function formatFileSize(bytes) {
   if (bytes < 1024) return `${bytes} B`;
@@ -24,10 +16,12 @@ function formatFileSize(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function getFileIcon(type) {
-  if (type.startsWith('image/')) return Image;
-  if (type.includes('pdf')) return FileText;
-  if (type.includes('word') || type.includes('document')) return FileText;
+function getFileIcon(file) {
+  const category = getAttachmentCategory(file);
+  if (category === 'image') return Image;
+  if (category === 'spreadsheet') return FileSpreadsheet;
+  if (category === 'presentation') return Presentation;
+  if (category === 'document') return FileText;
   return File;
 }
 
@@ -35,9 +29,7 @@ function validateFile(file) {
   if (file.size > MAX_FILE_SIZE) {
     return `"${file.name}" exceeds the 10MB limit`;
   }
-  const ext = '.' + file.name.split('.').pop().toLowerCase();
-  const acceptedExts = Object.values(ACCEPTED_TYPES).flat();
-  if (!acceptedExts.includes(ext)) {
+  if (!isSupportedAttachmentName(file.name)) {
     return `"${file.name}" has an unsupported file type`;
   }
   return null;
@@ -152,7 +144,7 @@ export default function FileUpload({ files, onFilesChange, disabled = false, lab
           {dragActive ? 'Drop files here' : 'Drag & drop files here'}
         </p>
         <p className={styles.dropHint}>
-          or click to browse &middot; PDF, images, docs &middot; max 10MB each
+          or click to browse &middot; PDF, images, Word, Excel, PowerPoint, OpenDocument &amp; text files &middot; max 10MB each
         </p>
       </div>
 
@@ -162,7 +154,7 @@ export default function FileUpload({ files, onFilesChange, disabled = false, lab
         ref={inputRef}
         type="file"
         multiple
-        accept={ACCEPTED_STRING}
+        accept={ATTACHMENT_ACCEPT_VALUE}
         onChange={handleInputChange}
         className="hidden"
         disabled={disabled}
@@ -172,7 +164,7 @@ export default function FileUpload({ files, onFilesChange, disabled = false, lab
       {files.length > 0 && (
         <div className={styles.fileList}>
           {files.map((file, index) => {
-            const FileIcon = getFileIcon(file.type);
+            const FileIcon = getFileIcon(file);
             return (
               <div key={`${file.name}-${index}`} className={styles.fileItem}>
                 <div className={styles.fileInfo}>
